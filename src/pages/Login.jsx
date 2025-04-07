@@ -12,8 +12,7 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = () => {
     if (username === 'reins' && password === '123456') {
       navigate('/home');
     } else {

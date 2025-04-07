@@ -138,7 +138,6 @@ function Cart() {
           <Text strong style={{ fontSize: 18, marginRight: 24 }}>
             总计: ¥{getCartTotal().toFixed(2)}
           </Text>
-          // The checkout button in your cart should look like this:
           <Button 
             type="primary" 
             onClick={handleCheckout}
