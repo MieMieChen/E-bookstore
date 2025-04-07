@@ -14,16 +14,14 @@ import {
 import { 
   DeleteOutlined, 
   PlusOutlined, 
-  MinusOutlined 
+  MinusOutlined,
+  ShopOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { ShopOutlined } from '@ant-design/icons';
 import { useShop } from '../context/ShopContext';
-import Navbar from '../components/Navbar';
 
 const { Title, Text } = Typography;
 
-// 在组件函数顶部定义handleCheckout（return之前）
 function Cart() {
   const navigate = useNavigate();
   const { 
@@ -99,7 +97,6 @@ function Cart() {
     }
   ];
 
-  // 正确位置：在return语句之前定义函数
   const handleCheckout = () => {
     const total = getCartTotal();
     createOrder(cartItems, total);
@@ -107,45 +104,42 @@ function Cart() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      <Navbar />
-      <div style={{ padding: 24 }}>
-        <Title level={2}>购物车</Title>
-        <Divider />
-        
-        <Card>
-          <Table
-            columns={columns}
-            dataSource={cartItems}
-            rowKey="id"
-            pagination={false}
-            locale={{
-              emptyText: (
-                <Text type="secondary" style={{ padding: 24 }}>
-                  购物车是空的
-                </Text>
-              )
-            }}
-          />
-        </Card>
+    <div>
+      <Title level={2}>购物车</Title>
+      <Divider />
+      
+      <Card>
+        <Table
+          columns={columns}
+          dataSource={cartItems}
+          rowKey="id"
+          pagination={false}
+          locale={{
+            emptyText: (
+              <Text type="secondary" style={{ padding: 24 }}>
+                购物车是空的
+              </Text>
+            )
+          }}
+        />
+      </Card>
 
-        <div style={{ 
-          marginTop: 24,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center'
-        }}>
-          <Text strong style={{ fontSize: 18, marginRight: 24 }}>
-            总计: ¥{getCartTotal().toFixed(2)}
-          </Text>
-          <Button 
-            type="primary" 
-            onClick={handleCheckout}
-            icon={<ShopOutlined />}
-          >
-            去结算
-          </Button>
-        </div>
+      <div style={{ 
+        marginTop: 24,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+      }}>
+        <Text strong style={{ fontSize: 18, marginRight: 24 }}>
+          总计: ¥{getCartTotal().toFixed(2)}
+        </Text>
+        <Button 
+          type="primary" 
+          onClick={handleCheckout}
+          icon={<ShopOutlined />}
+        >
+          去结算
+        </Button>
       </div>
     </div>
   );

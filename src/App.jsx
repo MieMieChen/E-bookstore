@@ -5,8 +5,10 @@ import Home from './pages/Home';
 import BookDetail from './pages/BookDetail';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
+import Profile from './pages/Profile';
 import Background from './components/Background';
-import  ShopProvider  from './context/ShopContext';
+import MainLayout from './components/MainLayout';
+import ShopProvider from './context/ShopContext';
 import './css/global.css';
 // 是整个应用的入口点
 // 这是应用的根组件，所有其他组件都是它的子组件，包含了路由配置，决定了不同 URL 显示什么内容
@@ -25,10 +27,15 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/book/:id" element={<BookDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/orders" element={<Orders />} />
+            
+            {/* 使用 MainLayout 作为受保护路由的布局 */}
+            <Route element={<MainLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/book/:id" element={<BookDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
           </Routes>
         </div>
       </Router>

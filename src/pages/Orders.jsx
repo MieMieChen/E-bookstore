@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table, Tag, Typography, Divider } from 'antd';
 import { useShop } from '../context/ShopContext';
-import Navbar from '../components/Navbar';
 
 const { Title } = Typography;
 
@@ -42,18 +41,15 @@ function Orders() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      <Navbar />
-      <div style={{ padding: 24 }}>
-        <Title level={2}>我的订单</Title>
-        <Divider />
-        <Table 
-          columns={columns} 
-          dataSource={orders} 
-          rowKey="id"
-          pagination={false}
-        />
-      </div>
+    <div>
+      <Title level={2}>我的订单</Title>
+      <Divider />
+      <Table 
+        columns={columns} 
+        dataSource={orders} 
+        rowKey="id"
+        pagination={false}
+      />
     </div>
   );
 }
