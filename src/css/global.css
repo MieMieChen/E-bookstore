@@ -1,0 +1,168 @@
+/* global.css */
+
+.App {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f5f5f5;
+  }
+  
+  .background-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  /* 保证内容层级 */
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* 确保导航栏位于顶部 */
+  .navbar {
+    background: linear-gradient(45deg, #673ab7 30%, #9c27b0 90%);
+    box-shadow: 0 3px 5px 2px rgba(156, 39, 176, 0.3);
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: static;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .navbar-left, .navbar-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-title {
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  
+  .nav-button, .home-button {
+    background: rgba(255, 255, 255, 0.2); /* 添加背景，略微透明 */
+    border: 1px solid white; /* 添加白色边框 */
+    border-radius: 5px; /* 让按钮有圆角 */
+    color: rgb(245, 243, 243);
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px; /* 减少间距，向左移动 */
+    margin-right: 10px; /* 避免最右侧按钮溢出 */
+    padding: 8px 12px; /* 让按钮更大 */
+}
+
+.nav-button:hover, .home-button:hover {
+    background: rgba(255, 255, 255, 0.4); /* 悬停时背景颜色变浅 */
+    text-decoration: none; /* 取消下划线 */
+}
+
+/* 让右侧按钮靠左一些，避免挤出屏幕 */
+.navbar-right {
+    margin-right: 10px; /* 缩小右侧间距 */
+}
+
+  
+  /* 保证卡片、内容层级 */
+  .MuiCard-root,
+  .MuiPaper-root {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  /* 页面容器 */
+  .page-container {
+  padding: 0; /* 避免影响 Navbar */
+  width: 100%;
+}
+
+.content-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 80px; /* 确保 Navbar 占位 */
+}
+
+  .styled-paper {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+  }
+  
+  .image-container img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .product-info {
+    margin: 10px 0;
+  }
+  
+  .divider {
+    margin: 20px 0;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .buy-now {
+    border-color: #1976d2 !important;
+    color: #1976d2 !important;
+  }
+  
+  .add-to-cart {
+    background-color: #1976d2 !important;
+  }
+  
+  .message {
+    color: purple;
+  }
+  /* 修正书籍卡片的大小不一致问题 */
+.book-card {
+    height: 100%; /* 让所有卡片高度一致 */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 统一封面图片的尺寸，防止大小不一 */
+  .book-cover {
+    height: 250px; /* 统一高度 */
+    object-fit: cover; /* 确保图片填充 */
+  }
+  
+  /* 让 `CardContent` 自动填充空间，保持对齐 */
+  .book-card .MuiCardContent-root {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
