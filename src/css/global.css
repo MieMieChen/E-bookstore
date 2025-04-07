@@ -58,7 +58,7 @@
   }
   
   .navbar-title {
-    color: white;
+    color: linear-gradient(45deg, #673ab7 30%, #9c27b0 90%);
     cursor: pointer;
     font-size: 20px;
     font-weight: bold;

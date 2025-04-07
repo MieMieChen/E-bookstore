@@ -6,7 +6,7 @@ import BookDetail from './pages/BookDetail';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
-import Background from './components/Background';
+// import Background from './components/Background';
 import MainLayout from './components/MainLayout';
 import ShopProvider from './context/ShopContext';
 import './css/global.css';
@@ -23,7 +23,7 @@ function App() {
     <ShopProvider> 
       <Router>
         <div className="App">
-          <Background />
+          {/* <Background /> */}
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
