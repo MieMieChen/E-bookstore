@@ -8,14 +8,14 @@ import {
   UserOutlined,
   BookOutlined
 } from '@ant-design/icons';
-
+import { useShop } from '../context/ShopContext';
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
 function MainLayout() {
   const location = useLocation();
   const { token } = theme.useToken();
-
+  const {userData} = useShop();
   // 菜单项配置
   const menuItems = [
     {
@@ -61,7 +61,7 @@ function MainLayout() {
           }}>
             <Avatar size={80} icon={<UserOutlined />} />
             <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
-              欢迎, reins
+              欢迎, {userData.name}
             </Title>
             <Text type="secondary" style={{ fontSize: '25px' }} >书城会员</Text>
           </div>

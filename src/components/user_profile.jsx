@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import { Card, Avatar, Typography, Descriptions, Divider, Button, Row, Col, Input, message } from 'antd';
 import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
-
+import { useShop } from '../context/ShopContext';
 const { Title, Text } = Typography;
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   
   // 用户数据
-  const [userData, setUserData] = useState({
-    username: 'Ashely',
-    name: '屁大点事分享家',
-    email: 'ashley@example.com',
-    phone: '123****4567',
-    address: '最温暖的被窝',
-    memberSince: '520-1314',
-    memberLevel: 'VVVVVVVVVVVVVVIP',
-    points: 771995
-  });
-
+  // const [userData, setUserData] = useState({
+  //   username: 'Ashely',
+  //   name: '屁大点事分享家',
+  //   email: 'ashley@example.com',
+  //   phone: '123****4567',
+  //   address: '最温暖的被窝',
+  //   memberSince: '520-1314',
+  //   memberLevel: 'VVVVVVVVVVVVVVIP',
+  //   points: 771995
+  // });
+  const{userData,changeUserData} = useShop();
   // 临时存储编辑中的数据
   const [tempData, setTempData] = useState({ ...userData });
 
@@ -32,7 +32,7 @@ export default function UserProfile() {
 
   // 保存更改
   const handleSave = () => {
-    setUserData(tempData);
+    changeUserData(tempData);
     setIsEditing(false);
     message.success('个人信息更新成功！');
   };

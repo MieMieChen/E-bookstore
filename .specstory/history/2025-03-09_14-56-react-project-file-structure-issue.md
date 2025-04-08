@@ -4101,6 +4101,58 @@ _****_
 
 ---
 
+_**User**_
+
+For the code present, we get this error:
+```
+Expression expected.
+```
+How can I resolve this? If you propose a fix, please make it concise.
+
+---
+
+_**Assistant**_
+
+Let me fix the `changeUserData` function syntax. The issue is that `new` is a reserved keyword in JavaScript and the function declaration syntax is incorrect:
+
+---
+
+_****_
+
+```diff
+    };
+  
+-   const changeUserData({new})
+-   {
+-     setUserData({new);
+-   }
++   const changeUserData = (newData) => {
++     setUserData(newData);
++   };}
+  
+    const getCartTotal = () => {
+```
+
+---
+
+_****_
+
+Let me clean that up one more time:
+
+---
+
+_****_
+
+Cancelled
+
+---
+
+_****_
+
+
+
+---
+
 
 
 ---

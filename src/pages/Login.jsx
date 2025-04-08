@@ -13,7 +13,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    if (username === 'reins' && password === '123456') {
+    if (username === 'Ashley' && password === '123456') {
       navigate('/home');
     } else {
       setError('用户名或密码错误');

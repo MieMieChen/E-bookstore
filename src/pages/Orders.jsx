@@ -1,5 +1,5 @@
 import React from 'react';
-// import { Table, Tag, Typography, Divider } from 'antd';
+import { Typography, Divider } from 'antd';
 import { useShop } from '../context/ShopContext';
 import OrderTable from '../components/order_table';
 const { Title } = Typography;

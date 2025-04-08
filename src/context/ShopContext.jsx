@@ -5,7 +5,16 @@ const ShopContext = createContext(); //创建了一个上下文对象 ShopContex
 export default function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
-
+  const [userData, setUserData] = useState({
+    username: 'Ashely',
+    name: '屁大点事分享家',
+    email: 'ashley@example.com',
+    phone: '123****4567',
+    address: '最温暖的被窝',
+    memberSince: '520-1314',
+    memberLevel: 'VVVVVVVVVVVVVVIP',
+    points: 771995
+  });
   const addToCart = (book) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === book.id);
@@ -48,6 +57,10 @@ export default function ShopProvider({ children }) {
     return newOrder;
   };
 
+  const changeUserData = (newData) => {
+    setUserData(newData);
+  };
+
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -66,6 +79,8 @@ export default function ShopProvider({ children }) {
       createOrder,
       getCartTotal,
       getCartItemsCount,
+      userData,
+      changeUserData
     }}>
       {children}
     </ShopContext.Provider>
