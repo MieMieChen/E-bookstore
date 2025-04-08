@@ -39,9 +39,9 @@ function MainLayout() {
       label: <Link to="/profile">个人信息</Link>,
     },
   ];
-
+//把这个删除 maxHeight: '100vh' 就能够自适应了~·
   return (
-      <Layout style={{ width: '100%', maxHeight: '100vh' }}>
+      <Layout style={{ width: '100%' }}>   
         <Header style={{ 
         display: 'flex', 
         alignItems: 'center', 
@@ -81,8 +81,6 @@ function MainLayout() {
               backgroundAttachment: 'fixed',
               borderRadius: token.borderRadius,
               marginTop: 24,
-              // maxHeight: '100vh', // 设置最大高度为视口高度
-              // overflow: 'auto',
             }}
           >
             <Outlet />

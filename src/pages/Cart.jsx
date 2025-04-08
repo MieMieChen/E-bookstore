@@ -1,26 +1,10 @@
 import React from 'react';
-import { 
-  Table, 
-  Tag, 
-  Typography, 
-  Button, 
-  Card, 
-  Row, 
-  Col, 
-  Space,
-  Divider,
-  Image
-} from 'antd';
-import { 
-  DeleteOutlined, 
-  PlusOutlined, 
-  MinusOutlined,
-  ShopOutlined
-} from '@ant-design/icons';
+import { Typography, Divider } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import CartItem from '../components/cart_item';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 function Cart() {
   const navigate = useNavigate();
@@ -30,117 +14,20 @@ function Cart() {
     updateCartItemQuantity, 
     getCartTotal,
     createOrder 
-  } = useShop(); //获取上下文的公共信息
-
-  const columns = [
-    {
-      title: '商品',
-      dataIndex: 'title',
-      key: 'title',
-      render: (_, record) => (
-        <Space>
-          <Image
-            width={50}
-            src={record.cover}
-            alt={record.title}
-            preview={false}
-          />
-          <Text>{record.title}</Text>
-        </Space>
-      )
-    },
-    {
-      title: '单价',
-      dataIndex: 'price',
-      key: 'price',
-      align: 'right',
-      render: (price) => `¥${price.toFixed(2)}`
-    },
-    {
-      title: '数量',
-      key: 'quantity',
-      align: 'center',
-      render: (_, record) => (
-        <Space>
-          <Button 
-            shape="circle" 
-            icon={<MinusOutlined />} 
-            onClick={() => updateCartItemQuantity(record.id, record.quantity - 1)}
-          />
-          <Text>{record.quantity}</Text>
-          <Button 
-            shape="circle" 
-            icon={<PlusOutlined />}
-            onClick={() => updateCartItemQuantity(record.id, record.quantity + 1)}
-          />
-        </Space>
-      )
-    },
-    {
-      title: '小计',
-      key: 'subtotal',
-      align: 'right',
-      render: (_, record) => `¥${(record.price * record.quantity).toFixed(2)}`
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'right',
-      render: (_, record) => (
-        <Button 
-          type="link" 
-          danger 
-          icon={<DeleteOutlined />} 
-          onClick={() => removeFromCart(record.id)}
-        />
-      )
-    }
-  ];
-
-  const handleCheckout = () => {
-    const total = getCartTotal();
-    createOrder(cartItems, total);
-    navigate('/orders');
-  };
+  } = useShop();
 
   return (
     <div>
       <Title level={2}>购物车</Title>
       <Divider />
-      
-      <Card>
-        <Table
-          columns={columns}
-          dataSource={cartItems}
-          rowKey="id"
-          pagination={false}
-          locale={{
-            emptyText: (
-              <Text type="secondary" style={{ padding: 24 }}>
-                购物车是空的
-              </Text>
-            )
-          }}
-        />
-      </Card>
-
-      <div style={{ 
-        marginTop: 24,
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-      }}>
-        <Text strong style={{ fontSize: 18, marginRight: 24 }}>
-          总计: ¥{getCartTotal().toFixed(2)}
-        </Text>
-        <Button 
-          type="primary" 
-          onClick={handleCheckout}
-          icon={<ShopOutlined />}
-        >
-          去结算
-        </Button>
-      </div>
+      <CartItem 
+        cartItems={cartItems} 
+        removeFromCart={removeFromCart} 
+        updateCartItemQuantity={updateCartItemQuantity} 
+        getCartTotal={getCartTotal}
+        createOrder={createOrder}
+        navigate={navigate}
+      />
     </div>
   );
 }
