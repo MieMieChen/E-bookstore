@@ -38,7 +38,7 @@ function BookDetail() {
 
   return (
     <div>
-      <Typography.Title level={2}>图书详情</Typography.Title>
+      <Typography.Title level={1}>图书详情</Typography.Title>
       <Divider />
       
       <Card>

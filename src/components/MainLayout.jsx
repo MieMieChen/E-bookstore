@@ -41,31 +41,29 @@ function MainLayout() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ 
+      <Layout style={{ width: '100%', maxHeight: '100vh' }}>
+        <Header style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        background: token.colorPrimary,
-        padding: '0 24px'
+        padding: '0 32px'
       }}>
         <BookOutlined style={{ fontSize: 24, color: 'white', marginRight: 12 }} />
-        <Title level={3} style={{ margin: 0, color: 'white' }}>
+        <Title level={2} style={{ margin: 0, color: 'white' }}>
           书城
         </Title>
       </Header>
       <Layout>
-        <Sider width={200} style={{ background: token.colorBgContainer }}>
+        <Sider width={220} >
           <div style={{ 
             padding: '24px 0', 
             textAlign: 'center',
-            borderBottom: `1px solid ${token.colorBorder}`,
-            marginBottom: 16
+            marginBottom: 10
           }}>
-            <Avatar size={64} icon={<UserOutlined />} />
-            <Title level={5} style={{ marginTop: 12, marginBottom: 4 }}>
+            <Avatar size={80} icon={<UserOutlined />} />
+            <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
               欢迎, reins
             </Title>
-            <Text type="secondary">书城会员</Text>
+            <Text type="secondary" style={{ fontSize: '25px' }} >书城会员</Text>
           </div>
           <Menu
             mode="inline"
@@ -79,10 +77,12 @@ function MainLayout() {
             style={{
               padding: 24,
               margin: 0,
-              minHeight: 280,
               background: token.colorBgContainer,
+              backgroundAttachment: 'fixed',
               borderRadius: token.borderRadius,
               marginTop: 24,
+              // maxHeight: '100vh', // 设置最大高度为视口高度
+              // overflow: 'auto',
             }}
           >
             <Outlet />

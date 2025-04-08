@@ -1,14 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const ShopContext = createContext();
+const ShopContext = createContext(); //创建了一个上下文对象 ShopContext，用于在组件树中共享购物车的状态和方法。
 
 export default function ShopProvider({ children }) {
-// cartItems: 购物车中的商品数组（当前状态）
-// setCartItems: 用来更新购物车的函数
-// []: 空数组作为初始值，表示购物车最初是空的
-// orders: 订单列表数组（当前状态）
-// setOrders: 用来更新订单的函数
-// []: 空数组作为初始值，表示最初没有订单
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -77,6 +71,9 @@ export default function ShopProvider({ children }) {
     </ShopContext.Provider>
   );
 }
+//ShopContext.Provider 将购物车的状态和方法传递给子组件。
+//value 属性中包含了所有需要共享的状态和方法。
+
 // 自定义 Hook 必须以 use 开头
 export function useShop() {
   const context = useContext(ShopContext);

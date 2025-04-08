@@ -4,11 +4,10 @@ import { Row, Col, Card, Input, Select, Button, Typography, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { books } from '../data/books';
 import '../css/global.css';  
-
 const { Search } = Input;
 const { Option } = Select;
 
-function Home() {
+export default function Home() {
   const [filteredBooks, setFilteredBooks] = useState(books);
   const [searchType, setSearchType] = useState('title');
   const navigate = useNavigate();
@@ -40,7 +39,7 @@ function Home() {
 
   return (
     <div>
-      <Typography.Title level={2}>书籍列表</Typography.Title>
+      <Typography.Title level={1}>书籍列表</Typography.Title>
       
       <Space style={{ marginBottom: 24, width: '100%' }}>
         <Select 
@@ -55,13 +54,13 @@ function Home() {
         <Search 
           placeholder="搜索书籍" 
           allowClear
-          enterButton={<SearchOutlined />}
+          // enterButton={<SearchOutlined />}
           onSearch={(value) => handleSearch(searchType, value)}
-          style={{ width: 400 }}
+          style={{ width: 400 ,   colorRendering:'rgb(12, 9, 227)',}}
         />
       </Space>
       
-      <Row gutter={[24, 24]}>
+      <Row gutter={[24, 24]}> 
         {filteredBooks.map((book) => (
           <Col key={book.id} xs={24} sm={12} md={8} lg={6}>
             <Card
@@ -85,4 +84,3 @@ function Home() {
   );
 }
 
-export default Home;

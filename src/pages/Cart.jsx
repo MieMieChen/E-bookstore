@@ -30,7 +30,7 @@ function Cart() {
     updateCartItemQuantity, 
     getCartTotal,
     createOrder 
-  } = useShop();
+  } = useShop(); //获取上下文的公共信息
 
   const columns = [
     {
