@@ -89,7 +89,8 @@ export default function ShopProvider({ children }) {
 //ShopContext.Provider 将购物车的状态和方法传递给子组件。
 //value 属性中包含了所有需要共享的状态和方法。
 
-// 自定义 Hook 必须以 use 开头
+// 自定义 Hook 必须以 use 开头 自己封装了一个API，方便其他组件使用上下文中的值。
+// useContext 是 React 内置的 Hook，用于在函数组件中访问上下文的值。
 export function useShop() {
   const context = useContext(ShopContext);
   if (!context) {

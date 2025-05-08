@@ -19,7 +19,8 @@ import {
 
 const { Text } = Typography;
 
-export default function CartItem({
+export default function 
+CartItem({
     cartItems,
     removeFromCart, 
     updateCartItemQuantity, 

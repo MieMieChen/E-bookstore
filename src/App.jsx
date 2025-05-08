@@ -14,6 +14,8 @@ function App() {
 
 export default App;
 
+//ConfigProvider 是许多 UI 组件库（如 Ant Design、React Suite 等）提供的一个顶层配置组件，用于统一管理子组件的全局默认参数、语言包、主题样式等。它通过 React 的 Context API 实现跨层级数据传递，避免在每个组件中重复配置。
+
 
 // 用户访问网站
 // ↓

@@ -9,3 +9,4 @@ root.render(
   </React.StrictMode>
 );
 
+//strictMode可以重复调用渲染的模块 检查是否是纯函数 是否存在·副作用 
