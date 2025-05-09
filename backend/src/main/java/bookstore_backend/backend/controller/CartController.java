@@ -87,11 +87,15 @@ public class CartController {
             if (existingCartItem.isPresent()) {
                 // 如果已存在，则更新数量
                 Cart existingItem = existingCartItem.get();
-                existingItem.setQuantity(existingItem.getQuantity() + cart.getQuantity());
+                int newQuantity = existingItem.getQuantity() + (cart.getQuantity() > 0 ? cart.getQuantity() : 1);
+                existingItem.setQuantity(newQuantity);
                 savedCart = cartRepository.save(existingItem);
                 System.out.println("更新购物车项数量成功: " + savedCart);
             } else {
                 // 如果不存在，则创建新记录
+                if (cart.getQuantity() <= 0) {
+                    cart.setQuantity(1); // 确保数量至少为1
+                }
                 savedCart = cartRepository.save(cart);
                 System.out.println("创建新购物车项成功: " + savedCart);
             }
