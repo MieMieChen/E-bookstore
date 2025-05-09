@@ -3,11 +3,14 @@ import { ConfigProvider } from 'antd';
 import { customTheme } from './theme/themeConfigs';
 import AppRouter from './components/router';
 import './css/global.css';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
     <ConfigProvider theme={customTheme}>
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </ConfigProvider>
   );
 }

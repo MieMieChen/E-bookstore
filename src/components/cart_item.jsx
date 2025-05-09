@@ -16,23 +16,27 @@ import {
     MinusOutlined,
     ShopOutlined
   } from '@ant-design/icons';
+  import { useAuth } from '../context/AuthContext';
 
 const { Text } = Typography;
 
-export default function 
-CartItem({
+export default function CartItem({
     cartItems,
     removeFromCart, 
     updateCartItemQuantity, 
     getCartTotal,
     createOrder,
-    navigate} )
-{
+    navigate
+}) {
     console.log(cartItems);
     console.log(removeFromCart);
     console.log(updateCartItemQuantity);
     console.log(getCartTotal);
     console.log(createOrder);
+    
+    // 获取认证上下文
+    const { getUser } = useAuth();
+
     const columns = [
         {
           title: '商品',
@@ -99,10 +103,64 @@ CartItem({
         }
       ];
     
-      const handleCheckout = () => {
-        const total = getCartTotal();
-        createOrder(cartItems, total);
-        navigate('/orders');
+      const handleCheckout = async () => {
+        try {
+          // 获取总金额
+          const total = getCartTotal();
+          
+          // 记录当前购物车中的所有商品ID和信息
+          console.log('结算的购物车内容:', JSON.stringify(cartItems, null, 2));
+          
+          if (!cartItems || cartItems.length === 0) {
+            console.error('购物车为空，无法结算');
+            return;
+          }
+          
+          // 1. 创建订单
+          console.log('正在创建订单...');
+          
+          // 检查cartItems的格式是否正确
+          const validItems = cartItems.filter(item => 
+            item && item.id && typeof item.quantity === 'number' && item.price
+          );
+          
+          if (validItems.length !== cartItems.length) {
+            console.error('购物车中存在无效商品项:', 
+              cartItems.filter(item => !(item && item.id && typeof item.quantity === 'number' && item.price))
+            );
+          }
+          
+          try {
+            // 这里的createOrder会在内部处理订单创建和状态更新，只需调用一次
+            const order = await createOrder(validItems, total);
+            console.log('订单创建成功:', order);
+            
+            // 2. 确保数据库购物车被清空（以防后端逻辑未清空）
+            const user = getUser();
+            console.log('当前用户:', user);
+            
+            // 使用fetch API直接发送删除请求
+            await fetch(`http://localhost:8080/api/cart/user/${user.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            console.log('已发送额外的购物车清空请求，确保数据库同步');
+            
+            // 3. 最后跳转到订单页面
+            navigate('/orders');
+          } catch (orderError) {
+            console.error('创建订单时出错:', orderError);
+            // 出错时也跳转，但显示错误信息
+            alert(`创建订单失败: ${orderError.message || '未知错误'}`);
+            navigate('/orders');
+          }
+        } catch (error) {
+          console.error('结算过程中发生致命错误:', error);
+          alert('结算过程中发生错误，请稍后再试');
+          navigate('/cart');
+        }
       };
 
       return (
