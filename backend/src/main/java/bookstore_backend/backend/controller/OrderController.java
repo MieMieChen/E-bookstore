@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -38,15 +42,41 @@ public class OrderController {
     
     @PersistenceContext
     private EntityManager entityManager;
+    
+    private final ObjectMapper objectMapper;
+    
+    public OrderController() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
 
     // 获取用户的所有订单
     @GetMapping("/orders/{userId}")
     public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
         try {
             return userRepository.findById(userId)
-                    .map(user -> ResponseEntity.ok(orderRepository.findByUser(user)))
+                    .map(user -> {
+                        List<Order> orders = orderRepository.findByUserOrderByOrderTimeDesc(user);
+                        // 预先加载关联对象，避免延迟加载异常
+                        for (Order order : orders) {
+                            // 手动触发集合的初始化加载
+                            if (order.getOrderItems() != null) {
+                                order.getOrderItems().size();
+                                // 预加载book，避免N+1查询问题
+                                order.getOrderItems().forEach(item -> {
+                                    if (item.getBook() != null) {
+                                        item.getBook().getTitle();
+                                    }
+                                });
+                            }
+                        }
+                        
+                        return ResponseEntity.ok(orders);
+                    })
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -56,9 +86,20 @@ public class OrderController {
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         try {
             return orderRepository.findById(orderId)
-                    .map(ResponseEntity::ok)
+                    .map(order -> {
+                        // 预先加载关联对象，避免延迟加载异常
+                        if (order.getOrderItems() != null) {
+                            order.getOrderItems().forEach(item -> {
+                                if (item.getBook() != null) {
+                                    item.getBook().getTitle();
+                                }
+                            });
+                        }
+                        return ResponseEntity.ok(order);
+                    })
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

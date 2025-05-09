@@ -96,6 +96,17 @@ export async function addToCart(cartItem) {
   return await res.json();
 }
 
+// 更新购物车数量
+export async function updateCartQuantity(cartId, quantity) {
+  const res = await fetch(`${API_BASE}/cart/${cartId}/quantity`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quantity })
+  });
+  if (!res.ok) throw new Error('更新购物车数量失败');
+  return await res.json();
+}
+
 // 删除购物车项
 export async function removeFromCart(cartId) {
   const res = await fetch(`${API_BASE}/cart/${cartId}`, { method: 'DELETE' });

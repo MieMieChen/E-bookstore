@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController //表明这个类是一个控制器，负责处理传入的Web请求
 @RequestMapping("/api/cart") //将所有在这个控制器中定义的请求映射到以 /api/cart 开头的URL路径下。例如，获取购物车项的接口可能是 GET /api/cart/{userId}
@@ -75,13 +77,52 @@ public class CartController {
             // 设置关联
             cart.setUser(user);
             cart.setBook(book);
+            
+            // 检查购物车中是否已存在相同的书籍
+            Cart savedCart;
+            
+            // 查找用户购物车中是否已有该书
+            Optional<Cart> existingCartItem = cartRepository.findByUserAndBook(user, book);
+            
+            if (existingCartItem.isPresent()) {
+                // 如果已存在，则更新数量
+                Cart existingItem = existingCartItem.get();
+                existingItem.setQuantity(existingItem.getQuantity() + cart.getQuantity());
+                savedCart = cartRepository.save(existingItem);
+                System.out.println("更新购物车项数量成功: " + savedCart);
+            } else {
+                // 如果不存在，则创建新记录
+                savedCart = cartRepository.save(cart);
+                System.out.println("创建新购物车项成功: " + savedCart);
+            }
 
-            // 保存购物车项
-            Cart savedCart = cartRepository.save(cart);
-            System.out.println("保存购物车成功: " + savedCart);
             return ResponseEntity.ok(savedCart);
         } catch (Exception e) {
-            System.err.println("添加购物车异常: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("添加购物车失败: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // 更新购物车商品数量
+    @PutMapping("/{cartId}/quantity")
+    public ResponseEntity<Cart> updateCartQuantity(
+            @PathVariable Long cartId,
+            @RequestBody Map<String, Integer> payload) {
+        try {
+            Integer quantity = payload.get("quantity");
+            if (quantity == null || quantity < 1) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            return cartRepository.findById(cartId)
+                    .map(cart -> {
+                        cart.setQuantity(quantity);
+                        Cart updatedCart = cartRepository.save(cart);
+                        return ResponseEntity.ok(updatedCart);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }

@@ -1,7 +1,11 @@
 package bookstore_backend.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,6 +13,10 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "orders")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,24 +33,28 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @ToString.Exclude
+    @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    @Column(name = "order_time", nullable = true)
+    @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist // 被这个注解标记的方法，会在实体对象首次被持久化到数据库之前执行
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+        
         if (orderTime == null) {
-            orderTime = LocalDateTime.now();
+            orderTime = now;
         }
     }
 

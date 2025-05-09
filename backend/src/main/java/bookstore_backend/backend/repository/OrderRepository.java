@@ -9,4 +9,10 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser(User user);
+    
+    // Add method to get orders sorted by orderTime descending (newest first)
+    List<Order> findByUserOrderByOrderTimeDesc(User user);
+    
+    // Add method to sort by created time if orderTime is not reliable
+    List<Order> findByUserOrderByCreatedAtDesc(User user);
 } 

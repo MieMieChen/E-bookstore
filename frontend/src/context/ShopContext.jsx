@@ -4,6 +4,7 @@ import {
   removeFromCart as removeFromCartApi,
   createOrder as createOrderApi,
   clearUserCart as clearUserCartApi,
+  updateCartQuantity as updateCartQuantityApi,
   getCart,
   getOrders
 } from '../services/api';
@@ -95,12 +96,14 @@ export default function ShopProvider({ children }) {
 
   const addToCart = async (book) => {
     // 先更新前端状态，确保UI立即响应
+    let newQuantity = 1;
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === book.id);
       if (existingItem) {
+        newQuantity = existingItem.quantity + 1;
         return prevItems.map(item =>
           item.id === book.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity }
             : item
         );
       }
@@ -113,7 +116,7 @@ export default function ShopProvider({ children }) {
       const cartItem = {
         user: { id: user.id }, // 从当前登录用户获取ID
         book: { id: book.id },
-        quantity: 1,
+        quantity: newQuantity, // 使用计算后的数量
         price: book.price
       };
       await addToCartApi(cartItem);
@@ -150,7 +153,8 @@ export default function ShopProvider({ children }) {
     }
   };
 
-  const updateCartItemQuantity = (bookId, quantity) => {
+  const updateCartItemQuantity = useCallback(async (bookId, quantity) => {
+    // 先更新前端状态，保证UI响应速度
     setCartItems(prevItems =>
       prevItems.map(item =>
         item.id === bookId
@@ -158,7 +162,38 @@ export default function ShopProvider({ children }) {
           : item
       ).filter(item => item.quantity > 0)
     );
-  };
+    
+    // 如果数量为0，实际上应该删除这个项
+    if (quantity <= 0) {
+      try {
+        await removeFromCart(bookId);
+        console.log('购物车项删除成功');
+      } catch (error) {
+        console.error('删除购物车项失败:', error);
+      }
+      return;
+    }
+    
+    // 同步到后端
+    try {
+      const user = getUser();
+      console.log(`正在更新商品 ${bookId} 的数量为 ${quantity}...`);
+      
+      // 查找购物车项的数据库ID
+      const userCartItems = await getCart(user.id);
+      const dbCartItem = userCartItems.find(item => item.book.id === bookId);
+      
+      if (dbCartItem) {
+        // 调用后端API更新数量
+        await updateCartQuantityApi(dbCartItem.id, quantity);
+        console.log('购物车数量更新成功');
+      } else {
+        console.error('找不到对应的购物车项，无法更新数量');
+      }
+    } catch (error) {
+      console.error('更新购物车数量失败:', error);
+    }
+  }, [getUser, removeFromCart]);
 
   const createOrder = async (items, total) => {
     try {
