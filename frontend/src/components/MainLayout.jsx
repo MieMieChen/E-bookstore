@@ -11,6 +11,13 @@ import {
 import { useShop } from '../context/ShopContext';
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
+import { useAuth } from '../context/AuthContext';
+
+// const { currentUser, getUser} = useAuth();
+  
+// 获取用户数据
+// const user = getUser();
+
 
 function MainLayout() {
   const location = useLocation();
@@ -61,7 +68,9 @@ function MainLayout() {
           }}>
             <Avatar size={80} icon={<UserOutlined />} />
             <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
-              欢迎, {userData.name}
+              {/* 欢迎, {user.username} */}
+              欢迎, {userData.username}
+
             </Title>
             <Text type="secondary" style={{ fontSize: '25px' }} >书城会员</Text>
           </div>

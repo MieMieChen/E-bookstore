@@ -87,8 +87,9 @@ public class CartController {
             if (existingCartItem.isPresent()) {
                 // 如果已存在，则更新数量
                 Cart existingItem = existingCartItem.get();
-                int newQuantity = existingItem.getQuantity() + (cart.getQuantity() > 0 ? cart.getQuantity() : 1);
-                existingItem.setQuantity(newQuantity);
+                // 获取当前数量并加1
+                int currentQuantity = existingItem.getQuantity();
+                existingItem.setQuantity(currentQuantity + 1);
                 savedCart = cartRepository.save(existingItem);
                 System.out.println("更新购物车项数量成功: " + savedCart);
             } else {
