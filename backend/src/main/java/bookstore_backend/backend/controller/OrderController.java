@@ -107,6 +107,7 @@ public class OrderController {
     // 创建新订单
     @PostMapping("/orders")
     @Transactional
+    //@RequestBody 数据来源： 该方法期望从 HTTP 请求的消息体 (Request Body) 中读取数据。
     public ResponseEntity<Order> createOrder(@RequestBody Order order) {
         try {
             System.out.println("接收到创建订单请求: " + order);
@@ -250,4 +251,5 @@ public class OrderController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
 } 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from "react";
 import { Layout, Menu, Avatar, Typography, theme } from 'antd';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { 
@@ -11,8 +12,10 @@ import {
 import { useShop } from '../context/ShopContext';
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
-import { useAuth } from '../context/AuthContext';
-
+// import { useAuth } from '../context/AuthContext';
+import {useNavigate } from "react-router-dom";
+import { getUserInfo } from '../services/api';
+import useMessage from "antd/es/message/useMessage";
 // const { currentUser, getUser} = useAuth();
   
 // 获取用户数据
@@ -99,5 +102,7 @@ function MainLayout() {
     </Layout>
   );
 }
+
+
 
 export default MainLayout; 

@@ -24,6 +24,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    //当 JPA 配置为自动生成数据库 schema (DDL) 时，JPA 提供者会读取 @ManyToOne 和 @JoinColumn 的信息，然后自动生成对应的 ALTER TABLE ... ADD CONSTRAINT ... FOREIGN KEY (...) REFERENCES ... (...); 这样的 SQL 语句来创建数据库层面的外键约束。
     private User user;
 
     @Column(nullable = false)

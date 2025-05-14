@@ -5,12 +5,13 @@ import bookstore_backend.backend.entity.UserAuth;
 import bookstore_backend.backend.repository.UserRepository;
 import bookstore_backend.backend.repository.UserAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-public class UserService {
+@Service  //springboot的注解，表示这是一个服务类 一个 Spring Bean 就是一个由 Spring IoC (Inversion of Control) 容器 实例化、组装和管理的 Java 对象
+public class UserService{
     @Autowired
     public UserRepository userRepository;
 
@@ -33,6 +34,11 @@ public class UserService {
 
         return user;
     }
+// Service 层的方法返回业务数据 (例如 Optional<User> 或 User 对象)。
+// Controller 层接收 Service 层返回的业务数据，然后根据数据构建 ResponseEntity。
+     public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
 
     // 登录校验
     public Optional<User> login(String username, String password) {
@@ -42,4 +48,5 @@ public class UserService {
         }
         return Optional.empty();
     }
+    
 } 

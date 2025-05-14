@@ -9,14 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/users")
+@RestController  //接口方法返回对象 转换成json文本
+@RequestMapping("/api/users")  //后面的路径不能重复！
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    // 用户注册
+    
+    // 用户注册 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody Map<String, String> body) {
         User user = userService.register(
@@ -28,24 +29,17 @@ public class UserController {
         );
         return ResponseEntity.ok(user);
     }
-
-    // 用户登录
-    @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody Map<String, String> body) {
-        Optional<User> user = userService.login(body.get("username"), body.get("password"));
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(401).build());
-    }
-
     // 获取用户信息（不含密码）
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
     public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return userService.userRepository.findById(id)
+        Optional<User> userOpt = userService.findUserById(id);
+        return userOpt
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
     
     // 更新用户信息
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")  //表示修改
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         try {
             System.out.println("接收到更新用户请求: " + updatedUser);

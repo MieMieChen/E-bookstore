@@ -3,23 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, Typography, message, ConfigProvider } from 'antd';
 import { customTheme } from '../theme/themeConfigs';
 import '../css/global.css';
-
+import useMessage from "antd/es/message/useMessage";
+import {login} from '../services/login';
 const { Title } = Typography;
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [messageApi, contextHolder] = useMessage();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === 'Ashley' && password === '123456') {
-      navigate('/home');
-    } else {
-      setError('用户名或密码错误');
-      message.error('用户名或密码错误');
-    }
-  };
+    const onSubmit = async (values) => {
+      let username = values['username'];
+      let password = values['password'];
+
+      // try {
+        let res = await login(username, password);
+        if (res.ok) {
+          // 登录成功
+         // await messageApi.success("登录成功！", 0.5);
+         // console.log("登录成功", res.data);
+          navigate('/home', { replace: true });
+        }
+        else
+        {
+           messageApi.error("无权访问当前页面，请先登录！", 0.6)
+                    .then(() => navigate("/login"));
+        }
+      //   } else {
+      //     // 登录失败
+      //     // const errorMessage = res.message || "登录失败，请检查用户名和密码";
+      //     //await messageApi.error(errorMessage, 0.5);
+      //   }
+      // } catch (error) {
+      //   console.error('Login error:', error);
+      //   await messageApi.error("登录过程中发生错误，请稍后重试", 0.5);
+      // }
+    };
+
 
   return (
     <ConfigProvider theme={customTheme}>
@@ -45,7 +67,7 @@ function Login() {
             网上书城
           </Title>
           
-          <Form onFinish={handleLogin}>
+          <Form onFinish={onSubmit}>
             {error && (
               <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>
             )}

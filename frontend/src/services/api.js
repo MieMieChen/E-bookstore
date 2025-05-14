@@ -1,15 +1,15 @@
 const API_BASE = 'http://localhost:8080/api';
 
 // 登录
-export async function login(username, password) {
-  const res = await fetch(`${API_BASE}/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
-  });
-  if (!res.ok) throw new Error('登录失败');
-  return await res.json();
-}
+// export async function login(username, password) {
+//   const res = await fetch(`${API_BASE}/users/login`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ username, password })
+//   });
+//   if (!res.ok) throw new Error('登录失败');
+//   return await res.json();
+// }
 
 // 注册
 export async function register(user) {

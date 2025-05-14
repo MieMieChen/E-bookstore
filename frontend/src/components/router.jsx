@@ -15,12 +15,10 @@ export default function AppRouter() {
         <ShopProvider>
             <BrowserRouter>
                 <Routes>
-                    {/* 根路径重定向到登录页 */}
                     <Route path="/" element={<Navigate to="/login" replace />} />
 
                     <Route path="/login" element={<Login />} />
                     
-                    {/* MainLayout 包裹的需要导航栏的页面 */}
                     <Route element={<MainLayout />}>
                         <Route path="/home" element={<Home />} />
                         <Route path="/book/:id" element={<BookDetail />} />
@@ -29,7 +27,6 @@ export default function AppRouter() {
                         <Route path="/profile" element={<Profile />} />
                     </Route>
 
-                    {/* 404页面 */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>

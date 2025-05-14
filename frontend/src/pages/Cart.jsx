@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import CartItem from '../components/cart_item';
+import { getUserInfo } from '../services/api';
+import useMessage from "antd/es/message/useMessage";
+
 
 const { Title } = Typography;
 
@@ -20,7 +23,20 @@ function Cart() {
     createOrder,
     loadUserCart
   } = useShop();
-
+  const [userC, setUserC] = useState(null);
+  const [messageApi, contextHolder] = useMessage();
+    useEffect(() => {
+            const checkLogin = async () => {
+                let me = await getUserInfo();
+                if (!me) {
+                    messageApi.error("无权访问当前页面，请先登录！", 0.6)
+                        .then(() => navigate("/login"));
+                } else {
+                    setUserC(me);
+                }
+            }
+            checkLogin();
+        }, [navigate]);
   // 计算购物车内容的哈希值，用于比较购物车是否有变化
   const calculateCartHash = useCallback((items) => {
     return JSON.stringify(items.map(item => ({
