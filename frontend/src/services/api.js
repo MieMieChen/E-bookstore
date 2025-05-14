@@ -1,19 +1,8 @@
-const API_BASE = 'http://localhost:8080/api';
-
-// 登录
-// export async function login(username, password) {
-//   const res = await fetch(`${API_BASE}/users/login`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify({ username, password })
-//   });
-//   if (!res.ok) throw new Error('登录失败');
-//   return await res.json();
-// }
-
+// const API_BASE = 'http://localhost:8080/api';
+import { PREFIX } from "./common";
 // 注册
 export async function register(user) {
-  const res = await fetch(`${API_BASE}/users/register`, {
+  const res = await fetch(`${PREFIX}/users/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user)
@@ -24,14 +13,14 @@ export async function register(user) {
 
 // 获取用户信息
 export async function getUserInfo(userId) {
-  const res = await fetch(`${API_BASE}/users/${userId}`);
+  const res = await fetch(`${PREFIX}/users/${userId}`);
   if (!res.ok) throw new Error('获取用户信息失败');
   return await res.json();
 }
 
 // 更新用户信息
 export async function updateUserInfo(userId, userData) {
-  const res = await fetch(`${API_BASE}/users/${userId}`, {
+  const res = await fetch(`${PREFIX}/users/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData)
@@ -42,28 +31,28 @@ export async function updateUserInfo(userId, userData) {
 
 // 获取所有图书
 export async function getBooks() {
-  const res = await fetch(`${API_BASE}/books`);
+  const res = await fetch(`${PREFIX}/books`);
   if (!res.ok) throw new Error('获取图书失败');
   return await res.json();
 }
 
 // 获取图书详情
 export async function getBookById(id) {
-  const res = await fetch(`${API_BASE}/books/${id}`);
+  const res = await fetch(`${PREFIX}/books/${id}`);
   if (!res.ok) throw new Error('获取图书详情失败');
   return await res.json();
 }
 
 // 获取热门图书
 export async function getHotBooks() {
-  const res = await fetch(`${API_BASE}/books/hot`);
+  const res = await fetch(`${PREFIX}/books/hot`);
   if (!res.ok) throw new Error('获取热门图书失败');
   return await res.json();
 }
 
 // 获取新书
 export async function getNewBooks() {
-  const res = await fetch(`${API_BASE}/books/new`);
+  const res = await fetch(`${PREFIX}/books/new`);
   if (!res.ok) throw new Error('获取新书失败');
   return await res.json();
 }
@@ -73,21 +62,21 @@ export async function searchBooks(searchType, query) {
   const params = new URLSearchParams();
   params.append('keyword', query);
   params.append('type', searchType);
-  const res = await fetch(`${API_BASE}/books/search?${params.toString()}`);
+  const res = await fetch(`${PREFIX}/books/search?${params.toString()}`);
   if (!res.ok) throw new Error('搜索图书失败');
   return await res.json();
 }
 
 // 获取购物车
 export async function getCart(userId) {
-  const res = await fetch(`${API_BASE}/cart/${userId}`);
+  const res = await fetch(`${PREFIX}/cart/${userId}`);
   if (!res.ok) throw new Error('获取购物车失败');
   return await res.json();
 }
 
 // 加入购物车
 export async function addToCart(cartItem) {
-  const res = await fetch(`${API_BASE}/cart`, {
+  const res = await fetch(`${PREFIX}/cart`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cartItem)
@@ -98,7 +87,7 @@ export async function addToCart(cartItem) {
 
 // 更新购物车数量
 export async function updateCartQuantity(cartId, quantity) {
-  const res = await fetch(`${API_BASE}/cart/${cartId}/quantity`, {
+  const res = await fetch(`${PREFIX}/cart/${cartId}/quantity`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ quantity })
@@ -109,26 +98,26 @@ export async function updateCartQuantity(cartId, quantity) {
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const res = await fetch(`${API_BASE}/cart/${cartId}`, { method: 'DELETE' });
+  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
 // 清空用户的所有购物车项
 export async function clearUserCart(userId) {
-  const res = await fetch(`${API_BASE}/cart/user/${userId}`, { method: 'DELETE' });
+  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('清空购物车失败');
 }
 
 // 获取用户订单列表
 export async function getOrders(userId) {
-  const res = await fetch(`${API_BASE}/orders/${userId}`);
+  const res = await fetch(`${PREFIX}/orders/${userId}`);
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
 
 // 获取订单详情
 export async function getOrderDetail(orderId) {
-  const res = await fetch(`${API_BASE}/orders/detail/${orderId}`);
+  const res = await fetch(`${PREFIX}/orders/detail/${orderId}`);
   if (!res.ok) throw new Error('获取订单详情失败');
   return await res.json();
 }
@@ -137,7 +126,7 @@ export async function getOrderDetail(orderId) {
 export async function createOrder(order) {
   try {
     console.log('API调用: 创建订单，发送数据:', order);
-    const res = await fetch(`${API_BASE}/orders`, {
+    const res = await fetch(`${PREFIX}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(order)
@@ -164,7 +153,7 @@ export async function createOrder(order) {
 
 // 取消订单
 export async function cancelOrder(orderId) {
-  const res = await fetch(`${API_BASE}/orders/${orderId}/cancel`, {
+  const res = await fetch(`${PREFIX}/orders/${orderId}/cancel`, {
     method: 'PUT'
   });
   if (!res.ok) throw new Error('取消订单失败');
@@ -173,7 +162,7 @@ export async function cancelOrder(orderId) {
 
 // 更新订单状态
 export async function updateOrderStatus(orderId, status) {
-  const res = await fetch(`${API_BASE}/orders/${orderId}/status?status=${status}`, {
+  const res = await fetch(`${PREFIX}/orders/${orderId}/status?status=${status}`, {
     method: 'PUT'
   });
   if (!res.ok) throw new Error('更新订单状态失败');
