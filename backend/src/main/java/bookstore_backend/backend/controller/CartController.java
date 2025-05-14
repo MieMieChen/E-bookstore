@@ -2,10 +2,11 @@ package bookstore_backend.backend.controller;
 
 import bookstore_backend.backend.entity.Cart;
 import bookstore_backend.backend.entity.User;
+import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.entity.Book;
-import bookstore_backend.backend.repository.CartRepository;
-import bookstore_backend.backend.repository.UserRepository;
-import bookstore_backend.backend.repository.BookRepository;
+import bookstore_backend.backend.service.CartService;
+import bookstore_backend.backend.service.UserService;
+import bookstore_backend.backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,10 @@ import java.util.Optional;
 @RestController //表明这个类是一个控制器，负责处理传入的Web请求
 @RequestMapping("/api/cart") //将所有在这个控制器中定义的请求映射到以 /api/cart 开头的URL路径下。例如，获取购物车项的接口可能是 GET /api/cart/{userId}
 @CrossOrigin(origins = "http://localhost:3000") //正是告诉浏览器，允许来自 http://localhost:3000 的前端应用访问这些购物车API接口。
+
+
+
+
 public class CartController {
 
     @Autowired //自动装配，将 CartRepository 注入到 CartController 中 
@@ -24,20 +29,23 @@ public class CartController {
     // 你的类 (如 CartController) 告诉框架 (如 Spring) 它需要什么 (如 CartRepository)。
     // 框架负责创建或找到这个需要的东西，并自动地把它提供给你的类。你的类不用关心这个东西是怎么来的，只需要直接使用它。
     // 松耦合 (Loose Coupling)：CartController 不再与 CartRepository 的具体实现类硬编码绑定。它只依赖于 CartRepository 接口。这样，更换 CartRepository 的实现或在测试时使用模拟对象都变得更容易。
-    private CartRepository cartRepository;
+    private CartService cartService;
 
     @Autowired
-    private UserRepository userRepository;
+    private BookService bookService;
 
     @Autowired
-    private BookRepository bookRepository;
+    private UserService userService;
+
+
 
     @GetMapping("/{userId}") //处理 GET 请求，用于获取指定用户的购物车信息。前端会用 AJAX 发送 GET 请求到这个URL
     public ResponseEntity<List<Cart>> getCartItems(@PathVariable Long userId) {
         // 从数据库中查找指定用户
-        return userRepository.findById(userId) //当你调用 findById(userId) 方法时，Spring Data JPA 会自动为你生成并执行一条 SQL 查询语句（类似 SELECT * FROM users WHERE id = userId），去数据库中查找对应 userId 的用户记录。
+        Optional<User> userOpt = userService.findUserById(userId);
+        return userOpt //当你调用 findById(userId) 方法时，Spring Data JPA 会自动为你生成并执行一条 SQL 查询语句（类似 SELECT * FROM users WHERE id = userId），去数据库中查找对应 userId 的用户记录。
         // 如果找到用户，则返回购物车列表
-            .map(user -> ResponseEntity.ok(cartRepository.findByUser(user)))
+            .map(user -> ResponseEntity.ok(cartService.getCartItemsByUser(user))) //如果找到用户，则返回购物车列表
             // 如果找不到用户，则返回404 Not Found  
             .orElse(ResponseEntity.notFound().build());
     }
@@ -54,7 +62,7 @@ public class CartController {
                 return ResponseEntity.badRequest().build();
             }
             
-            User user = userRepository.findById(cart.getUser().getId())
+            User user = userService.findUserById(cart.getUser().getId())
                     .orElse(null);
             if (user == null) {
                 System.out.println("找不到用户ID: " + cart.getUser().getId());
@@ -67,7 +75,7 @@ public class CartController {
                 return ResponseEntity.badRequest().build();
             }
             
-            Book book = bookRepository.findById(cart.getBook().getId())
+            Book book = bookService.getBookById(cart.getBook().getId())
                     .orElse(null);
             if (book == null) {
                 System.out.println("找不到图书ID: " + cart.getBook().getId());
@@ -82,7 +90,7 @@ public class CartController {
             Cart savedCart;
             
             // 查找用户购物车中是否已有该书
-            Optional<Cart> existingCartItem = cartRepository.findByUserAndBook(user, book);
+            Optional<Cart> existingCartItem = cartService.findCartByUserAndBook(user, book);
             
             if (existingCartItem.isPresent()) {
                 // 如果已存在，则更新数量
@@ -90,14 +98,14 @@ public class CartController {
                 // 获取当前数量并加1
                 int currentQuantity = existingItem.getQuantity();
                 existingItem.setQuantity(currentQuantity + 1);
-                savedCart = cartRepository.save(existingItem);
+                savedCart = cartService.addCartItem(existingItem);
                 System.out.println("更新购物车项数量成功: " + savedCart);
             } else {
                 // 如果不存在，则创建新记录
                 if (cart.getQuantity() <= 0) {
                     cart.setQuantity(1); // 确保数量至少为1
                 }
-                savedCart = cartRepository.save(cart);
+                savedCart = cartService.addCartItem(cart);
                 System.out.println("创建新购物车项成功: " + savedCart);
             }
 
@@ -116,77 +124,111 @@ public class CartController {
             @RequestBody Map<String, Integer> payload) {
         try {
             Integer quantity = payload.get("quantity");
-            if (quantity == null || quantity < 1) {
-                return ResponseEntity.badRequest().build();
+            Cart updatedCart = cartService.updateCartItemQuantity(cartId, quantity); 
+            return ResponseEntity.ok(updatedCart); 
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage() != null && e.getMessage().contains("not found")) {
+                 return ResponseEntity.notFound().build(); // 返回 404 Not Found
+            } else {
+                 return ResponseEntity.badRequest().body(null); // 返回 400 Bad Request (假设其他 IllegalArgumentException 都是参数问题)
             }
-            
-            return cartRepository.findById(cartId)
-                    .map(cart -> {
-                        cart.setQuantity(quantity);
-                        Cart updatedCart = cartRepository.save(cart);
-                        return ResponseEntity.ok(updatedCart);
-                    })
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeFromCart(@PathVariable Long id) {
-        return cartRepository.findById(id)
-                .map(cart -> {
-                    cartRepository.delete(cart);
-                    return ResponseEntity.ok().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        //Optional<Cart> deletedCartOptional = cartService.findCartItemById(id);
+    //    if (deletedCartOptional.isPresent()) {
+    //         // 如果 Optional 有值，表示 Service 找到了并删除了购物车项
+    //         // 根据原始需求返回 200 OK 但没有响应体 (Void)
+    //         Cart deletedCart = cartService.deleteCartItem(deletedCartOptional.get());
+    //         return ResponseEntity.ok().<Void>build(); // 或者 ResponseEntity.noContent().build(); 返回 204 No Content 更符合 DELETE 操作无返回体的惯例
+    //     } else {
+    //         // 如果 Optional 为空，表示 Service 没有找到对应的购物车项
+    //         return ResponseEntity.notFound().build(); // 返回 404 Not Found
+    //     }
+     boolean deleted = cartService.removeCartItemById(id);
+        if (deleted) {
+            // Service 返回 true，表示删除成功
+            // 返回 204 No Content 是 DELETE 成功的标准响应，表示没有内容返回
+            return ResponseEntity.noContent().build();
+            // 或者你坚持返回 200 OK 也可以，但 204 更常用
+            // return ResponseEntity.ok().<Void>build();
+        } else {
+            // Service 返回 false，表示未找到
+            return ResponseEntity.notFound().build(); // 返回 404 Not Found
+        }
     }
     
     // 清空用户购物车（结算使用）
-    @DeleteMapping("/user/{userId}")
+    // @DeleteMapping("/user/{userId}")
+    // public ResponseEntity<Void> clearUserCart(@PathVariable Long userId) {
+    //     try {
+    //         User user = userService.findUserById(userId).orElse(null);
+    //         if (user == null) {
+    //             System.err.println("找不到用户ID " + userId);
+    //             return ResponseEntity.notFound().build();
+    //         }
+            
+    //         // 清空该用户的购物车，使用原生SQL查询，绕过安全更新模式
+    //         System.out.println("清空用户ID " + userId + " 的购物车");
+            
+    //         try {
+    //             // 先尝试使用原生SQL查询删除
+    //             System.out.println("禁用安全更新模式...");
+    //             cartRepository.disableSafeUpdates();
+                
+    //             System.out.println("使用原生SQL删除购物车数据...");
+    //             cartRepository.deleteByUserIdNative(userId);
+                
+    //             System.out.println("恢复安全更新模式...");
+    //             cartRepository.enableSafeUpdates();
+                
+    //             System.out.println("购物车删除成功");
+    //         } catch (Exception e) {
+    //             System.err.println("原生SQL删除失败，尝试使用JPA方法: " + e.getMessage());
+    //             e.printStackTrace();
+                
+    //             // 如果原生SQL查询失败，回退到使用JPA方法
+    //             List<Cart> userCartItems = cartReposit.findByUser(user);
+    //             System.out.println("找到 " + userCartItems.size() + " 个购物车项，逐个删除...");
+                
+    //             for (Cart cart : userCartItems) {
+    //                 System.out.println("删除购物车项 ID: " + cart.getId());
+    //                 cartRepository.deleteById(cart.getId());
+    //             }
+    //         }
+            
+    //         return ResponseEntity.ok().build();
+    //     } catch (Exception e) {
+    //         System.err.println("清空购物车失败: " + e.getMessage());
+    //         e.printStackTrace();
+    //         return ResponseEntity.internalServerError().build();
+    //     }
+    // }
     public ResponseEntity<Void> clearUserCart(@PathVariable Long userId) {
         try {
-            User user = userRepository.findById(userId).orElse(null);
-            if (user == null) {
-                System.err.println("找不到用户ID " + userId);
-                return ResponseEntity.notFound().build();
-            }
-            
-            // 清空该用户的购物车，使用原生SQL查询，绕过安全更新模式
-            System.out.println("清空用户ID " + userId + " 的购物车");
-            
-            try {
-                // 先尝试使用原生SQL查询删除
-                System.out.println("禁用安全更新模式...");
-                cartRepository.disableSafeUpdates();
-                
-                System.out.println("使用原生SQL删除购物车数据...");
-                cartRepository.deleteByUserIdNative(userId);
-                
-                System.out.println("恢复安全更新模式...");
-                cartRepository.enableSafeUpdates();
-                
-                System.out.println("购物车删除成功");
-            } catch (Exception e) {
-                System.err.println("原生SQL删除失败，尝试使用JPA方法: " + e.getMessage());
-                e.printStackTrace();
-                
-                // 如果原生SQL查询失败，回退到使用JPA方法
-                List<Cart> userCartItems = cartRepository.findByUser(user);
-                System.out.println("找到 " + userCartItems.size() + " 个购物车项，逐个删除...");
-                
-                for (Cart cart : userCartItems) {
-                    System.out.println("删除购物车项 ID: " + cart.getId());
-                    cartRepository.deleteById(cart.getId());
-                }
-            }
-            
+            // Delegate the business logic to the Service layer
+            cartService.clearUserCart(userId);
+
+            // If the service call is successful, return 200 OK
             return ResponseEntity.ok().build();
+
+        } catch (UserNotFoundException e) {
+            // If the service throws UserNotFoundException, return 404 Not Found
+            System.err.println("Error clearing cart: " + e.getMessage()); // Replace with logger
+            // Consider using a Global Exception Handler for cleaner error mapping
+            return ResponseEntity.notFound().build();
+
         } catch (Exception e) {
-            System.err.println("清空购物车失败: " + e.getMessage());
-            e.printStackTrace();
+            // Catch any other exceptions from the service and return 500 Internal Server Error
+            System.err.println("Error clearing cart: " + e.getMessage()); // Replace with logger
+            e.printStackTrace(); // Replace with logger
+            // Consider using a Global Exception Handler
             return ResponseEntity.internalServerError().build();
         }
     }
-} 
+
+
+
+}

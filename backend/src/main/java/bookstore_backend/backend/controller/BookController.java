@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.OpenOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class BookController {
 
     @Autowired
-    // private BookRepository bookRepository
     private BookService bookService;
     // 获取所有图书
     @GetMapping("/books")

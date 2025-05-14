@@ -3,12 +3,15 @@ package bookstore_backend.backend.controller;
 import bookstore_backend.backend.entity.Order;
 import bookstore_backend.backend.entity.Order.OrderStatus;
 import bookstore_backend.backend.entity.User;
+import bookstore_backend.backend.exception.OrderNotFoundException;
+import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.entity.OrderItem;
 import bookstore_backend.backend.entity.Cart;
-import bookstore_backend.backend.repository.OrderRepository;
-import bookstore_backend.backend.repository.UserRepository;
-import bookstore_backend.backend.repository.BookRepository;
-import bookstore_backend.backend.repository.CartRepository;
+import bookstore_backend.backend.service.OrderService;
+import bookstore_backend.backend.service.UserService;
+import bookstore_backend.backend.service.BookService;
+import bookstore_backend.backend.service.CartService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,16 +33,15 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     @Autowired
-    private OrderRepository orderRepository;
-
+    private OrderService orderService;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     
     @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;
     
     @Autowired
-    private CartRepository cartRepository;
+    private CartService cartService;
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -54,29 +57,48 @@ public class OrderController {
     // 获取用户的所有订单
     @GetMapping("/orders/{userId}")
     public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
-        try {
-            return userRepository.findById(userId)
-                    .map(user -> {
-                        List<Order> orders = orderRepository.findByUserOrderByOrderTimeDesc(user);
-                        // 预先加载关联对象，避免延迟加载异常
-                        for (Order order : orders) {
-                            // 手动触发集合的初始化加载
-                            if (order.getOrderItems() != null) {
-                                order.getOrderItems().size();
-                                // 预加载book，避免N+1查询问题
-                                order.getOrderItems().forEach(item -> {
-                                    if (item.getBook() != null) {
-                                        item.getBook().getTitle();
-                                    }
-                                });
-                            }
-                        }
+        // try {
+        //     Optional<User> userOpt = userService.findUserById(userId);
+        //     return userOpt
+        //             .map(user -> {
+        //                 List<Order> orders = orderService.getAllOrders(user);
+        //                 // 预先加载关联对象，避免延迟加载异常
+        //                 for (Order order : orders) {
+        //                     // 手动触发集合的初始化加载
+        //                     if (order.getOrderItems() != null) {
+        //                         order.getOrderItems().size();
+        //                         // 预加载book，避免N+1查询问题
+        //                         order.getOrderItems().forEach(item -> {
+        //                             if (item.getBook() != null) {
+        //                                 item.getBook().getTitle();
+        //                             }
+        //                         });
+        //                     }
+        //                 }
                         
-                        return ResponseEntity.ok(orders);
-                    })
-                    .orElse(ResponseEntity.notFound().build());
+        //                 return ResponseEntity.ok(orders);
+        //             })
+        //             .orElse(ResponseEntity.notFound().build());
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     return ResponseEntity.internalServerError().build();
+        // }
+         try {
+            // 直接调用 Service 方法，Service 会处理查找用户、获取订单和预加载细节
+            List<Order> orders = orderService.getUserOrders(userId);
+
+            // 如果 Service 成功返回列表，则返回 200 OK
+            // 即使列表为空 (用户没有订单)，也是成功，返回 200 和空列表
+            return ResponseEntity.ok(orders);
+
+        } catch (UserNotFoundException e) {
+            // 如果 Service 抛出 UserNotFoundException，Controller 捕获并返回 404 Not Found
+            //logger.warn("获取用户ID {} 订单失败: {}", userId, e.getMessage()); // 使用日志记录警告
+            return ResponseEntity.notFound().build();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
+            //logger.error("获取用户ID {} 订单时发生内部错误: {}", userId, e.getMessage(), e); // 使用日志记录错误及堆栈
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -85,19 +107,28 @@ public class OrderController {
     @GetMapping("/orders/detail/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         try {
-            return orderRepository.findById(orderId)
-                    .map(order -> {
-                        // 预先加载关联对象，避免延迟加载异常
-                        if (order.getOrderItems() != null) {
-                            order.getOrderItems().forEach(item -> {
-                                if (item.getBook() != null) {
-                                    item.getBook().getTitle();
-                                }
-                            });
-                        }
-                        return ResponseEntity.ok(order);
-                    })
-                    .orElse(ResponseEntity.notFound().build());
+        //     return orderRepository.findById(orderId)
+        //             .map(order -> {
+        //                 // 预先加载关联对象，避免延迟加载异常
+        //                 if (order.getOrderItems() != null) {
+        //                     order.getOrderItems().forEach(item -> {
+        //                         if (item.getBook() != null) {
+        //                             item.getBook().getTitle();
+        //                         }
+        //                     });
+        //                 }
+        //                 return ResponseEntity.ok(order);
+        //             })
+        //             .orElse(ResponseEntity.notFound().build());
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     return ResponseEntity.internalServerError().build();
+        Order order = orderService.getUsersOrderWithDetails(orderId);
+            if (order != null) {
+                return ResponseEntity.ok(order);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
@@ -111,26 +142,15 @@ public class OrderController {
     public ResponseEntity<Order> createOrder(@RequestBody Order order) {
         try {
             System.out.println("接收到创建订单请求: " + order);
-            
-            // 清理缓存
             entityManager.clear();
-            
-            // 确保orderTime有值
             order.setOrderTime(LocalDateTime.now());
-            
-            // 验证用户
-            User user = userRepository.findById(order.getUser().getId())
+            User user = userService.findUserById(order.getUser().getId())
                     .orElse(null);
             if (user == null) {
                 System.out.println("用户不存在: " + order.getUser().getId());
                 return ResponseEntity.badRequest().build();
             }
-            
-            // 设置关联
             order.setUser(user);
-            
-            // Order类中可能使用了createdAt
-            // 尝试设置日期字段
             try {
                 java.lang.reflect.Method method = Order.class.getMethod("setCreatedAt", LocalDateTime.class);
                 method.invoke(order, LocalDateTime.now());
@@ -138,64 +158,38 @@ public class OrderController {
             } catch (Exception e) {
                 System.err.println("找不到设置订单时间的方法: " + e.getMessage());
             }
-            
-            // 验证订单项中的图书
             if (order.getOrderItems() != null) {
                 for (OrderItem item : order.getOrderItems()) {
-                    bookRepository.findById(item.getBook().getId())
+                    bookService.getBookById(item.getBook().getId())
                             .ifPresent(book -> {
                                 item.setBook(book);
                                 item.setOrder(order);
                             });
                 }
             }
-            
-            // 保存订单
-            Order savedOrder = orderRepository.save(order);
-            
-            // 刷新实体，确保从数据库获取最新状态
+            Order savedOrder = orderService.saveOrder(order);
             entityManager.flush();
             entityManager.refresh(savedOrder);
-            
-            // 清空该用户的购物车
             try {
-                System.out.println("正在清空用户 " + user.getId() + " 的购物车...");
-                
-                try {
-                    // 先尝试使用原生SQL，绕过安全更新模式
-                    System.out.println("禁用安全更新模式...");
-                    cartRepository.disableSafeUpdates();
-                    
-                    System.out.println("使用原生SQL删除购物车数据...");
-                    cartRepository.deleteByUserIdNative(user.getId());
-                    
-                    System.out.println("恢复安全更新模式...");
-                    cartRepository.enableSafeUpdates();
-                    
-                    System.out.println("购物车清空成功(原生SQL)");
-                } catch (Exception sqlEx) {
-                    System.err.println("原生SQL删除失败，尝试使用JPA方法: " + sqlEx.getMessage());
-                    
-                    // 如果原生SQL查询失败，回退到使用JPA方法
-                    List<Cart> userCartItems = cartRepository.findByUser(user);
-                    System.out.println("找到 " + userCartItems.size() + " 个购物车项，逐个删除...");
-                    
-                    for (Cart cart : userCartItems) {
-                        System.out.println("删除购物车项 ID: " + cart.getId());
-                        cartRepository.deleteById(cart.getId());
-                    }
-                }
-                
-                entityManager.flush(); // 立即执行删除操作
-                System.out.println("购物车清空过程完成");
-            } catch (Exception e) {
-                System.err.println("清空购物车失败: " + e.getMessage());
-                e.printStackTrace();
-                // 继续处理，不因为清空购物车失败而影响订单创建
+                cartService.clearUserCart(user.getId());
+                System.out.println("订单创建成功: " + savedOrder.getId());
+                return ResponseEntity.ok(savedOrder);
             }
+            catch (UserNotFoundException e) {
+            // If the service throws UserNotFoundException, return 404 Not Found
+            System.err.println("Error clearing cart: " + e.getMessage()); // Replace with logger
+            // Consider using a Global Exception Handler for cleaner error mapping
+            return ResponseEntity.notFound().build();
+
+        } catch (Exception e) {
+            // Catch any other exceptions from the service and return 500 Internal Server Error
+            System.err.println("Error clearing cart: " + e.getMessage()); // Replace with logger
+            e.printStackTrace(); // Replace with logger
+            // Consider using a Global Exception Handler
+            return ResponseEntity.internalServerError().build();
+        }
             
-            System.out.println("订单创建成功: " + savedOrder.getId());
-            return ResponseEntity.ok(savedOrder);
+            
         } catch (Exception e) {
             System.err.println("创建订单失败: " + e.getMessage());
             e.printStackTrace();
@@ -207,13 +201,26 @@ public class OrderController {
     @PutMapping("/orders/{orderId}/cancel")
     public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
         try {
-            return orderRepository.findById(orderId)
-                    .map(order -> {
-                        order.setStatus(OrderStatus.CANCELLED);
-                        return ResponseEntity.ok(orderRepository.save(order));
-                    })
-                    .orElse(ResponseEntity.notFound().build());
+            // return orderRepository.findById(orderId)
+            //         .map(order -> {
+            //             order.setStatus(OrderStatus.CANCELLED);
+            //             return ResponseEntity.ok(orderRepository.save(order));
+            //         })
+            //         .orElse(ResponseEntity.notFound().build());
+            Order order = orderService.cancelOrder(orderId);
+            if (order != null) {
+                return ResponseEntity.ok(order);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (OrderNotFoundException e) {
+            // 如果 Service 抛出 UserNotFoundException，Controller 捕获并返回 404 Not Found
+            //logger.warn("获取用户ID {} 订单失败: {}", userId, e.getMessage()); // 使用日志记录警告
+            return ResponseEntity.notFound().build();
+
         } catch (Exception e) {
+            // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
+            //logger.error("获取用户ID {} 订单时发生内部错误: {}", userId, e.getMessage(), e); // 使用日志记录错误及堆栈
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -224,13 +231,20 @@ public class OrderController {
             @PathVariable Long orderId,
             @RequestParam OrderStatus status) {
         try {
-            return orderRepository.findById(orderId)
-                    .map(order -> {
-                        order.setStatus(status);
-                        return ResponseEntity.ok(orderRepository.save(order));
-                    })
-                    .orElse(ResponseEntity.notFound().build());
+            Order order = orderService.uodateOrderStatus(orderId, status);
+            if (order != null) {
+                return ResponseEntity.ok(order);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (OrderNotFoundException e) {
+            // 如果 Service 抛出 UserNotFoundException，Controller 捕获并返回 404 Not Found
+            //logger.warn("获取用户ID {} 订单失败: {}", userId, e.getMessage()); // 使用日志记录警告
+            return ResponseEntity.notFound().build();
+
         } catch (Exception e) {
+            // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
+            //logger.error("获取用户ID {} 订单时发生内部错误: {}", userId, e.getMessage(), e); // 使用日志记录错误及堆栈
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -252,4 +266,4 @@ public class OrderController {
         }
     }
 
-} 
+}
