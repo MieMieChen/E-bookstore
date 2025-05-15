@@ -13,10 +13,7 @@ import bookstore_backend.backend.service.OrderService;
 import bookstore_backend.backend.service.UserService;
 
 import java.util.Optional;
-import java.util.List;
-import java.util.Collections;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.exception.OrderNotFoundException;

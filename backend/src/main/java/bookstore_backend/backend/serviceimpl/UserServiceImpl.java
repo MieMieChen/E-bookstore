@@ -7,7 +7,6 @@ import bookstore_backend.backend.repository.UserRepository;
 import bookstore_backend.backend.repository.UserAuthRepository;
 import bookstore_backend.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
