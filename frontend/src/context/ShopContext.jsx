@@ -16,13 +16,13 @@ export default function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [userData, setUserData] = useState({
-    username: 'Ashely',
-    name: '屁大点事分享家',
-    email: 'ashley@example.com',
-    phone: '123****4567',
-    address: '最温暖的被窝',
-    memberSince: '520-1314',
-    memberLevel: 'VVVVVVVVVVVVVVIP',
+    username: ' ',
+    name: ' ',
+    email: ' ',
+    phone: ' ',
+    address: ' ',
+    memberSince: ' ',
+    memberLevel: ' ',
     points: 771995
   });
   
