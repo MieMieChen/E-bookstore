@@ -45,7 +45,7 @@ public class UserController {
             System.out.println("接收到更新用户请求: " + updatedUser);
             
             // 校验用户是否存在
-            Optional<User> existingUserOpt = userService.userRepository.findById(id);
+            Optional<User> existingUserOpt = userService.findUserById(id);
             if (existingUserOpt.isEmpty()) {
                 System.out.println("找不到用户ID: " + id);
                 return ResponseEntity.notFound().build();
@@ -65,7 +65,7 @@ public class UserController {
             }
             
             // 保存更新后的用户
-            User savedUser = userService.userRepository.save(existingUser);
+            User savedUser = userService.saveUser(existingUser);
             System.out.println("用户更新成功: " + savedUser);
             
             return ResponseEntity.ok(savedUser);

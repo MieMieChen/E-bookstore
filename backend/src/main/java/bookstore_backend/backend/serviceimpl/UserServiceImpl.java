@@ -1,11 +1,11 @@
 package bookstore_backend.backend.serviceimpl;
 
-package bookstore_backend.backend.service;
 
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.entity.UserAuth;
 import bookstore_backend.backend.repository.UserRepository;
 import bookstore_backend.backend.repository.UserAuthRepository;
+import bookstore_backend.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service  //springboot的注解，表示这是一个服务类 一个 Spring Bean 就是一个由 Spring IoC (Inversion of Control) 容器 实例化、组装和管理的 Java 对象
-public class UserService{
+public class UserServiceImpl implements UserService{
     @Autowired
     public UserRepository userRepository;
 
@@ -50,5 +50,7 @@ public class UserService{
         }
         return Optional.empty();
     }
-    
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 } 

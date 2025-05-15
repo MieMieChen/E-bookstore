@@ -3,23 +3,13 @@ package bookstore_backend.backend.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import bookstore_backend.backend.entity.Order;
 import bookstore_backend.backend.entity.Order.OrderStatus;
-import bookstore_backend.backend.repository.OrderRepository;
-import bookstore_backend.backend.entity.User;
-import bookstore_backend.backend.service.UserService;
 
-import org.slf4j.Logger;
-import java.util.Optional;
-import java.util.List;
-import java.util.Collections;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.exception.OrderNotFoundException;
-import bookstore_backend.backend.entity.OrderItem;
 
 
 @Service
@@ -31,47 +21,9 @@ public interface OrderService {
     // }
    @Transactional(readOnly = true) // 读取操作，使用只读事务可以提高性能
     public List<Order> getUserOrders(Long userId) throws UserNotFoundException ;
-    public Order getUsersOrderWithDetails(Long orderId)
-    {
-       Order order = orderRepository.findById(orderId).get();
-        if(order.getOrderItems() != null)
-        {
-            order.getOrderItems().size();
-            for(OrderItem item:order.getOrderItems())
-            {
-                if(item.getBook() != null)
-                {
-                    item.getBook().getTitle();
-                }
-            }
-        }
-        return order;
+    public Order getUsersOrderWithDetails(Long orderId);
+    public Order saveOrder(Order order)  ;
 
-    }
-    public Order saveOrder(Order order)  {
-        return orderRepository.save(order);
-    }
-
-    public Order cancelOrder(Long orderId) throws OrderNotFoundException{
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
-        // Optional<Order> orderOpt = orderRepository.findById(orderId);
-        // if (orderOpt.isPresent()) {
-        //     Order order = orderOpt.get();
-        //     order.setStatus(OrderStatus.CANCELLED);
-        //     return orderRepository.save(order);
-        // }
-        if(order.getOrderItems()!=null) 
-        {
-            order.setStatus(OrderStatus.CANCELLED);
-            return orderRepository.save(order);
-        }
-        return null;
-    }
-    public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
-        order.setStatus(status);
-        return orderRepository.save(order);
-    }
+    public Order cancelOrder(Long orderId) throws OrderNotFoundException;
+    public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException;
 }

@@ -1,6 +1,5 @@
 package bookstore_backend.backend.serviceimpl;
 
-package bookstore_backend.backend.service;
 
 import java.util.List;
 
@@ -10,9 +9,9 @@ import bookstore_backend.backend.entity.Order;
 import bookstore_backend.backend.entity.Order.OrderStatus;
 import bookstore_backend.backend.repository.OrderRepository;
 import bookstore_backend.backend.entity.User;
+import bookstore_backend.backend.service.OrderService;
 import bookstore_backend.backend.service.UserService;
 
-import org.slf4j.Logger;
 import java.util.Optional;
 import java.util.List;
 import java.util.Collections;
@@ -23,9 +22,8 @@ import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.exception.OrderNotFoundException;
 import bookstore_backend.backend.entity.OrderItem;
 
-
 @Service
-public class OrderService {
+public class OrderServiceImpl implements OrderService {
     
 
     @Autowired
