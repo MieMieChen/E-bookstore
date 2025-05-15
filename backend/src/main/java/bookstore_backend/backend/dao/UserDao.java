@@ -1,5 +1,11 @@
 package bookstore_backend.backend.dao;
 
-public class UserDao {
-    
+import bookstore_backend.backend.entity.User;
+import java.util.Optional;
+
+public interface UserDao {
+    User save(User user);
+    Optional<User> findById(Long id);
+    Optional<User> findByUsername(String username);
+    boolean existsByUsername(String username);
 }

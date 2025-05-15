@@ -3,7 +3,7 @@ package bookstore_backend.backend.serviceimpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import bookstore_backend.backend.repository.CartRepository;
+import bookstore_backend.backend.dao.CartDao;
 import bookstore_backend.backend.entity.Cart;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.exception.UserNotFoundException;
@@ -21,29 +21,30 @@ public class CartServiceImpl implements CartService {
 
 
     @Autowired
-    private CartRepository cartRepository;
+    private CartDao cartDao;
 
     @Autowired
     private UserService userService;
 
 
     public List<Cart> getCartItemsByUser(User user) {
-        return cartRepository.findByUser(user);
+        return cartDao.findByUser(user);
     }
     public Cart addCartItem(Cart cart) {
-        return cartRepository.save(cart);
+        return cartDao.save(cart);
     }
     public Optional<Cart> findCartItemById(Long cartId) {
-        return cartRepository.findById(cartId);
+        return cartDao.findById(cartId);
     }
 
     @Transactional
     public boolean removeCartItemById(Long id) {
         // Spring Data JPA 的 deleteById 默认如果 ID 不存在不会抛异常，只会什么也不做。
         // 如果需要知道是否成功删除，可以在删除前先检查是否存在。
-        boolean exists = cartRepository.existsById(id);
+        boolean exists = cartDao.findById(id).isPresent();
         if (exists) {
-            cartRepository.deleteById(id); // 直接根据ID删除
+            Cart cart = cartDao.findById(id).get();
+            cartDao.delete(cart); // 使用 delete 方法删除
             return true; // 找到了并删除了
         } else {
             return false; // 未找到
@@ -71,13 +72,13 @@ public class CartServiceImpl implements CartService {
             System.out.println("禁用安全更新模式..."); // Replace with logger
             // This call might need to interact with the JDBC connection or session
             // The specific implementation of this in CartRepository is assumed
-            cartRepository.disableSafeUpdates();
+            cartDao.disableSafeUpdates();
 
             System.out.println("使用原生SQL删除购物车数据..."); // Replace with logger
-            cartRepository.deleteByUserIdNative(userId); // Perform the native delete
+            cartDao.deleteByUserIdNative(userId); // Perform the native delete
 
             System.out.println("恢复安全更新模式..."); // Replace with logger
-            cartRepository.enableSafeUpdates();
+            cartDao.enableSafeUpdates();
 
             System.out.println("购物车删除成功 (原生SQL)"); // Replace with logger
 
@@ -88,13 +89,13 @@ public class CartServiceImpl implements CartService {
 
             // Find cart items using JPA method
             // Note: Using the fetched 'user' object directly is possible with JPA
-            List<Cart> userCartItems = cartRepository.findByUser(user);
+            List<Cart> userCartItems = cartDao.findByUser(user);
             System.out.println("找到 " + userCartItems.size() + " 个购物车项，逐个删除..."); // Replace with logger
 
             // Iterate and delete each item (less efficient for many items)
             for (Cart cart : userCartItems) {
                 System.out.println("删除购物车项 ID: " + cart.getId()); // Replace with logger
-                cartRepository.deleteById(cart.getId());
+                cartDao.delete(cart);
             }
 
             System.out.println("购物车删除成功 (JPA方法)"); // Replace with logger
@@ -109,18 +110,17 @@ public class CartServiceImpl implements CartService {
              throw new IllegalArgumentException("Invalid quantity: " + quantity); // 抛出自定义业务异常
         }
 
-        // 2. Service 调用 Repository 查找数据
-        Optional<Cart> cartOptional = cartRepository.findById(cartId);
+        // 2. Service 调用 Dao 查找数据
+        Optional<Cart> cartOptional = cartDao.findById(cartId);
 
         // 3. Service 处理业务情况 (例如找不到)
         if (cartOptional.isPresent()) {
             Cart cart = cartOptional.get();
             // 4. Service 执行业务逻辑 (修改数据)
             cart.setQuantity(quantity);
-            // 5. Service 调用 Repository 保存数据 (在@Transactional下会自动同步到DB)
-            // cartRepository.save(cart); // 可以显式save，也可以依赖@Transactional的自动flush
+            // 5. Service 调用 Dao 保存数据 (在@Transactional下会自动同步到DB)
             // 为了明确，我们保留 save
-            Cart updatedCart = cartRepository.save(cart);
+            Cart updatedCart = cartDao.save(cart);
             return updatedCart; // Service 返回业务数据 (更新后的实体)
         } else {
             // 如果找不到，Service 抛出异常
@@ -128,6 +128,6 @@ public class CartServiceImpl implements CartService {
         }
     }
     public Optional<Cart> findCartByUserAndBook(User user, Book book) {
-        return cartRepository.findByUserAndBook(user, book);
+        return cartDao.findByUserAndBook(user, book);
     }
 }

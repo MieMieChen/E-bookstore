@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import bookstore_backend.backend.entity.Order;
 import bookstore_backend.backend.entity.Order.OrderStatus;
-import bookstore_backend.backend.repository.OrderRepository;
+import bookstore_backend.backend.dao.OrderDao;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.service.OrderService;
 import bookstore_backend.backend.service.UserService;
@@ -24,14 +24,14 @@ public class OrderServiceImpl implements OrderService {
     
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderDao orderDao;
 
     @Autowired
     private UserService userService;
 
     // public List<Order> getAllOrders(User user) {
     //     // 这里可以添加获取所有订单的逻辑
-    //     return orderRepository.findByUserOrderByOrderTimeDesc(user);
+    //     return orderDao.findByUserOrderByOrderTimeDesc(user);
     // }
    @Transactional(readOnly = true) // 读取操作，使用只读事务可以提高性能
     public List<Order> getUserOrders(Long userId) throws UserNotFoundException {
@@ -47,10 +47,8 @@ public class OrderServiceImpl implements OrderService {
         User user = userOpt.get();
         // logger.info("获取用户ID {} 的订单列表。", userId); // 使用日志记录信息
 
-        // 3. 调用 Repository 获取订单列表
-        // 注意：orderRepository.getAllOrders(user) 这个方法应该存在于你的 OrderRepository 中
-        // 并且它应该根据用户获取订单，例如 JpaRepository 的 findByUser(User user)
-        List<Order> orders = orderRepository.findByUser(user); // 假设 OrderRepository 有 findByUser 方法
+        // 3. 调用 Dao 获取订单列表
+        List<Order> orders = orderDao.findByUser(user);
 
         // 4. 在 Service 层手动触发关联对象的加载，避免 LazyInitializationException
         // 这是一个解决延迟加载问题的临时方法。更好的方法是在 Repository 层使用 JOIN FETCH 或 @EntityGraph
@@ -79,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
     
     public Order getUsersOrderWithDetails(Long orderId)
     {
-       Order order = orderRepository.findById(orderId).get();
+       Order order = orderDao.findById(orderId).get();
         if(order.getOrderItems() != null)
         {
             order.getOrderItems().size();
@@ -95,29 +93,29 @@ public class OrderServiceImpl implements OrderService {
 
     }
     public Order saveOrder(Order order)  {
-        return orderRepository.save(order);
+        return orderDao.save(order);
     }
 
     public Order cancelOrder(Long orderId) throws OrderNotFoundException{
-        Order order = orderRepository.findById(orderId)
+        Order order = orderDao.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
-        // Optional<Order> orderOpt = orderRepository.findById(orderId);
+        // Optional<Order> orderOpt = orderDao.findById(orderId);
         // if (orderOpt.isPresent()) {
         //     Order order = orderOpt.get();
         //     order.setStatus(OrderStatus.CANCELLED);
-        //     return orderRepository.save(order);
+        //     return orderDao.save(order);
         // }
         if(order.getOrderItems()!=null) 
         {
             order.setStatus(OrderStatus.CANCELLED);
-            return orderRepository.save(order);
+            return orderDao.save(order);
         }
         return null;
     }
     public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderDao.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
         order.setStatus(status);
-        return orderRepository.save(order);
+        return orderDao.save(order);
     }
 }

@@ -1,7 +1,7 @@
 package bookstore_backend.backend.serviceimpl;
 
 import bookstore_backend.backend.entity.Book;
-import bookstore_backend.backend.repository.BookRepository;
+import bookstore_backend.backend.dao.BookDao;
 import bookstore_backend.backend.service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ import java.util.Collections;
 
 public class BookServiceImpl implements BookService {
     @Autowired
-    private BookRepository bookRepository;
+    private BookDao bookDao;
     
     public List<Book> getAllBooks() {
-        return bookRepository.findAll(); // Service调用Repository
+        return bookDao.findAll(); // Service调用Dao
     }
     public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id); // Service调用Repository
+        return bookDao.findById(id); // Service调用Dao
     }
     public List<Book> searchBooks(String keyword, String type) {
          if (keyword == null || keyword.trim().isEmpty()) {
-             return bookRepository.findAll();
+             return bookDao.findAll();
          }
 
          keyword = keyword.trim();
@@ -36,25 +36,25 @@ public class BookServiceImpl implements BookService {
          // 注意：这里可以将更复杂的搜索逻辑、异常处理等放在Service层
          switch (type) {
              case "title":
-                 return bookRepository.findByTitleContainingIgnoreCase(keyword);
+                 return bookDao.findByTitleContainingIgnoreCase(keyword);
              case "author":
-                 return bookRepository.findByAuthorContainingIgnoreCase(keyword);
+                 return bookDao.findByAuthorContainingIgnoreCase(keyword);
              case "isbn":
-                 return bookRepository.findByIsbnContaining(keyword);
+                 return bookDao.findByIsbnContaining(keyword);
              default:
                  // 如果type未知，可以返回空列表或所有书籍，取决于业务需求
-                 return bookRepository.findAll(); // 或者 Collections.emptyList();
+                 return bookDao.findAll(); // 或者 Collections.emptyList();
          }
     }
     public List<Book> getHotBooks() {
-        List<Book> allBooks = bookRepository.findAll();
+        List<Book> allBooks = bookDao.findAll();
          if (allBooks.isEmpty()) {
              return Collections.emptyList();
          }
         return allBooks.subList(0, Math.min(6, allBooks.size()));
     }
     public List<Book> getNewBooks() {
-        List<Book> allBooks = bookRepository.findAll();
+        List<Book> allBooks = bookDao.findAll();
          if (allBooks.isEmpty()) {
              return Collections.emptyList();
          }

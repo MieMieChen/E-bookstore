@@ -3,8 +3,8 @@ package bookstore_backend.backend.serviceimpl;
 
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.entity.UserAuth;
-import bookstore_backend.backend.repository.UserRepository;
-import bookstore_backend.backend.repository.UserAuthRepository;
+import bookstore_backend.backend.dao.UserDao;
+import bookstore_backend.backend.dao.UserAuthDao;
 import bookstore_backend.backend.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 public class UserAuthServiceImpl implements UserAuthService {
     
     @Autowired
-    private UserRepository userRepository;
+    private UserDao userDao;
     
     @Autowired
-    private UserAuthRepository userAuthRepository;
+    private UserAuthDao userAuthDao;
     
     public User authenticateUser(String username, String password) {
         // 1. 通过用户名查找用户
-        User user = userRepository.findByUsername(username)
+        User user = userDao.findByUsername(username)
                 .orElse(null);
         
         if (user == null) {
@@ -28,7 +28,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
         
         // 2. 通过用户ID查找认证信息
-        UserAuth userAuth = userAuthRepository.findByUserId(user.getId())
+        UserAuth userAuth = userAuthDao.findByUserId(user.getId())
                 .orElse(null);
         
         if (userAuth == null) {
