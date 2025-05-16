@@ -28,9 +28,8 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS user_auth;
 CREATE TABLE user_auth (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    auth_type VARCHAR(20) DEFAULT 'password',
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

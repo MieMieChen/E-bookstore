@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const { Title, Text } = Typography;
 import UserProfile from '../components/user_profile';  
 import useMessage from "antd/es/message/useMessage";
-import { getUserInfo } from '../services/api';
+import { getUserInfo } from '../services/user';
 import { useEffect } from 'react';
 function Profile() {
     const [user, setUser] = useState(null);

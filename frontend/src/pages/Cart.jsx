@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import CartItem from '../components/cart_item';
-import { getUserInfo } from '../services/api';
+import { getUserInfo } from '../services/user';
 import useMessage from "antd/es/message/useMessage";
 
 

@@ -10,13 +10,10 @@ import {
   BookOutlined
 } from '@ant-design/icons';
 import { useShop } from '../context/ShopContext';
+import { useAuth } from '../context/AuthContext';
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
-// import { useAuth } from '../context/AuthContext';
-import {useNavigate } from "react-router-dom";
-import { getUserInfo } from '../services/api';
-import useMessage from "antd/es/message/useMessage";
-// const { currentUser, getUser} = useAuth();
+
   
 // 获取用户数据
 // const user = getUser();
@@ -72,7 +69,7 @@ function MainLayout() {
             <Avatar size={80} icon={<UserOutlined />} />
             <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
               {/* 欢迎, {user.username} */}
-              欢迎, {userData.username}
+              欢迎 {userData.username}
 
             </Title>
             <Text type="secondary" style={{ fontSize: '25px' }} >书城会员</Text>

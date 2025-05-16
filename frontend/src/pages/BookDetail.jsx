@@ -5,7 +5,6 @@ import { books } from '../data/books';
 import { useShop } from '../context/ShopContext';
 import '../css/global.css';
 import BookCard from '../components/bookCard';
- //console.log('当前书籍数据:', books.map(b => ({ id: b.id, title: b.title })));
 
 function BookDetail() {
   //每次渲染组件，useParams 都会重新获取路由参数，确保获取的是最新的参数。
@@ -15,8 +14,6 @@ function BookDetail() {
   const { addToCart,getCartTotal ,createOrder,cartItems} = useShop();
   const [bookPrice,setBookPrice] = useState(0);
   const book = books.find((book) => {
-    // console.log('当前对比 ID:', book.id, typeof book.id); 
-    // console.log('路由参数 ID:', id, typeof id);
     return book.id == id;
   });
 

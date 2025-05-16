@@ -8,7 +8,8 @@ export async function updateUserInfo(userId, userData) {
   const res = await fetch(`${PREFIX}/users/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(userData),
+    credentials:'include'
   });
   if (!res.ok) throw new Error('更新用户信息失败');
   return await res.json();

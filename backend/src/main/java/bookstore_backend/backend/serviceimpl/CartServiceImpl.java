@@ -30,6 +30,8 @@ public class CartServiceImpl implements CartService {
     public List<Cart> getCartItemsByUser(User user) {
         return cartDao.findByUser(user);
     }
+    //返回 Optional<Cart> 是一种更现代、更安全的做法。它通过类型系统明确地表达了“结果可能为空”的事实，并将处理结果为空的责任显式地放在了调用者身上，从而有效避免了 NullPointerException。
+    //直接返回 Cart 意味着如果没找到对象，方法很可能返回 null。这是一种遗留的做法，容易因为调用者忘记检查 null 而导致运行时错误。
     public Cart addCartItem(Cart cart) {
         return cartDao.save(cart);
     }

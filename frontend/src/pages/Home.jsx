@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Card, Input, Select, Button, Typography, Space, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { getBooks, searchBooks } from '../services/api';
+import { getBooks, searchBooks } from '../services/book';
 import '../css/global.css';
 
 const { Search } = Input;
@@ -12,12 +12,36 @@ export default function Home() {
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [searchType, setSearchType] = useState('title');
+  const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchBooks();
   }, []);
+
+  // 使用useEffect来处理搜索逻辑
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!searchValue) {
+        setFilteredBooks(books);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        const data = await searchBooks(searchType, searchValue);
+        setFilteredBooks(data);
+      } catch (error) {
+        message.error('搜索图书失败');
+        setFilteredBooks(books);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    performSearch();
+  }, [searchValue, searchType, books]);
 
   const fetchBooks = async () => {
     try {
@@ -31,22 +55,8 @@ export default function Home() {
     }
   };
 
-  const handleSearch = async (value) => {
-    if (!value) {
-      setFilteredBooks(books);
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const data = await searchBooks(searchType, value);
-      setFilteredBooks(data);
-    } catch (error) {
-      message.error('搜索图书失败');
-      setFilteredBooks(books);
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = (value) => {
+    setSearchValue(value);
   };
 
   const handleSearchTypeChange = (value) => {

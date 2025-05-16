@@ -19,7 +19,8 @@ export async function createOrder(order) {
     const res = await fetch(`${PREFIX}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(order)
+      body: JSON.stringify(order),
+      credentials:'include'
     });
     
     if (!res.ok) {
@@ -27,7 +28,8 @@ export async function createOrder(order) {
       console.error('创建订单API错误:', {
         status: res.status,
         statusText: res.statusText,
-        errorBody: errorText
+        errorBody: errorText,
+        credentials:'include'
       });
       throw new Error(`创建订单失败: HTTP ${res.status} - ${errorText}`);
     }
@@ -44,7 +46,8 @@ export async function createOrder(order) {
 // 取消订单
 export async function cancelOrder(orderId) {
   const res = await fetch(`${PREFIX}/orders/${orderId}/cancel`, {
-    method: 'PUT'
+    method: 'PUT',
+    credentials:'include'
   });
   if (!res.ok) throw new Error('取消订单失败');
   return await res.json();
@@ -53,7 +56,8 @@ export async function cancelOrder(orderId) {
 // 更新订单状态
 export async function updateOrderStatus(orderId, status) {
   const res = await fetch(`${PREFIX}/orders/${orderId}/status?status=${status}`, {
-    method: 'PUT'
+    method: 'PUT',
+    credentials:'include'
   });
   if (!res.ok) throw new Error('更新订单状态失败');
   return await res.json();

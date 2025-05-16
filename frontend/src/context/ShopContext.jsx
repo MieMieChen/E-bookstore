@@ -1,13 +1,26 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { 
+// import { 
+//   addToCart as addToCartApi, 
+//   removeFromCart as removeFromCartApi,
+//   createOrder as createOrderApi,
+//   clearUserCart as clearUserCartApi,
+//   updateCartQuantity as updateCartQuantityApi,
+//   getCart,
+//   getOrders
+// } from '../services/api';
+import {
   addToCart as addToCartApi, 
   removeFromCart as removeFromCartApi,
-  createOrder as createOrderApi,
   clearUserCart as clearUserCartApi,
   updateCartQuantity as updateCartQuantityApi,
-  getCart,
+  getCart
+} from '../services/cart';
+
+import{
+  createOrder as createOrderApi,
   getOrders
-} from '../services/api';
+}from '../services/order';
+
 import { useAuth } from './AuthContext';
 
 const ShopContext = createContext(); //创建了一个上下文对象 ShopContext，用于在组件树中共享购物车的状态和方法。

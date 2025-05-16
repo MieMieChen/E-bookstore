@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import OrderTable from '../components/order_table';
 import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/icons';
 import useMessage from "antd/es/message/useMessage";
-import { getUserInfo } from '../services/api';
+import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
 
 
@@ -18,21 +18,21 @@ function Orders() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastOrdersHash, setLastOrdersHash] = useState('');
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
-    const [userC, setUserC] = useState(null);
-    const navigate = useNavigate();
-    const [messageApi, contextHolder] = useMessage();
-    useEffect(() => {
-            const checkLogin = async () => {
-                let me = await getUserInfo();
-                if (!me) {
-                    messageApi.error("无权访问当前页面，请先登录！", 0.6)
-                        .then(() => navigate("/login"));
-                } else {
-                    setUserC(me);
-                }
-            }
-            checkLogin();
-        }, [navigate]);
+  const [userC, setUserC] = useState(null);
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = useMessage();
+  useEffect(() => {
+          const checkLogin = async () => {
+              let me = await getUserInfo();
+              if (!me) {
+                  messageApi.error("无权访问当前页面，请先登录！", 0.6)
+                      .then(() => navigate("/login"));
+              } else {
+                  setUserC(me);
+              }
+          }
+          checkLogin();
+      }, [navigate]);
   // 获取当前用户
   const user = currentUser || getUser();
 

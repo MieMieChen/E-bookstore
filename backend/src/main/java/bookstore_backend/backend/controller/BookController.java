@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // 允许来自 http://localhost:3000 的跨域请求
 public class BookController {
 
     @Autowired
@@ -48,27 +48,8 @@ public class BookController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type) {
         try {
-            // if (keyword == null || keyword.trim().isEmpty()) {
-            //     return ResponseEntity.ok(bookRepository.findAll());
-            // }
-
-            // keyword = keyword.trim();
             List<Book> results;
             results = bookService.searchBooks(keyword, type);
-            // switch (type) {
-            //     case "title":
-            //         results = bookRepository.findByTitleContainingIgnoreCase(keyword);
-            //         break;
-            //     case "author":
-            //         results = bookRepository.findByAuthorContainingIgnoreCase(keyword);
-            //         break;
-            //     case "isbn":
-            //         results = bookRepository.findByIsbnContaining(keyword);
-            //         break;
-            //     default:
-            //         results = bookRepository.findAll();
-            // }
-
             return ResponseEntity.ok(results);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

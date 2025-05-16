@@ -5,7 +5,8 @@ export async function register(user) {
   const res = await fetch(`${PREFIX}/users/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
+    credentials:'include'
   });
   if (!res.ok) throw new Error('注册失败');
   return await res.json();
@@ -23,7 +24,8 @@ export async function updateUserInfo(userId, userData) {
   const res = await fetch(`${PREFIX}/users/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(userData),
+    credentials:'include'
   });
   if (!res.ok) throw new Error('更新用户信息失败');
   return await res.json();
@@ -98,13 +100,13 @@ export async function updateCartQuantity(cartId, quantity) {
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE' });
+  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE' ,credentials: 'include'});
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
 // 清空用户的所有购物车项
 export async function clearUserCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { method: 'DELETE' });
+  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { method: 'DELETE' ,credentials:'include'});
   if (!res.ok) throw new Error('清空购物车失败');
 }
 
@@ -129,7 +131,8 @@ export async function createOrder(order) {
     const res = await fetch(`${PREFIX}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(order)
+      body: JSON.stringify(order),
+      credentials:'include'
     });
     
     if (!res.ok) {
@@ -154,7 +157,8 @@ export async function createOrder(order) {
 // 取消订单
 export async function cancelOrder(orderId) {
   const res = await fetch(`${PREFIX}/orders/${orderId}/cancel`, {
-    method: 'PUT'
+    method: 'PUT',
+    credentials:'include'
   });
   if (!res.ok) throw new Error('取消订单失败');
   return await res.json();
@@ -163,7 +167,8 @@ export async function cancelOrder(orderId) {
 // 更新订单状态
 export async function updateOrderStatus(orderId, status) {
   const res = await fetch(`${PREFIX}/orders/${orderId}/status?status=${status}`, {
-    method: 'PUT'
+    method: 'PUT',
+    credentials:'include'
   });
   if (!res.ok) throw new Error('更新订单状态失败');
   return await res.json();

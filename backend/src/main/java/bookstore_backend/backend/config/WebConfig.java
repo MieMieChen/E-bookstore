@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.lang.NonNull;
-
+//这是一个 Spring Boot 后端配置类，主要用于配置 CORS（跨域资源共享） 规则，解决前端应用（如 React、Vue）访问后端 API 时的跨域问题
 @Configuration
 public class WebConfig {
     

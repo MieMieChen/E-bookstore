@@ -37,13 +37,13 @@ export default function BookCard({book, handleAddToCart, handleBuyNow}) {
                     <Divider />
                     
                     <Space>
-                        <Button 
+                        {/* <Button 
                             type="default" 
                             icon={<ShopOutlined />} 
                             onClick={()=>handleBuyNow(book.price)}
                         >
                             立即购买
-                        </Button>
+                        </Button> */}
                         <Button 
                             type="primary" 
                             icon={<ShoppingCartOutlined />} 
