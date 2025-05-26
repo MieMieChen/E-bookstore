@@ -1,13 +1,21 @@
 import { PREFIX } from "./common";
 export async function getOrders(userId) {
-  const res = await fetch(`${PREFIX}/orders/${userId}`);
+  const res = await fetch(`${PREFIX}/orders/${userId}`,
+    {
+          credentials:'include'
+    }
+  );
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
 
 // 获取订单详情
 export async function getOrderDetail(orderId) {
-  const res = await fetch(`${PREFIX}/orders/detail/${orderId}`);
+  const res = await fetch(`${PREFIX}/orders/detail/${orderId}`,
+    {
+          credentials:'include'
+    }
+  );
   if (!res.ok) throw new Error('获取订单详情失败');
   return await res.json();
 }

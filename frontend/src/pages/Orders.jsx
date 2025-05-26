@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import OrderTable from '../components/order_table';
 import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/icons';
 import useMessage from "antd/es/message/useMessage";
-import { getUserInfo } from '../services/user';
+// import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
 
 
@@ -21,9 +21,14 @@ function Orders() {
   const [userC, setUserC] = useState(null);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = useMessage();
+  // const {userData} = useShop();
+
   useEffect(() => {
           const checkLogin = async () => {
-              let me = await getUserInfo();
+              const me = await getUser(currentUser.id);
+              // console.log("userData", userData);
+              // let me = await getUser(userData.userid);
+              console.log("me", me);
               if (!me) {
                   messageApi.error("无权访问当前页面，请先登录！", 0.6)
                       .then(() => navigate("/login"));

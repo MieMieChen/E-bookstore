@@ -100,7 +100,7 @@ export async function updateCartQuantity(cartId, quantity) {
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE' ,credentials: 'include'});
+  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE' ,credentials: 'include'}); //credentials: 'include' 确保了包含 Session ID 的那个 Cookie 被发送到了后端。后端服务器利用这个接收到的 Session ID (来自于 Cookie) 去查找和访问存储在服务器自身的 HttpSession 对象及其数据。
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 

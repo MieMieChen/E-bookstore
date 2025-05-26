@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
-import java.math.BigDecimal;
+// import lombok.Builder;
 
+// @Builder
 @Data
 @Entity
 @Table(name = "order_items")
@@ -28,7 +29,7 @@ public class OrderItem {
     private Integer quantity;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private Integer price;
 
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;

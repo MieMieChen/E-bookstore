@@ -4,26 +4,28 @@ import { Card, Form, Input, Button, Typography, message, ConfigProvider } from '
 import { customTheme } from '../theme/themeConfigs';
 import '../css/global.css';
 import useMessage from "antd/es/message/useMessage";
-import {login} from '../services/login';
+import { useAuth} from '../context/AuthContext';
+import { useShop } from '../context/ShopContext';
+// import {login} from '../services/login';
 const { Title } = Typography;
 
 function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // const {userData,  changeUserData } = useShop();
+
   const [error, setError] = useState('');
   const [messageApi, contextHolder] = useMessage();
+  const {login,getUser} = useAuth();
   const navigate = useNavigate();
-
     const onSubmit = async (values) => {
       let username = values['username'];
       let password = values['password'];
-
-      // try {
         let res = await login(username, password);
+        console.log("res.ok", res.ok);
         if (res.ok) {
-          // 登录成功
-         // await messageApi.success("登录成功！", 0.5);
-         // console.log("登录成功", res.data);
+          console.log("登录成功", res.data);
+          console.log("res.data.id", res.data.id);
+          // changeUserData ({username: res.data.username, userid: res.data.id,address: res.data.address, phone: res.data.phone, email: res.data.email});
+          const userData = await getUser();
           navigate('/home', { replace: true });
         }
         else
@@ -31,15 +33,6 @@ function Login() {
            messageApi.error("无权访问当前页面，请先登录！", 0.6)
                     .then(() => navigate("/login"));
         }
-      //   } else {
-      //     // 登录失败
-      //     // const errorMessage = res.message || "登录失败，请检查用户名和密码";
-      //     //await messageApi.error(errorMessage, 0.5);
-      //   }
-      // } catch (error) {
-      //   console.error('Login error:', error);
-      //   await messageApi.error("登录过程中发生错误，请稍后重试", 0.5);
-      // }
     };
 
 
@@ -75,16 +68,16 @@ function Login() {
             <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
               <Input 
                 placeholder="用户名" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                // value={userData.username}
+                // onChange={(e) => setUsername(e.target.value)}
               />
             </Form.Item>
             
             <Form.Item name="password" rules={[{ required: true, message: '请输入密码' }]}>
               <Input.Password 
                 placeholder="密码"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                // value={userData.password}
+                // onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Item>
             

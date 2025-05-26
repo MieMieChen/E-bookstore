@@ -1,7 +1,6 @@
 package bookstore_backend.backend.controller;
 
 import bookstore_backend.backend.entity.Book;
-import bookstore_backend.backend.repository.BookRepository;
 import bookstore_backend.backend.service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;

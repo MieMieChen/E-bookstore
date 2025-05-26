@@ -54,8 +54,9 @@ export function AuthProvider({ children }) {
       localStorage.setItem('currentUser', JSON.stringify(userData));
       
       // 登录后加载完整的用户信息
+      console.log(userData.id);
       await refreshUserInfo(userData.id);
-      return userData;
+      return response;
     } catch (error) {
       console.error('登录失败:', error);
       throw error;
@@ -74,25 +75,22 @@ export function AuthProvider({ children }) {
   };
   
   // 获取当前用户数据
-  const getUser = () => {
+  const getUser = async(userId) => {
     if (currentUser) return currentUser;
     
-    // 从本地存储获取
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       // 异步更新状态但不等待
+      console.log("getUser", userData);
       setCurrentUser(userData);
       return userData;
     }
-    
-    // 默认测试用户（仅在开发环境使用）
-    console.warn('使用默认测试用户，仅用于开发环境');
-    return {
-      id: 1,
-      username: 'test_user',
-      email: 'test@example.com'
-    };
+    else
+    {
+      const User = await getUserInfo(userId);
+      return User;
+    }
   };
   
   // 更新用户信息

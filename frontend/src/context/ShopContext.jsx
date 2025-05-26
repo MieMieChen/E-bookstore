@@ -1,13 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-// import { 
-//   addToCart as addToCartApi, 
-//   removeFromCart as removeFromCartApi,
-//   createOrder as createOrderApi,
-//   clearUserCart as clearUserCartApi,
-//   updateCartQuantity as updateCartQuantityApi,
-//   getCart,
-//   getOrders
-// } from '../services/api';
 import {
   addToCart as addToCartApi, 
   removeFromCart as removeFromCartApi,
@@ -28,28 +19,32 @@ const ShopContext = createContext(); //创建了一个上下文对象 ShopContex
 export default function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [userData, setUserData] = useState({
-    username: ' ',
-    name: ' ',
-    email: ' ',
-    phone: ' ',
-    address: ' ',
-    memberSince: ' ',
-    memberLevel: ' ',
-    points: 771995
-  });
+  // const [userData, setUserData] = useState({
+  //   userid: 0,
+  //   username: ' ',
+  //   name: ' ',
+  //   email: ' ',
+  //   phone: ' ',
+  //   address: ' ',
+  //   memberSince: ' ',
+  //   memberLevel: ' ',
+  //   points: 771995
+  // });
   
   // 使用AuthContext获取当前用户
   const { getUser, isAuthenticated, currentUser } = useAuth();
-
+  
   // 加载用户购物车数据 - 使用useCallback包装以保持引用稳定性
   const loadUserCart = useCallback(async () => {
     if (!isAuthenticated()) return;
     
     try {
-      const user = getUser();
-      console.log('正在加载用户购物车数据...');
-      const userCartItems = await getCart(user.id);
+      // console.log('当前用户', userData);
+      console.log("localStorage中的用户数据:", localStorage.getItem('currentUser'));
+      const userData = await getUser(currentUser.id);
+      console.log("userData111:", userData);
+      console.log('当前用户ID:', userData.id);
+      const userCartItems = await getCart(userData.id);
       
       // 转换为前端购物车格式
       const frontendCartItems = userCartItems.map(item => ({
@@ -73,9 +68,11 @@ export default function ShopProvider({ children }) {
     if (!isAuthenticated()) return;
     
     try {
-      const user = getUser();
       console.log('正在加载用户订单历史...');
-      const userOrders = await getOrders(user.id);
+      // console.log('当前用户', userData);
+      // const userData = getUser();
+      console.log('当前用户ID:', currentUser.id);
+      const userOrders = await getOrders(currentUser.id);
       
       console.log('成功加载订单历史:', userOrders);
       setOrders(userOrders);
@@ -133,11 +130,9 @@ export default function ShopProvider({ children }) {
         price: book.price
       };
       await addToCartApi(cartItem);
-      console.log('购物车同步到服务器成功');
+      //console.log('购物车同步到服务器成功');
     } catch (error) {
-      console.error('购物车同步到服务器失败:', error);
-      // 这里可以添加一个小提示，但不打断用户操作
-      // 例如: notification.warn({ message: '购物车数据未能保存到服务器，请稍后再试' });
+      // console.error('购物车同步到服务器失败:', error);
     }
   };
 
@@ -328,9 +323,9 @@ export default function ShopProvider({ children }) {
     }
   };
 
-  const changeUserData = (newData) => {
-    setUserData(newData);
-  };
+  // const changeUserData = (newData) => {
+  //   setUserData(newData);
+  // };
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -350,8 +345,8 @@ export default function ShopProvider({ children }) {
       createOrder,
       getCartTotal,
       getCartItemsCount,
-      userData,
-      changeUserData,
+      // userData,
+      // changeUserData,
       loadUserCart,     // 暴露方法以便手动刷新
       loadUserOrders    // 暴露方法以便手动刷新
     }}>

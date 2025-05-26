@@ -22,7 +22,8 @@ const { Title, Text } = Typography;
 function MainLayout() {
   const location = useLocation();
   const { token } = theme.useToken();
-  const {userData} = useShop();
+  // const {userData} = useShop();
+  const { currentUser , isAuthenticated } = useAuth();
   // 菜单项配置
   const menuItems = [
     {
@@ -69,7 +70,7 @@ function MainLayout() {
             <Avatar size={80} icon={<UserOutlined />} />
             <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
               {/* 欢迎, {user.username} */}
-              欢迎 {userData.username}
+              欢迎 {currentUser.username}
 
             </Title>
             <Text type="secondary" style={{ fontSize: '25px' }} >书城会员</Text>

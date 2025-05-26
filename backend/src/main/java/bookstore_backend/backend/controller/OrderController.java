@@ -6,7 +6,6 @@ import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.exception.OrderNotFoundException;
 import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.entity.OrderItem;
-import bookstore_backend.backend.entity.Cart;
 import bookstore_backend.backend.service.OrderService;
 import bookstore_backend.backend.service.UserService;
 import bookstore_backend.backend.service.BookService;
@@ -24,8 +23,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api")

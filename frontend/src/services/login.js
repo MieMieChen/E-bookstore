@@ -15,16 +15,14 @@ export async function login(username, password) {
     result = {
       ok: response.ok,
       data: data,
-      message: response.ok ? "登录成功！" : data,
-      credentials:'include'
+      message: response.ok ? "登录成功！" : data
     };
   } catch (e) {
     console.log('Login error:', e);
     result = {
       ok: false,
-      message: "网络错误！",
-      credentials:'include'
-    };
+      message: "网络错误！"
+      };
   }
   return result;
 }

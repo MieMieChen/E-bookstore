@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import CartItem from '../components/cart_item';
-import { getUserInfo } from '../services/user';
 import useMessage from "antd/es/message/useMessage";
 
 
@@ -12,7 +11,7 @@ const { Title } = Typography;
 
 function Cart() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated,getUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [lastCartHash, setLastCartHash] = useState('');
   const { 
@@ -21,13 +20,17 @@ function Cart() {
     updateCartItemQuantity, 
     getCartTotal,
     createOrder,
-    loadUserCart
+    loadUserCart,
+    // userData
   } = useShop();
   const [userC, setUserC] = useState(null);
   const [messageApi, contextHolder] = useMessage();
     useEffect(() => {
             const checkLogin = async () => {
-                let me = await getUserInfo();
+                const userData = await getUser();
+                console.log("userData", userData);
+                let me = await getUser(userData.userid);
+                console.log("me", me);
                 if (!me) {
                     messageApi.error("无权访问当前页面，请先登录！", 0.6)
                         .then(() => navigate("/login"));

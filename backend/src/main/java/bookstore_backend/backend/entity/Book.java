@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+// import lombok.Builder;
 import java.util.List;
-// import java.math.BigDecimal;
 
 @Data
 @Entity
+// @Builder
 @Table(name = "books")
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,

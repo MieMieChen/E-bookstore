@@ -1,6 +1,10 @@
 import { PREFIX } from "./common";
 export async function getCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/${userId}`);
+  const res = await fetch(`${PREFIX}/cart/${userId}`,
+    {
+          credentials:'include'
+    }
+  );
   if (!res.ok) throw new Error('获取购物车失败');
   return await res.json();
 }
@@ -31,12 +35,19 @@ export async function updateCartQuantity(cartId, quantity) {
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const res = await fetch(`${PREFIX}/cart/${cartId}`, { method: 'DELETE',credentials:'include' });
+  const res = await fetch(`${PREFIX}/cart/${cartId}`, 
+    { 
+      method: 'DELETE',
+      credentials:'include'
+    });
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
 // 清空用户的所有购物车项
 export async function clearUserCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { method: 'DELETE',credentials:'include' });
+  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { 
+    method: 'DELETE',
+    credentials:'include' 
+  });
   if (!res.ok) throw new Error('清空购物车失败');
 }

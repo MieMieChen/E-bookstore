@@ -1,18 +1,32 @@
 package bookstore_backend.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+
+
+@Builder
 @Data
 @Entity
 @Table(name = "user_auth")
-public class UserAuth {
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class UserAuth{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
+    
+    private Integer type;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)

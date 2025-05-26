@@ -2,11 +2,12 @@ package bookstore_backend.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-// import java.math.BigDecimal;
+// import lombok.Builder;
 
-@Data
+@Data //lombok注解，自动生成getter和setter方法
+// @ToString.Exclude //这个注解用于在生成的 toString() 方法中排除该字段。避免在打印对象时，打印出循环引用的字段
 @Entity  //这个是JPA注释，表明这个Cart类是一个JPA实体，可以被持久化到数据库中，而且数据库中的一行数据可以映射回这个类的实例。
-
+// @Builder
 @Table(name = "carts")
 public class Cart {
     @Id 

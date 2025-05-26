@@ -33,21 +33,11 @@ public class UserController {
     @GetMapping("/{id}")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> userOpt = userService.findUserById(id);
+        System.out.println("获取用户信息请求，用户ID: " + id);
         return userOpt
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    // @GetMapping("/me")
-    // public ResponseEntity<User> getCurrentUser(@RequestHeader("Authorization") String token) {
-    //     // 这里可以解析 token 来获取当前用户的 ID
-    //     // 假设我们从 token 中解析出了用户 ID
-    //     Long userId = 1L; // 示例：假设当前用户的 ID 是 1
-    //     Optional<User> userOpt = userService.findUserById(userId);
-    //     return userOpt
-    //             .map(ResponseEntity::ok)
-    //             .orElse(ResponseEntity.notFound().build());
-    // }
-
     // 更新用户信息
     @PutMapping("/{id}")  //表示修改
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
