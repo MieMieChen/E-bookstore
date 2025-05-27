@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getUserInfo, updateUserInfo } from '../services/user';
 import { login as loginApi } from '../services/login';
+import { getMe as getMeApi } from '../services/auth';
+import Cookies from 'js-cookie';
 
 //localStorage 是浏览器内置的 Web Storage API，不需要额外声明
 // 它是前端本地存储机制，用于在浏览器中持久化存储键值对数据
@@ -9,18 +11,42 @@ import { login as loginApi } from '../services/login';
 
 
 const AuthContext = createContext();
+const COOKIE_NAME = 'currentUser';
+const COOKIE_OPTIONS = {
+  path: '/',
+  secure: process.env.NODE_ENV === 'production', // Use secure in production
+  sameSite: 'strict'
+};
+
+// 解码 Base64 cookie 值
+const decodeCookie = (cookieValue) => {
+  try {
+    if (!cookieValue) return null;
+    const decoded = atob(cookieValue);
+    return JSON.parse(decoded);
+  } catch (error) {
+    console.error('Failed to decode cookie:', error);
+    return null;
+  }
+};
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // 在组件挂载时，从localStorage检查用户登录状态
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setCurrentUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // 在组件挂载时验证用户状态
+    const validateUser = async () => {
+      const userData = await getMeApi();
+      if (userData) {
+        setCurrentUser(userData);
+      } else {
+        setCurrentUser(null);
+        Cookies.remove(COOKIE_NAME, { path: '/' });
+      }
+      setLoading(false);
+    };
+    validateUser();
   }, []);
   
   // 登录后加载完整的用户信息
@@ -30,8 +56,8 @@ export function AuthProvider({ children }) {
       // 更新currentUser但保留之前的认证信息
       setCurrentUser(prev => {
         const updatedUser = { ...prev, ...fullUserInfo };
-        // 更新localStorage
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        // 更新cookie
+        Cookies.set(COOKIE_NAME, btoa(JSON.stringify(updatedUser)), COOKIE_OPTIONS);
         return updatedUser;
       });
       return fullUserInfo;
@@ -52,7 +78,6 @@ export function AuthProvider({ children }) {
       
       const userData = response.data;
       setCurrentUser(userData);
-      localStorage.setItem('currentUser', JSON.stringify(userData));
       
       // 登录后加载完整的用户信息
       console.log(userData.id);
@@ -67,7 +92,7 @@ export function AuthProvider({ children }) {
   // 登出函数
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('currentUser');
+    Cookies.remove(COOKIE_NAME, { path: '/' });
   };
   
   // 检查用户是否已认证
@@ -79,13 +104,19 @@ export function AuthProvider({ children }) {
   const getUser = async(userId) => {
     if (currentUser) return currentUser;
     
-    const savedUser = localStorage.getItem('currentUser');
+    const savedUser = Cookies.get(COOKIE_NAME);
     if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      // 异步更新状态但不等待
-      console.log("getUser", userData);
-      setCurrentUser(userData);
-      return userData;
+      try {
+        const userData = decodeCookie(savedUser);
+        if (userData) {
+          setCurrentUser(userData);
+          return userData;
+        }
+      } catch (error) {
+        console.error('Failed to parse user data from cookie:', error);
+        Cookies.remove(COOKIE_NAME);
+        return null;
+      }
     }
     else
     {
@@ -104,10 +135,10 @@ export function AuthProvider({ children }) {
       // 调用API更新用户信息
       const updatedUser = await updateUserInfo(currentUser.id, userData);
       
-      // 更新状态和localStorage
+      // 更新状态和cookie
       setCurrentUser(prev => {
         const newUserData = { ...prev, ...updatedUser };
-        localStorage.setItem('currentUser', JSON.stringify(newUserData));
+        Cookies.set(COOKIE_NAME, btoa(JSON.stringify(newUserData)), COOKIE_OPTIONS);
         return newUserData;
       });
       
@@ -118,12 +149,30 @@ export function AuthProvider({ children }) {
     }
   };
   
+  // 获取当前用户信息
+  const getMe = async () => {
+    try {
+      const userData = await getMeApi();
+      if (userData) {
+        setCurrentUser(userData);
+        return userData;
+      }
+      return null;
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+      setCurrentUser(null);
+      Cookies.remove(COOKIE_NAME, { path: '/' });
+      return null;
+    }
+  };
+  
   const value = {
     currentUser,
     loading,
     login,
     logout,
     getUser,
+    getMe,
     isAuthenticated,
     refreshUserInfo,
     updateUser

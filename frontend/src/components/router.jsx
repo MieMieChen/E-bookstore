@@ -1,36 +1,34 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import Login from '../pages/Login';
-import Home from '../pages/Home';
+import {Login} from '../pages/Login';
+import {Home} from '../pages/Home';
 import BookDetail from '../pages/BookDetail';
-import Cart from '../pages/Cart';
-import Orders from '../pages/Orders';
-import Profile from '../pages/Profile';
-import MainLayout from '../components/MainLayout';
+import {Cart} from '../pages/Cart';
+import {Orders} from '../pages/Orders';
+import {Profile} from '../pages/Profile';
+import {Register} from '../pages/Register';
 import ShopProvider from '../context/ShopContext';
 import NotFound from '../pages/NotFound';
+import {MainLayout} from '../components/layout';
 
 export default function AppRouter() {
 // 这样做的目的是让整个应用的所有组件都能访问到 Context 中提供的状态和方法。如果没有外嵌 <ShopProvider>，子组件中使用 useShop() 会报错。
     return (
         <ShopProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/login" replace />} />
+            <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-                    <Route path="/login" element={<Login />} />
-                    
-                    {/* <Route element={<MainLayout />}> */}
+                <Route element={<MainLayout />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/book/:id" element={<BookDetail />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/register" element={<Register />} />
-                    {/* </Route> */}
+                </Route>
 
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </BrowserRouter>
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </ShopProvider>
     );
 }

@@ -22,7 +22,7 @@ export async function fetchWithAuth(url, options = {}) {
 }
 
 // 处理API响应的通用函数
-async function processResponse(response) {
+export async function processResponse(response) {
     const data = await response.json();
     return {
         ok: response.ok,

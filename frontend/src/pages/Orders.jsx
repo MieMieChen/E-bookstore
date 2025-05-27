@@ -7,7 +7,6 @@ import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/
 import useMessage from "antd/es/message/useMessage";
 // import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
-import { PrivateLayout } from "../components/layout";
 
 const { Title, Text } = Typography;
 
@@ -149,7 +148,6 @@ export function Orders() {
   }, [orders]);
 
   return (
-    <PrivateLayout>
     <div>
       <Card 
         style={{ marginBottom: 20 }} 
@@ -225,6 +223,5 @@ export function Orders() {
         />
       )}
     </div>
-  </PrivateLayout>
   );
 }

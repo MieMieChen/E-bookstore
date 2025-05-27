@@ -4,13 +4,16 @@ import { customTheme } from './theme/themeConfigs';
 import './css/global.css';
 import { AuthProvider } from './context/AuthContext';
 import AppRouter from './components/router';
+import { BrowserRouter } from 'react-router-dom';
 
 function App() {
   return (
     <ConfigProvider theme={customTheme}>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
+      </BrowserRouter>
     </ConfigProvider>
   );
 }

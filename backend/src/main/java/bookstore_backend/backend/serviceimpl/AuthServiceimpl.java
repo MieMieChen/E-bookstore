@@ -28,6 +28,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import java.time.Duration;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 public class AuthServiceimpl  implements AuthService {
@@ -42,14 +47,7 @@ public class AuthServiceimpl  implements AuthService {
         String username = credentials.get("username");
         String password = credentials.get("password");
 
-        System.out.println("=== Login Attempt Debug ===");
-        System.out.println("Username: " + username);
-        System.out.println("Password length: " + (password != null ? password.length() : 0));
-        System.out.println("========================");
-
-        // 验证输入
-        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            System.out.println("Login failed: Empty username or password");
+        if (username == null || password == null) {
             return new ResponseEntity<>(
                 Collections.singletonMap("message", "Username and password are required"),
                 HttpStatus.BAD_REQUEST
@@ -60,12 +58,6 @@ public class AuthServiceimpl  implements AuthService {
             // 1. 构造认证请求
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(username.trim(), password);
-            
-            System.out.println("=== Authentication Request ===");
-            System.out.println("Auth Request: " + authRequest);
-            System.out.println("Principal: " + authRequest.getPrincipal());
-            System.out.println("Credentials present: " + (authRequest.getCredentials() != null));
-            System.out.println("===========================");
             
             // 2. 认证
             Authentication authentication = authenticationManager.authenticate(authRequest);
@@ -85,28 +77,18 @@ public class AuthServiceimpl  implements AuthService {
             session.setAttribute("userType", user.getType());
             session.setAttribute("authorities", authentication.getAuthorities());
             
-            // 7. 打印调试信息
-            System.out.println("=== Login Success Debug ===");
-            System.out.println("Username: " + username);
-            System.out.println("Session ID: " + session.getId());
-            System.out.println("User ID: " + user.getId());
-            System.out.println("User Type: " + user.getType());
-            System.out.println("User Email: " + user.getEmail());
-            System.out.println("Password present: " + (user.getPassword() != null));
-            System.out.println("UserAuth present: " + (user.getUserAuth() != null));
-            System.out.println("Authorities: " + authentication.getAuthorities());
-            System.out.println("SecurityContext: " + SecurityContextHolder.getContext());
-            System.out.println("========================");
-            
-            // 8. 返回用户信息
+            // 7. 创建响应对象
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.getId());
             response.put("username", user.getUsername());
             response.put("email", user.getEmail());
             response.put("type", user.getType());
             response.put("message", "Login successful");
+            response.put("ok", true);
             
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, createAuthCookie(user))
+                .body(response);
         } catch (AuthenticationException e) {
             System.out.println("=== Authentication Failed ===");
             System.out.println("Username: " + username);
@@ -125,18 +107,33 @@ public class AuthServiceimpl  implements AuthService {
                 Collections.singletonMap("message", "Invalid username or password"),
                 HttpStatus.UNAUTHORIZED
             );
-        } catch (Exception e) {
-            System.out.println("=== Unexpected Error ===");
-            System.out.println("Username: " + username);
-            System.out.println("Error type: " + e.getClass().getSimpleName());
-            System.out.println("Error message: " + e.getMessage());
-            e.printStackTrace();
-            System.out.println("======================");
+        }
+    }
+
+    private String createAuthCookie(User user) {
+        try {
+            String userJson = new ObjectMapper().writeValueAsString(user);
+            String encodedUser = java.util.Base64.getEncoder().encodeToString(userJson.getBytes());
             
-            return new ResponseEntity<>(
-                Collections.singletonMap("message", "An unexpected error occurred"),
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
+            ResponseCookie cookie = ResponseCookie.from("currentUser", encodedUser)
+                .httpOnly(false) // Allow JavaScript access
+                .secure(false) // Set to true in production with HTTPS
+                .path("/")
+                .sameSite("Strict")
+                .build();
+            return cookie.toString();
+        } catch (JsonProcessingException e) {
+            // If we can't serialize the user object, return a minimal cookie with just the user ID
+            String minimalJson = String.format("{\"id\":%d}", user.getId());
+            String encodedMinimal = java.util.Base64.getEncoder().encodeToString(minimalJson.getBytes());
+            
+            ResponseCookie cookie = ResponseCookie.from("currentUser", encodedMinimal)
+                .httpOnly(false)
+                .secure(false)
+                .path("/")
+                .sameSite("Strict")
+                .build();
+            return cookie.toString();
         }
     }
 
@@ -151,5 +148,54 @@ public class AuthServiceimpl  implements AuthService {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("message", "Logged out successfully");
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> getCurrentUser(HttpSession session) {
+        try {
+            // 从 SecurityContext 获取认证信息
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            
+            if (authentication == null || !authentication.isAuthenticated() || 
+                authentication.getPrincipal().equals("anonymousUser")) {
+                return new ResponseEntity<>(
+                    Collections.singletonMap("message", "Not authenticated"),
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
+
+            // 获取用户信息
+            User user = (User) authentication.getPrincipal();
+            
+            // 验证会话中的用户ID是否匹配
+            Long sessionUserId = (Long) session.getAttribute("userId");
+            if (sessionUserId == null || !sessionUserId.equals(user.getId())) {
+                SecurityContextHolder.clearContext();
+                session.invalidate();
+                return new ResponseEntity<>(
+                    Collections.singletonMap("message", "Session invalid"),
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
+
+            // 构建响应
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("type", user.getType());
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            if (session != null) {
+                session.invalidate();
+            }
+            return new ResponseEntity<>(
+                Collections.singletonMap("message", "Error retrieving user information"),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

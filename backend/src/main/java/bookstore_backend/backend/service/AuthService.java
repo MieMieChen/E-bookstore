@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface AuthService {
     /**
      * 用户登录方法
@@ -21,5 +23,7 @@ public interface AuthService {
 
     @Transactional
     ResponseEntity<Object> logout(HttpSession session);
+
+    ResponseEntity<Object> getCurrentUser(HttpSession session);
 }
 

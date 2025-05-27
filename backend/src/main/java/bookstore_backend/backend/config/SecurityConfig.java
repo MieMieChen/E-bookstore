@@ -43,11 +43,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend URL
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true); // Important for cookies
+        configuration.setMaxAge(3600L); // 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -74,27 +74,16 @@ public class SecurityConfig {
                     .hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated() // All other requests require authentication
             )
-            // .formLogin(form -> form // Configure form-based login
-            //     .loginProcessingUrl("/api/auth/login") // URL to submit username and password
-            //     .successHandler((request, response, authentication) -> {
-            //         // The actual login logic and session creation is handled in AuthServiceimpl
-            //         response.setStatus(HttpStatus.OK.value()); 
-            //     })
-            //     .failureHandler((request, response, exception) -> {
-            //         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            //     })
-            //     .permitAll() // Allow access to the login page
-            // )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout"))
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.setStatus(HttpStatus.OK.value());
                 })
                 .invalidateHttpSession(true) // Invalidate session on logout
-                .deleteCookies("JSESSIONID") // Delete session cookie
+                .deleteCookies("JSESSIONID", "currentUser") // Delete both session and auth cookies
                 .permitAll()
             )
-            .userDetailsService(customUserDetailsService); // Use custom user details service
+            .userDetailsService(customUserDetailsService);
 
         return http.build();
     }

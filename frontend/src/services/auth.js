@@ -20,9 +20,20 @@ export async function register(userData) {
 
 // 获取当前登录用户信息
 export async function getMe() {
-    const url = `${PREFIX}/user/me`;
     try {
-        return await getJson(url);
+        const response = await fetch(`${PREFIX}/auth/me`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        return await response.json();
     } catch (error) {
         console.error('获取用户信息失败:', error);
         return null;
