@@ -9,7 +9,7 @@ import { useShop } from '../context/ShopContext';
 // import {login} from '../services/login';
 const { Title } = Typography;
 
-function Login() {
+export function Login() {
   // const {userData,  changeUserData } = useShop();
 
   const [error, setError] = useState('');
@@ -110,4 +110,3 @@ function Login() {
   );
 }
 
-export default Login;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { ConfigProvider } from 'antd';
 import { customTheme } from './theme/themeConfigs';
-import AppRouter from './components/router';
 import './css/global.css';
 import { AuthProvider } from './context/AuthContext';
+import AppRouter from './components/router';
 
 function App() {
   return (

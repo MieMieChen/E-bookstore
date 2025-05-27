@@ -1,30 +1,41 @@
 import React, { useState } from 'react';
-import { Card, Avatar, Typography, Descriptions, Divider, Button, Row, Col, Input, message } from 'antd';
-import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import {Typography, Divider} from 'antd';
 import { useNavigate } from "react-router-dom";
-const { Title, Text } = Typography;
+const { Title} = Typography;
 import UserProfile from '../components/user_profile';  
 import useMessage from "antd/es/message/useMessage";
 import { getUserInfo } from '../services/user';
 import { useEffect } from 'react';
-function Profile() {
+import { useAuth } from '../context/AuthContext';
+import { PrivateLayout } from "../components/layout";
+
+export function Profile() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [messageApi, contextHolder] = useMessage();
+    const {currentUser} = useAuth(); 
     useEffect(() => {
             const checkLogin = async () => {
-                let me = await getUserInfo();
-                if (!me) {
+                if(!currentUser) {
                     messageApi.error("无权访问当前页面，请先登录！", 0.6)
+                        .then(() => navigate("/login"));
+                } else {
+                    let me = await getUserInfo(currentUser.id);
+                    if (!me) {
+                        messageApi.error("无权访问当前页面，请先登录！", 0.6)
                         .then(() => navigate("/login"));
                 } else {
                     setUser(me);
                 }
             }
-            checkLogin();
-        }, [navigate]);
+        }
+        checkLogin();
+    }, [navigate]);
+        
 
   return (
+    <PrivateLayout>
+    
       <div style={{ 
         height: '100%',
         overflow: 'visible',
@@ -34,7 +45,6 @@ function Profile() {
         <Divider />
         <UserProfile />
       </div>
+    </PrivateLayout>
  ) ;
 }
-
-export default Profile; 

@@ -28,7 +28,7 @@ export async function getHotBooks() {
 // 获取新书
 export async function getNewBooks() {
   const url = `${PREFIX}/books/new`;
-  const res = get(url);
+  const res = await get(url);
   if (!res.ok) throw new Error('获取新书失败');
   return await res.json();
 }

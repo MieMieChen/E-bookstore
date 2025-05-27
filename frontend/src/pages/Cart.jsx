@@ -6,10 +6,11 @@ import { useAuth } from '../context/AuthContext';
 import CartItem from '../components/cart_item';
 import useMessage from "antd/es/message/useMessage";
 
+import { PrivateLayout } from "../components/layout";
 
 const { Title } = Typography;
 
-function Cart() {
+export function Cart() {
   const navigate = useNavigate();
   const { isAuthenticated,getUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -101,6 +102,7 @@ function Cart() {
   }, []); // 仅在组件挂载时运行一次
 
   return (
+ <PrivateLayout>
     <div>
       <Title level={2}>购物车</Title>
       <Divider />
@@ -120,7 +122,6 @@ function Cart() {
         />
       )}
     </div>
+  </PrivateLayout>
   );
 }
-
-export default Cart;

@@ -45,6 +45,7 @@ export function AuthProvider({ children }) {
   const login = async (username, password) => {
     try {
       const response = await loginApi(username, password);
+      console.log('登录响应:', response);
       if (!response.ok) {
         throw new Error(response.message || '登录失败');
       }

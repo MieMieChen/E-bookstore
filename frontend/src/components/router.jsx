@@ -19,13 +19,14 @@ export default function AppRouter() {
 
                     <Route path="/login" element={<Login />} />
                     
-                    <Route element={<MainLayout />}>
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/book/:id" element={<BookDetail />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/orders" element={<Orders />} />
-                        <Route path="/profile" element={<Profile />} />
-                    </Route>
+                    {/* <Route element={<MainLayout />}> */}
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/book/:id" element={<BookDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/register" element={<Register />} />
+                    {/* </Route> */}
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>

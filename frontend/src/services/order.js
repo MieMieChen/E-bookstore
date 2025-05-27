@@ -25,8 +25,7 @@ export async function createOrder(order) {
       console.error('创建订单API错误:', {
         status: res.status,
         statusText: res.statusText,
-        errorBody: errorText,
-        credentials:'include'
+        errorBody: errorText
       });
       throw new Error(`创建订单失败: HTTP ${res.status} - ${errorText}`);
     }

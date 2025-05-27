@@ -1,12 +1,11 @@
 // const API_BASE = 'http://localhost:8080/api';
-import { PREFIX } from "./common";
+import { PREFIX, fetchWithAuth } from "./common";
 // 注册
 export async function register(user) {
-  const res = await fetch(`${PREFIX}/users/register`, {
+  const res = await fetchWithAuth(`${PREFIX}/users/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user),
-    credentials:'include'
+    body: JSON.stringify(user)
   });
   if (!res.ok) throw new Error('注册失败');
   return await res.json();
@@ -14,20 +13,17 @@ export async function register(user) {
 
 // 获取用户信息
 export async function getUserInfo(userId) {
-  const res = await fetch(`${PREFIX}/users/${userId}`, {
-    credentials:'include'
-  });
+  const res = await fetchWithAuth(`${PREFIX}/users/${userId}`);
   if (!res.ok) throw new Error('获取用户信息失败');
   return await res.json();
 }
 
 // 更新用户信息
 export async function updateUserInfo(userId, userData) {
-  const res = await fetch(`${PREFIX}/users/${userId}`, {
+  const res = await fetchWithAuth(`${PREFIX}/users/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-    credentials:'include'
+    body: JSON.stringify(userData)
   });
   if (!res.ok) throw new Error('更新用户信息失败');
   return await res.json();
@@ -35,36 +31,28 @@ export async function updateUserInfo(userId, userData) {
 
 // 获取所有图书
 export async function getBooks() {
-  const res = await fetch(`${PREFIX}/books`, {
-    credentials:'include'
-  });
+  const res = await fetchWithAuth(`${PREFIX}/books`);
   if (!res.ok) throw new Error('获取图书失败');
   return await res.json();
 }
 
 // 获取图书详情
 export async function getBookById(id) {
-  const res = await fetch(`${PREFIX}/books/${id}`, {
-    credentials:'include'
-  });
+  const res = await fetchWithAuth(`${PREFIX}/books/${id}`);
   if (!res.ok) throw new Error('获取图书详情失败');
   return await res.json();
 }
 
 // 获取热门图书
 export async function getHotBooks() {
-  const res = await fetch(`${PREFIX}/books/hot`, {
-    credentials:'include'
-  });
+  const res = await fetchWithAuth(`${PREFIX}/books/hot`);
   if (!res.ok) throw new Error('获取热门图书失败');
   return await res.json();
 }
 
 // 获取新书
 export async function getNewBooks() {
-  const res = await fetch(`${PREFIX}/books/new`, {
-    credentials:'include'
-  });
+  const res = await fetchWithAuth(`${PREFIX}/books/new`);
   if (!res.ok) throw new Error('获取新书失败');
   return await res.json();
 }

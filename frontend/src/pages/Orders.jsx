@@ -7,11 +7,11 @@ import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/
 import useMessage from "antd/es/message/useMessage";
 // import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
-
+import { PrivateLayout } from "../components/layout";
 
 const { Title, Text } = Typography;
 
-function Orders() {
+export function Orders() {
   const { orders, loadUserOrders } = useShop();
   const { isAuthenticated, currentUser, getUser } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -149,6 +149,7 @@ function Orders() {
   }, [orders]);
 
   return (
+    <PrivateLayout>
     <div>
       <Card 
         style={{ marginBottom: 20 }} 
@@ -224,7 +225,6 @@ function Orders() {
         />
       )}
     </div>
+  </PrivateLayout>
   );
 }
-
-export default Orders;

@@ -4,11 +4,12 @@ import { Row, Col, Card, Input, Select, Button, Typography, Space, message } fro
 import { SearchOutlined } from '@ant-design/icons';
 import { getBooks, searchBooks } from '../services/book';
 import '../css/global.css';
+import MainLayout from '../components/MainLayout';
 
 const { Search } = Input;
 const { Option } = Select;
 
-export default function Home() {
+export function Home() {
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [searchType, setSearchType] = useState('title');
@@ -68,6 +69,7 @@ export default function Home() {
   };
 
   return (
+    <MainLayout>
     <div className="home-container" style={{ padding: '24px' }}>
       <div className="search-section" style={{ marginBottom: '24px' }}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -142,6 +144,7 @@ export default function Home() {
         ))}
       </Row>
     </div>
+    </MainLayout>
   );
 }
 

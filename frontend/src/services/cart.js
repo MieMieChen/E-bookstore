@@ -26,13 +26,13 @@ export async function updateCartQuantity(cartId, quantity) {
 // 删除购物车项
 export async function removeFromCart(cartId) {
   const url = `${PREFIX}/cart/${cartId}`;
-  const res = del(url);
+  const res = await del(url);
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
 // 清空用户的所有购物车项
 export async function clearUserCart(userId) {
   const url = `${PREFIX}/cart/user/${userId}`;
-  const res = del(url);
+  const res = await del(url);
   if (!res.ok) throw new Error('清空购物车失败');
 }
