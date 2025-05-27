@@ -34,10 +34,12 @@ public class User implements UserDetails {
     private String email;
 
     private String address;
-    private String phone;
-    private Integer type;
-
     
+    private String phone;
+    
+    @Column(nullable = false)
+    private Integer type = 0;  // 0: 普通用户, 1: 管理员
+
     @ToString.Exclude
     @JsonIgnore //避免在序列化时出现循环引用
     //mappedBy 用在关系的非所有者一方（也就是数据库中没有外键的那个实体类里）

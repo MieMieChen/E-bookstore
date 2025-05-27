@@ -60,6 +60,24 @@ public class BookServiceImpl implements BookService {
          }
         return allBooks.subList(0, Math.min(10, allBooks.size()));
     }
+    public void deleteBook(Long id) {
+        bookDao.deleteById(id);
+    }
+    public Book createBook(Book book) {
+        return bookDao.save(book);
+    }
+    public Book updateBook(Long id, Book book) {
+        Book existingBook = bookDao.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPrice(book.getPrice());
+        return bookDao.save(existingBook);
+    }   
+    public Book updateBookStock(Long id, int stock) {
+        Book existingBook = bookDao.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+        existingBook.setStock(stock);
+        return bookDao.save(existingBook);
+    }
 
 
 

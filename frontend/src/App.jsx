@@ -3,15 +3,34 @@ import { ConfigProvider } from 'antd';
 import { customTheme } from './theme/themeConfigs';
 import './css/global.css';
 import { AuthProvider } from './context/AuthContext';
-import AppRouter from './components/router';
-import { BrowserRouter } from 'react-router-dom';
+import { ShopProvider } from './context/ShopContext';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { MainLayout } from './components/Layout';
+import { Home } from './pages/Home';
+import { Cart } from './pages/Cart';
+import { Orders } from './pages/Orders';
+import { Profile } from './pages/Profile';
+import { PrivateRoute } from './components/PrivateRoute';
 
 function App() {
   return (
     <ConfigProvider theme={customTheme}>
       <BrowserRouter>
         <AuthProvider>
-          <AppRouter />
+          <ShopProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<MainLayout />}>
+                <Route path="/home" element={<Home />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
+            </Routes>
+          </ShopProvider>
         </AuthProvider>
       </BrowserRouter>
     </ConfigProvider>

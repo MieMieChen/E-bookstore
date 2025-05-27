@@ -38,4 +38,12 @@ public class UserDaoImpl implements UserDao {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

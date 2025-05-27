@@ -45,4 +45,8 @@ public class OrderDaoImpl implements OrderDao {
     public List<Order> findByUserOrderByCreatedAtDesc(User user) {
         return orderRepository.findByUserOrderByCreatedAtDesc(user);
     }
+    @Override
+    public void deleteById(Long id) {
+        orderRepository.deleteById(id);
+    }
 }

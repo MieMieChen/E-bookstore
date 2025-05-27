@@ -62,15 +62,41 @@ export async function del(url, data) {
 }
 
 export async function post(url, data) {
-    let opts = {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        let responseData;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            responseData = await response.json();
+        } else {
+            const text = await response.text();
+            responseData = { message: text };
         }
-    };
-    const res = await fetchWithAuth(url, opts);
-    return processResponse(res);
+
+        return {
+            ok: response.ok,
+            status: response.status,
+            message: responseData.message || '操作失败',
+            data: responseData.data || responseData
+        };
+    } catch (error) {
+        console.error('POST request failed:', error);
+        return {
+            ok: false,
+            status: 500,
+            message: '请求失败，请稍后重试',
+            data: null
+        };
+    }
 }
 
 // export const BASEURL = process.env.REACT_APP_BASE_URL ?? 'http://localhost:8080';

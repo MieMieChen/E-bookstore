@@ -27,6 +27,7 @@ export function MainLayout() {
       try {
         const me = await getMe();
         if (!me) {
+          console.log("请先登录！");
           messageApi.error("请先登录！", 0.6)
             .then(() => navigate("/login", { state: { from: location.pathname } }));
         }

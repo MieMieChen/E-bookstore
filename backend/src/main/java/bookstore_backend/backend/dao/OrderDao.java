@@ -9,6 +9,7 @@ public interface OrderDao {
     List<Order> findAll();
     Order save(Order order);
     Optional<Order> findById(Long id);
+    void deleteById(Long id);
     List<Order> findByUser(User user);
     List<Order> findByUserOrderByOrderTimeDesc(User user);
     List<Order> findByUserOrderByCreatedAtDesc(User user);

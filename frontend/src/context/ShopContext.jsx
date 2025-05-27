@@ -16,7 +16,7 @@ import { useAuth } from './AuthContext';
 
 const ShopContext = createContext(); //创建了一个上下文对象 ShopContext，用于在组件树中共享购物车的状态和方法。
 
-export default function ShopProvider({ children }) {
+export function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
   // const [userData, setUserData] = useState({

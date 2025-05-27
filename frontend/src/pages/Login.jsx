@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, Form, Input, Button, Typography, ConfigProvider } from 'antd';
 import { customTheme } from '../theme/themeConfigs';
 import '../css/global.css';
 import useMessage from "antd/es/message/useMessage";
 import { useAuth } from '../context/AuthContext';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export function Login() {
   const [error, setError] = useState('');
@@ -33,7 +33,7 @@ export function Login() {
       });
 
       const res = await login(username, password);
-
+      console.log("登录结果:", res);
       if (res.ok) {
         messageApi.success("登录成功！").then(() => {
           const from = location.state?.from || '/home';
@@ -41,12 +41,13 @@ export function Login() {
           navigate(from, { replace: true });
         });
       } else {
-        setError(res.message || '登录失败，请检查用户名和密码');
-        messageApi.error(res.message || '登录失败，请检查用户名和密码');
+        console.log("登录失败，请检查用户名和密码");
+        setError('登录失败，请检查用户名和密码');
+        messageApi.error('登录失败，请检查用户名和密码');
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError('登录过程中发生错误，请稍后重试');
+      setError('');
       messageApi.error('登录过程中发生错误，请稍后重试');
     }
   };
@@ -103,6 +104,20 @@ export function Login() {
             >
               登录
             </Button>
+
+            <div style={{ 
+              marginTop: 16, 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center' 
+            }}>
+              <Link to="/register" style={{ color: '#673ab7' }}>
+                新账号？前往注册
+              </Link>
+              <Link to="/forgot-password" style={{ color: '#673ab7' }}>
+                忘记密码？
+              </Link>
+            </div>
           </Form>
         </Card>
       </div>

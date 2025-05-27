@@ -1,7 +1,7 @@
 package bookstore_backend.backend.controller;
 
 import bookstore_backend.backend.entity.Order;
-import bookstore_backend.backend.entity.Order.OrderStatus;
+import bookstore_backend.backend.entity.OrderStatus;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.exception.OrderNotFoundException;
 import bookstore_backend.backend.exception.UserNotFoundException;

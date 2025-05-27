@@ -18,17 +18,17 @@ public class UserController {
 
     
     // 用户注册 
-    @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody Map<String, String> body) {
-        User user = userService.register(
-                body.get("username"),
-                body.get("email"),
-                body.get("password"),
-                body.get("address"),
-                body.get("phone")
-        );
-        return ResponseEntity.ok(user);
-    }
+    // @PostMapping("/register")
+    // public ResponseEntity<User> register(@RequestBody Map<String, String> body) {
+    //     User user = userService.register(
+    //             body.get("username"),
+    //             body.get("email"),
+    //             body.get("password"),
+    //             body.get("address"),
+    //             body.get("phone")
+    //     );
+    //     return ResponseEntity.ok(user);
+    // }
     // 获取用户信息（不含密码）
     @GetMapping("/{id}")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
     public ResponseEntity<User> getUser(@PathVariable Long id) {

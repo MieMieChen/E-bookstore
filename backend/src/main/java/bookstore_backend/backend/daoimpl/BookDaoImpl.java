@@ -39,4 +39,12 @@ public class BookDaoImpl implements BookDao {
     public List<Book> findByIsbnContaining(String isbn) {
         return bookRepository.findByIsbnContaining(isbn);
     }
+    @Override
+    public void deleteById(Long id) {
+        bookRepository.deleteById(id);
+    }
+    @Override
+    public Book save(Book book) {
+        return bookRepository.save(book);
+    }
 }

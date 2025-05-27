@@ -10,4 +10,6 @@ public interface BookDao {
     List<Book> findByTitleContainingIgnoreCase(String title);
     List<Book> findByAuthorContainingIgnoreCase(String author);
     List<Book> findByIsbnContaining(String isbn);
+    void deleteById(Long id);
+    Book save(Book book);
 }

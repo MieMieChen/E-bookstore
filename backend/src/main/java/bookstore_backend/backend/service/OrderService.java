@@ -1,10 +1,10 @@
 package bookstore_backend.backend.service;
 
 import java.util.List;
+import bookstore_backend.backend.entity.OrderStatus;
 
 import org.springframework.stereotype.Service;
 import bookstore_backend.backend.entity.Order;
-import bookstore_backend.backend.entity.Order.OrderStatus;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,4 +26,9 @@ public interface OrderService {
 
     public Order cancelOrder(Long orderId) throws OrderNotFoundException;
     public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException;
+    public Order getOrderById(Long orderId);
+    public List<Order> getAllOrders();
+    public void deleteOrder(Long orderId);
+    public Order updateOrder(Long orderId, Order order);
+    public Order updateOrderStatus(Long orderId, OrderStatus status);
 }

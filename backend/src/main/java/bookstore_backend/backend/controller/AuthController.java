@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.List;
 import jakarta.servlet.http.HttpSession;
 import bookstore_backend.backend.service.AuthService;
+import lombok.Data;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +26,9 @@ import bookstore_backend.backend.service.AuthService;
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/me")
     public ResponseEntity<Object> getCurrentUser(HttpSession session) {
@@ -40,4 +44,36 @@ public class AuthController {
     public ResponseEntity<Object> logout(HttpSession session) {
         return authService.logout(session);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            User user = userService.register(
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getAddress(),
+                request.getPhone()
+            );
+            Map<String, Object> response = new HashMap<>();
+            response.put("ok", true);
+            response.put("message", "注册成功");
+            response.put("data", user);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("ok", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+}
+
+@Data
+class RegisterRequest {
+    private String username;
+    private String email;
+    private String password;
+    private String address;
+    private String phone;
 }

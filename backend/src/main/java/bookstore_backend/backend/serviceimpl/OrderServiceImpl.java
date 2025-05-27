@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import bookstore_backend.backend.entity.Order;
-import bookstore_backend.backend.entity.Order.OrderStatus;
+import bookstore_backend.backend.entity.OrderStatus;
 import bookstore_backend.backend.dao.OrderDao;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.service.OrderService;
@@ -14,7 +14,6 @@ import bookstore_backend.backend.service.UserService;
 
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
-
 import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.exception.OrderNotFoundException;
 import bookstore_backend.backend.entity.OrderItem;
@@ -118,4 +117,27 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status);
         return orderDao.save(order);
     }
+    public Order getOrderById(Long orderId)
+    {
+        return orderDao.findById(orderId).get();
+    }
+    public List<Order> getAllOrders()
+    {
+        return orderDao.findAll();
+    }
+    public void deleteOrder(Long orderId)
+    {
+        orderDao.deleteById(orderId);
+    }
+    public Order updateOrder(Long orderId, Order order)
+    {
+        return orderDao.save(order);
+    }
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderDao.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
+        order.setStatus(status);
+        return orderDao.save(order);
+    }
+
 }

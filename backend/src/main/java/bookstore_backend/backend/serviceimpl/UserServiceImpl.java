@@ -15,13 +15,25 @@ import java.util.List;
 @Service  //springboot的注解，表示这是一个服务类 一个 Spring Bean 就是一个由 Spring IoC (Inversion of Control) 容器 实例化、组装和管理的 Java 对象
 public class UserServiceImpl implements UserService{
     @Autowired
-    public UserDao userDao;
+    private UserDao userDao;
 
     @Autowired
     private UserAuthDao userAuthDao;
 
     // 注册用户
+    @Override
     public User register(String username, String email, String password, String address, String phone) {
+        // 检查用户名是否已存在
+        if (userDao.findByUsername(username).isPresent()) {
+            throw new RuntimeException("用户名已存在");
+        }
+
+        // 检查邮箱是否已存在
+        if (userDao.findByEmail(email).isPresent()) {
+            throw new RuntimeException("邮箱已被使用");
+        }
+
+        // 创建新用户
         User user = User.builder()
                 .username(username)
                 .email(email)
@@ -29,12 +41,19 @@ public class UserServiceImpl implements UserService{
                 .phone(phone)
                 .type(0)  // 默认为普通用户
                 .build();
-        user = userDao.save(user); //将 User 对象持久化到数据库 save 方法会返回持久化后的对象，通常包含数据库生成的主键ID
+
+        // 保存用户基本信息
+        user = userDao.save(user);
+
+        // 创建用户认证信息
         UserAuth userAuth = UserAuth.builder()
                 .user(user)
                 .password(password)
                 .build();
-        userAuth = userAuthDao.save(userAuth);
+
+        // 保存认证信息
+        userAuthDao.save(userAuth);
+
         return user;
     }
 // Service 层的方法返回业务数据 (例如 Optional<User> 或 User 对象)。
@@ -56,5 +75,19 @@ public class UserServiceImpl implements UserService{
     }
     public List<User> listUsers() {
         return userDao.findAll();
+    }
+    public void deleteUser(Long id) {
+        userDao.deleteById(id);
+    }
+    public User createUser(User user) {
+        return userDao.save(user);
+    }
+    public User updateUser(Long id, User user) {
+        User existingUser = userDao.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        existingUser.setUsername(user.getUsername());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setAddress(user.getAddress());
+        existingUser.setPhone(user.getPhone());
+        return userDao.save(existingUser);
     }
 } 

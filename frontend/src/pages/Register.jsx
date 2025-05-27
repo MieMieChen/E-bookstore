@@ -1,41 +1,39 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Card, Form, Input, Button, Typography, Space, message } from 'antd';
-import { register } from '../services/auth';
+import { Card, Form, Input, Button, Typography, ConfigProvider, message } from 'antd';
 import { customTheme } from '../theme/themeConfigs';
-import { ConfigProvider } from 'antd';
+import { useAuth } from '../context/AuthContext';
+
 const { Title } = Typography;
 
 export function Register() {
     const navigate = useNavigate();
-    const [form] = Form.useForm();
+    const { register } = useAuth();
 
     const onSubmit = async (values) => {
         try {
-            // 验证两次密码是否一致
             if (values.password !== values.confirmPassword) {
                 message.error('两次输入的密码不一致！');
                 return;
             }
 
-            // 构造注册数据
-            const userData = {
-                username: values.username,
-                password: values.password,
-                email: values.email
-            };
+            const result = await register(
+                values.username,
+                values.email,
+                values.password,
+                values.address,
+                values.phone
+            );
 
-            const result = await register(userData);
-            
             if (result.ok) {
-                message.success(result.message).then(() => {
-                    navigate('/login');  // 注册成功后跳转到登录页
-                });
+                message.success('注册成功！');
+                navigate('/login');
             } else {
-                message.error(result.message);
+                message.error(result.message || '注册失败，请重试');
             }
         } catch (error) {
-            message.error('注册过程中发生错误，请稍后重试');
+            console.error('Registration error:', error);
+            message.error('注册过程中发生错误，请重试');
         }
     };
 
@@ -60,45 +58,45 @@ export function Register() {
                     borderRadius: 8
                 }}>
                     <Title level={2} style={{ textAlign: 'center', marginBottom: 24, color: '#673ab7' }}>
-                        注册账号
+                        用户注册
                     </Title>
                     
-                    <Form
-                        form={form}
-                        onFinish={onSubmit}
-                        layout="vertical"
-                    >
+                    <Form onFinish={onSubmit} layout="vertical">
                         <Form.Item
+                            label="用户名"
                             name="username"
                             rules={[
                                 { required: true, message: '请输入用户名' },
                                 { min: 3, message: '用户名至少3个字符' }
                             ]}
                         >
-                            <Input placeholder="用户名" />
+                            <Input />
                         </Form.Item>
-                        
+
                         <Form.Item
+                            label="邮箱"
                             name="email"
                             rules={[
                                 { required: true, message: '请输入邮箱' },
                                 { type: 'email', message: '请输入有效的邮箱地址' }
                             ]}
                         >
-                            <Input placeholder="邮箱" />
+                            <Input />
                         </Form.Item>
-                        
+
                         <Form.Item
+                            label="密码"
                             name="password"
                             rules={[
                                 { required: true, message: '请输入密码' },
                                 { min: 6, message: '密码至少6个字符' }
                             ]}
                         >
-                            <Input.Password placeholder="密码" />
+                            <Input.Password />
                         </Form.Item>
-                        
+
                         <Form.Item
+                            label="确认密码"
                             name="confirmPassword"
                             rules={[
                                 { required: true, message: '请确认密码' },
@@ -112,22 +110,39 @@ export function Register() {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="确认密码" />
-                        </Form.Item>
-                        
-                        <Form.Item>
-                            <Button 
-                                type="primary" 
-                                htmlType="submit" 
-                                block
-                                style={{ height: 40, fontSize: 16 }}
-                            >
-                                注册
-                            </Button>
+                            <Input.Password />
                         </Form.Item>
 
-                        <div style={{ textAlign: 'center' }}>
-                            已有账号？ <Link to="/login">立即登录</Link>
+                        <Form.Item
+                            label="地址"
+                            name="address"
+                        >
+                            <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="电话"
+                            name="phone"
+                            rules={[
+                                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码' }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+
+                        <Button 
+                            type="primary" 
+                            htmlType="submit" 
+                            block
+                            style={{ height: 40, fontSize: 16 }}
+                        >
+                            注册
+                        </Button>
+
+                        <div style={{ marginTop: 16, textAlign: 'center' }}>
+                            <Link to="/login" style={{ color: '#673ab7' }}>
+                                已有账号？返回登录
+                            </Link>
                         </div>
                     </Form>
                 </Card>

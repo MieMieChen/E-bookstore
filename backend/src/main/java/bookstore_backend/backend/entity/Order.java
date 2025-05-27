@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.List;
+import bookstore_backend.backend.entity.OrderStatus;
 // import lombok.Builder;
 
 // @Builder
@@ -33,7 +34,7 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.PENDING; // 默认为待付款状态
 
     @ToString.Exclude
     @JsonManagedReference
@@ -63,13 +64,5 @@ public class Order {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public enum OrderStatus {
-        PENDING,
-        PAID,
-        SHIPPED,
-        DELIVERED,
-        CANCELLED
     }
 } 
