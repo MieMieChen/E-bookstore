@@ -18,6 +18,7 @@ public class UserDTO implements Serializable {
     private String email;
     private String address;
     private String phone;
+    private Integer type;  // 添加用户类型字段
     // 不包含 password 字段
 
     // 1. 无参构造函数 (通常需要)
@@ -25,12 +26,13 @@ public class UserDTO implements Serializable {
     }
 
     // 2. 带所有参数的构造函数 (方便创建)
-    public UserDTO(Long id, String username, String email, String address, String phone) {
+    public UserDTO(Long id, String username, String email, String address, String phone, Integer type) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.address = address;
         this.phone = phone;
+        this.type = type;
     }
 
    
@@ -43,6 +45,7 @@ public class UserDTO implements Serializable {
                ", email='" + email + '\'' +
                ", address='" + address + '\'' +
                ", phone='" + phone + '\'' +
+               ", type=" + type +
                '}';
     }
 }

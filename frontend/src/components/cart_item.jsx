@@ -35,7 +35,7 @@ export default function CartItem({
     console.log(createOrder);
     
     // 获取认证上下文
-    const { getUser } = useAuth();
+    const { getUser,currentUser } = useAuth();
 
     const columns = [
         {
@@ -136,7 +136,7 @@ export default function CartItem({
             console.log('订单创建成功:', order);
             
             // 2. 确保数据库购物车被清空（以防后端逻辑未清空）
-            const user = getUser();
+            const user = await getUser(currentUser.id);
             console.log('当前用户:', user);
             
             // 使用fetch API直接发送删除请求

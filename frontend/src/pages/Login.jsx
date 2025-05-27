@@ -14,27 +14,42 @@ function Login() {
 
   const [error, setError] = useState('');
   const [messageApi, contextHolder] = useMessage();
-  const {login,getUser} = useAuth();
+  const {login, getUser} = useAuth();
   const navigate = useNavigate();
-    const onSubmit = async (values) => {
-      let username = values['username'];
-      let password = values['password'];
-        let res = await login(username, password);
-        console.log("res.ok", res.ok);
-        if (res.ok) {
-          console.log("登录成功", res.data);
-          console.log("res.data.id", res.data.id);
-          // changeUserData ({username: res.data.username, userid: res.data.id,address: res.data.address, phone: res.data.phone, email: res.data.email});
-          const userData = await getUser();
-          navigate('/home', { replace: true });
-        }
-        else
-        {
-           messageApi.error("无权访问当前页面，请先登录！", 0.6)
-                    .then(() => navigate("/login"));
-        }
-    };
 
+  const onSubmit = async (values) => {
+    try {
+      setError(''); // 清除之前的错误
+      const username = values.username?.trim();
+      const password = values.password;
+      
+      if (!username || !password) {
+        setError('用户名和密码不能为空');
+        return;
+      }
+
+      console.log('Attempting login with username:', username);
+      const res = await login(username, password);
+      console.log("Login response:", res);
+
+      if (res.ok) {
+        console.log("Login successful, user data:", res.data);
+        const userData = await getUser();
+        console.log("Retrieved user data:", userData);
+        messageApi.success("登录成功！").then(() => {
+          navigate('/home', { replace: true });
+        });
+      } else {
+        console.log("Login failed:", res.message);
+        setError(res.message || '登录失败，请检查用户名和密码');
+        messageApi.error(res.message || '登录失败，请检查用户名和密码');
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError('登录过程中发生错误，请稍后重试');
+      messageApi.error('登录过程中发生错误，请稍后重试');
+    }
+  };
 
   return (
     <ConfigProvider theme={customTheme}>
@@ -49,6 +64,7 @@ function Login() {
         backgroundPosition: 'center',
         backgroundBlendMode: 'overlay'
       }}>
+        {contextHolder}
         <Card style={{
           width: 400,
           padding: 24,
@@ -65,20 +81,18 @@ function Login() {
               <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>
             )}
             
-            <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
-              <Input 
-                placeholder="用户名" 
-                // value={userData.username}
-                // onChange={(e) => setUsername(e.target.value)}
-              />
+            <Form.Item 
+              name="username" 
+              rules={[{ required: true, message: '请输入用户名' }]}
+            >
+              <Input placeholder="用户名" />
             </Form.Item>
             
-            <Form.Item name="password" rules={[{ required: true, message: '请输入密码' }]}>
-              <Input.Password 
-                placeholder="密码"
-                // value={userData.password}
-                // onChange={(e) => setPassword(e.target.value)}
-              />
+            <Form.Item 
+              name="password" 
+              rules={[{ required: true, message: '请输入密码' }]}
+            >
+              <Input.Password placeholder="密码" />
             </Form.Item>
             
             <Button 

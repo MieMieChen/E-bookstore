@@ -14,7 +14,9 @@ export async function register(user) {
 
 // 获取用户信息
 export async function getUserInfo(userId) {
-  const res = await fetch(`${PREFIX}/users/${userId}`);
+  const res = await fetch(`${PREFIX}/users/${userId}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取用户信息失败');
   return await res.json();
 }
@@ -33,28 +35,36 @@ export async function updateUserInfo(userId, userData) {
 
 // 获取所有图书
 export async function getBooks() {
-  const res = await fetch(`${PREFIX}/books`);
+  const res = await fetch(`${PREFIX}/books`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取图书失败');
   return await res.json();
 }
 
 // 获取图书详情
 export async function getBookById(id) {
-  const res = await fetch(`${PREFIX}/books/${id}`);
+  const res = await fetch(`${PREFIX}/books/${id}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取图书详情失败');
   return await res.json();
 }
 
 // 获取热门图书
 export async function getHotBooks() {
-  const res = await fetch(`${PREFIX}/books/hot`);
+  const res = await fetch(`${PREFIX}/books/hot`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取热门图书失败');
   return await res.json();
 }
 
 // 获取新书
 export async function getNewBooks() {
-  const res = await fetch(`${PREFIX}/books/new`);
+  const res = await fetch(`${PREFIX}/books/new`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取新书失败');
   return await res.json();
 }
@@ -64,14 +74,18 @@ export async function searchBooks(searchType, query) {
   const params = new URLSearchParams();
   params.append('keyword', query);
   params.append('type', searchType);
-  const res = await fetch(`${PREFIX}/books/search?${params.toString()}`);
+  const res = await fetch(`${PREFIX}/books/search?${params.toString()}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('搜索图书失败');
   return await res.json();
 }
 
 // 获取购物车
 export async function getCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/${userId}`);
+  const res = await fetch(`${PREFIX}/cart/${userId}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取购物车失败');
   return await res.json();
 }
@@ -81,7 +95,8 @@ export async function addToCart(cartItem) {
   const res = await fetch(`${PREFIX}/cart`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(cartItem)
+    body: JSON.stringify(cartItem),
+    credentials:'include'
   });
   if (!res.ok) throw new Error('加入购物车失败');
   return await res.json();
@@ -92,7 +107,8 @@ export async function updateCartQuantity(cartId, quantity) {
   const res = await fetch(`${PREFIX}/cart/${cartId}/quantity`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ quantity })
+    body: JSON.stringify({ quantity }),
+    credentials:'include'
   });
   if (!res.ok) throw new Error('更新购物车数量失败');
   return await res.json();
@@ -112,14 +128,18 @@ export async function clearUserCart(userId) {
 
 // 获取用户订单列表
 export async function getOrders(userId) {
-  const res = await fetch(`${PREFIX}/orders/${userId}`);
+  const res = await fetch(`${PREFIX}/orders/${userId}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
 
 // 获取订单详情
 export async function getOrderDetail(orderId) {
-  const res = await fetch(`${PREFIX}/orders/detail/${orderId}`);
+  const res = await fetch(`${PREFIX}/orders/detail/${orderId}`, {
+    credentials:'include'
+  });
   if (!res.ok) throw new Error('获取订单详情失败');
   return await res.json();
 }

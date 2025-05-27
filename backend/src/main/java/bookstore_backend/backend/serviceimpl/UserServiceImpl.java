@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService{
                 .email(email)
                 .address(address)
                 .phone(phone)
+                .type(0)  // 默认为普通用户
                 .build();
         user = userDao.save(user); //将 User 对象持久化到数据库 save 方法会返回持久化后的对象，通常包含数据库生成的主键ID
         UserAuth userAuth = UserAuth.builder()

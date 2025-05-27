@@ -8,27 +8,33 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import bookstore_backend.backend.entity.User;
 
 @Service
-public class  CustomUserDetailsService implements UserDetailsService {
-
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserDao userDao;
-    
+
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userDao.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-       //  User userInfo = userDao.findByUsername(username).orElse(null);
-        // if(userInfo == null) {
-        //     throw new UsernameNotFoundException("not found");
-        // }
-        // //定义权限列表.
-        // List<GrantedAuthority> authorities = new ArrayList<>();
-        // // 用户可以访问的资源名称（或者说用户所拥有的权限） 注意：必须"ROLE_"开头
-        // authorities.add(new SimpleGrantedAuthority("ROLE_"+ userInfo.getRole()));
-        // User userDetails = new User(userInfo.getUserName(),passwordEncoder.encode(userInfo.getPassword()),authorities);
-        // return userDetails;
+        User user = userDao.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        
+        // 确保UserAuth被加载
+        if (user.getUserAuth() == null) {
+            throw new UsernameNotFoundException("User authentication details not found for user: " + username);
+        }
+        
+        // 打印调试信息
+        System.out.println("=== Debug: Loading User Details ===");
+        System.out.println("Username: " + user.getUsername());
+        System.out.println("Password: " + (user.getPassword() != null ? "[PROTECTED]" : "null"));
+        System.out.println("Authorities: " + user.getAuthorities());
+        System.out.println("==============================");
+        
+        return user;
     }
 } 

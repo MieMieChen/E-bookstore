@@ -122,7 +122,7 @@ export default function ShopProvider({ children }) {
 
     // 然后尝试调用后端API（不影响用户体验）
     try {
-      const user = getUser();
+      const user = await getUser(currentUser.id);
       const cartItem = {
         user: { id: user.id }, // 从当前登录用户获取ID
         book: { id: book.id },
@@ -146,7 +146,7 @@ export default function ShopProvider({ children }) {
     
     // 然后尝试调用后端API
     try {
-      const user = getUser();
+      const user = await getUser(currentUser.id);
       // 注意：这里需要传递购物车项的数据库ID，而不是书籍ID
       // 由于我们没有在前端存储购物车项的数据库ID，需要先通过API获取
       const userCartItems = await getCart(user.id);
@@ -205,7 +205,7 @@ export default function ShopProvider({ children }) {
 
   const createOrder = async (items, total) => {
     try {
-      const user = getUser();
+      const user = await getUser(currentUser.id);
       
       // 确保items是有效数组且包含必要字段
       if (!Array.isArray(items) || items.length === 0) {
