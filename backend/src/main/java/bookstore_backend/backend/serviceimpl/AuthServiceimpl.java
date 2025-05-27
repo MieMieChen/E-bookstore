@@ -86,9 +86,8 @@ public class AuthServiceimpl  implements AuthService {
             response.put("message", "Login successful");
             response.put("ok", true);
             
-            return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, createAuthCookie(user))
-                .body(response);
+            // 8. 直接返回响应，不再设置额外的 Cookie
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             System.out.println("=== Authentication Failed ===");
             System.out.println("Username: " + username);
@@ -107,33 +106,6 @@ public class AuthServiceimpl  implements AuthService {
                 Collections.singletonMap("message", "Invalid username or password"),
                 HttpStatus.UNAUTHORIZED
             );
-        }
-    }
-
-    private String createAuthCookie(User user) {
-        try {
-            String userJson = new ObjectMapper().writeValueAsString(user);
-            String encodedUser = java.util.Base64.getEncoder().encodeToString(userJson.getBytes());
-            
-            ResponseCookie cookie = ResponseCookie.from("currentUser", encodedUser)
-                .httpOnly(false) // Allow JavaScript access
-                .secure(false) // Set to true in production with HTTPS
-                .path("/")
-                .sameSite("Strict")
-                .build();
-            return cookie.toString();
-        } catch (JsonProcessingException e) {
-            // If we can't serialize the user object, return a minimal cookie with just the user ID
-            String minimalJson = String.format("{\"id\":%d}", user.getId());
-            String encodedMinimal = java.util.Base64.getEncoder().encodeToString(minimalJson.getBytes());
-            
-            ResponseCookie cookie = ResponseCookie.from("currentUser", encodedMinimal)
-                .httpOnly(false)
-                .secure(false)
-                .path("/")
-                .sameSite("Strict")
-                .build();
-            return cookie.toString();
         }
     }
 

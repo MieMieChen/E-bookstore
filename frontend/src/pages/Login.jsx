@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, Button, Typography, message, ConfigProvider } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Card, Form, Input, Button, Typography, ConfigProvider } from 'antd';
 import { customTheme } from '../theme/themeConfigs';
 import '../css/global.css';
 import useMessage from "antd/es/message/useMessage";
-import { useAuth} from '../context/AuthContext';
-import { useShop } from '../context/ShopContext';
-// import {login} from '../services/login';
+import { useAuth } from '../context/AuthContext';
+
 const { Title } = Typography;
 
 export function Login() {
-  // const {userData,  changeUserData } = useShop();
-
   const [error, setError] = useState('');
   const [messageApi, contextHolder] = useMessage();
-  const {login, getUser} = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onSubmit = async (values) => {
     try {
-      setError(''); // 清除之前的错误
+      setError('');
       const username = values.username?.trim();
       const password = values.password;
       
@@ -28,19 +26,21 @@ export function Login() {
         return;
       }
 
-      console.log('Attempting login with username:', username);
+      console.log('当前location状态:', {
+        pathname: location.pathname,
+        state: location.state,
+        from: location.state?.from
+      });
+
       const res = await login(username, password);
-      console.log("Login response:", res);
 
       if (res.ok) {
-        console.log("Login successful, user data:", res.data);
-        const userData = await getUser();
-        console.log("Retrieved user data:", userData);
         messageApi.success("登录成功！").then(() => {
-          navigate('/home', { replace: true });
+          const from = location.state?.from || '/home';
+          console.log('登录成功，即将重定向到:', from);
+          navigate(from, { replace: true });
         });
       } else {
-        console.log("Login failed:", res.message);
         setError(res.message || '登录失败，请检查用户名和密码');
         messageApi.error(res.message || '登录失败，请检查用户名和密码');
       }

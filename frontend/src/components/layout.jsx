@@ -20,7 +20,29 @@ export function MainLayout() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = useMessage();
-  const { currentUser, getUser, updateUser, isAuthenticated, getMe } = useAuth();
+  const { currentUser, getMe, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const me = await getMe();
+        if (!me) {
+          messageApi.error("请先登录！", 0.6)
+            .then(() => navigate("/login", { state: { from: location.pathname } }));
+        }
+      } catch (error) {
+        console.error("验证用户失败:", error);
+        messageApi.error("验证用户信息失败，请重新登录！", 0.6)
+          .then(() => navigate("/login", { state: { from: location.pathname } })); //
+      }
+    };
+    checkLogin();
+  }, [location.pathname]); // 当路径变化时重新检查
+
+  // 如果未认证，直接重定向到登录页
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />; //通过 state 属性将这个路径传递给登录页面 replace 表示替换当前历史记录，而不是添加新记录
+  }
 
   // 菜单项配置
   const menuItems = [
@@ -46,33 +68,6 @@ export function MainLayout() {
     },
   ];
 
-  useEffect(() => {
-    const checkLogin = async () => {
-      if (!isAuthenticated) {
-        return;
-      }
-      try {
-        const me = await getMe();
-        if (!me) {
-          messageApi.error("登录已过期，请重新登录！", 0.6)
-            .then(() => navigate("/login"));
-        } else {
-          updateUser(me);
-        }
-      } catch (error) {
-        console.error("验证用户失败:", error);
-        messageApi.error("验证用户信息失败，请重新登录！", 0.6)
-          .then(() => navigate("/login"));
-      }
-    };
-    checkLogin();
-  }, [isAuthenticated]); // 只在认证状态变化时检查
-
-  // 如果未认证，直接重定向到登录页
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
   return (
     <Layout style={{ width: '100%', minHeight: '100vh' }}>   
       {contextHolder}
@@ -94,7 +89,7 @@ export function MainLayout() {
             marginBottom: 10
           }}>
             <Avatar size={80} icon={<UserOutlined />} />
-            <Title level={6} style={{ marginTop: 12, marginBottom: 4 }}>
+            <Title level={4} style={{ marginTop: 12, marginBottom: 4 }}>
               欢迎 {currentUser?.username}
             </Title>
             <Text type="secondary">书城会员</Text>

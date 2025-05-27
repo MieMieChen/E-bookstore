@@ -66,7 +66,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow all OPTIONS requests
-                .requestMatchers("/api/auth/login", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
+                .requestMatchers("/api/auth/login", "/api/auth/me", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
                 .requestMatchers("/api/auth/register").permitAll() // Allow registration
                 .requestMatchers("/api/auth/checkLogin").permitAll() // Allow checking login status
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
