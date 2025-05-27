@@ -1,5 +1,5 @@
 const API_BASE = 'http://localhost:8080/api';
-
+import  {post} from './common';
 // 登录
 export async function login(username, password) {
   let result;
@@ -13,16 +13,8 @@ export async function login(username, password) {
     }
 
     console.log('Sending login request:', { username, password: '***' });
-    
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ username, password }),
-      credentials: 'include'
-    });
+    const url = `${API_BASE}/auth/login`;
+    const response = await post(url, { username, password });
     
     console.log('Login response status:', response.status);
     

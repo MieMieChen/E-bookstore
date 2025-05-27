@@ -1,20 +1,13 @@
-import { PREFIX } from "./common";
+import { PREFIX,get,put } from "./common";
 export async function getUserInfo(userId) {
-  const res = await fetch(`${PREFIX}/users/${userId}`,
-    {
-      credentials:'include'
-    }
-  );
+  const url = `${PREFIX}/users/${userId}`;
+  const res = await get(url);
   if (!res.ok) throw new Error('获取用户信息失败');
   return await res.json();
 }
 export async function updateUserInfo(userId, userData) {
-  const res = await fetch(`${PREFIX}/users/${userId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-    credentials:'include'
-  });
+  const url = `${PREFIX}/users/${userId}`;
+  const res = await put(url, userData);
   if (!res.ok) throw new Error('更新用户信息失败');
   return await res.json();
 }

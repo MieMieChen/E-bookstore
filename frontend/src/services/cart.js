@@ -1,53 +1,38 @@
-import { PREFIX } from "./common";
+import { PREFIX,get,post,del,put } from "./common";
 export async function getCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/${userId}`,
-    {
-          credentials:'include'
-    }
-  );
+  const url = `${PREFIX}/cart/${userId}`;
+  const res = await get(url);
   if (!res.ok) throw new Error('获取购物车失败');
   return await res.json();
 }
 
 // 加入购物车
 export async function addToCart(cartItem) {
-  const res = await fetch(`${PREFIX}/cart`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(cartItem),
-    credentials:'include'
-  });
+  const url = `${PREFIX}/cart`;
+  const res = await post(url, cartItem);
+  // 注意：这里的 res 是一个 Response 对象，包含了状态码、头信息等
   if (!res.ok) throw new Error('加入购物车失败');
   return await res.json();
 }
 
 // 更新购物车数量
 export async function updateCartQuantity(cartId, quantity) {
-  const res = await fetch(`${PREFIX}/cart/${cartId}/quantity`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ quantity }),
-    credentials:'include'
-  });
+  const url = `${PREFIX}/cart/${cartId}/quantity`;
+  const res = await put(url, { quantity });
   if (!res.ok) throw new Error('更新购物车数量失败');
   return await res.json();
 }
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const res = await fetch(`${PREFIX}/cart/${cartId}`, 
-    { 
-      method: 'DELETE',
-      credentials:'include'
-    });
+  const url = `${PREFIX}/cart/${cartId}`;
+  const res = del(url);
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
 // 清空用户的所有购物车项
 export async function clearUserCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { 
-    method: 'DELETE',
-    credentials:'include' 
-  });
+  const url = `${PREFIX}/cart/user/${userId}`;
+  const res = del(url);
   if (!res.ok) throw new Error('清空购物车失败');
 }
