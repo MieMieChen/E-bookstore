@@ -10,10 +10,11 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(false);
   
   // 获取认证上下文
-  const { currentUser, getUser, refreshUserInfo, updateUser } = useAuth();
+  const { currentUser, getMe, refreshUserInfo, updateUser } = useAuth();
   
   // 获取用户数据
-  const user = currentUser || getUser();
+  const user = currentUser || getMe();
+  console.log("user",user);
   
   // 临时存储编辑中的数据
   const [tempData, setTempData] = useState({

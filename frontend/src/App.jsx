@@ -12,7 +12,6 @@ import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
 import { Orders } from './pages/Orders';
 import { Profile } from './pages/Profile';
-import { PrivateRoute } from './components/PrivateRoute';
 
 function App() {
   return (

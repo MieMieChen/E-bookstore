@@ -76,7 +76,9 @@ public class AuthServiceimpl  implements AuthService {
             session.setAttribute("userId", user.getId());
             session.setAttribute("userType", user.getType());
             session.setAttribute("authorities", authentication.getAuthorities());
-            
+            session.setAttribute("phone", user.getPhone());
+            session.setAttribute("address", user.getAddress());
+            session.setAttribute("email", user.getEmail());
             // 7. 创建响应对象
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.getId());
@@ -85,6 +87,9 @@ public class AuthServiceimpl  implements AuthService {
             response.put("type", user.getType());
             response.put("message", "Login successful");
             response.put("ok", true);
+            response.put("phone", user.getPhone());
+            response.put("address", user.getAddress());
+            response.put("email", user.getEmail());
             
             // 8. 直接返回响应，不再设置额外的 Cookie
             return ResponseEntity.ok(response);
