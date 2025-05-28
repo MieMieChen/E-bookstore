@@ -89,6 +89,11 @@ export function MainLayout() {
       icon: <UserOutlined />,
       label: <Link to="/profile">个人信息</Link>,
     },
+    {
+      key:'/stats',
+      icon: <BarChartOutlined />,
+      label: <Link to="/admin/stats">统计分析</Link>,
+    },
   ];
   // currentUser.type = 1;
   console.log ("当前用户信息:", currentUser.type);

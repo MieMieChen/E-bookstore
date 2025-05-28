@@ -13,4 +13,5 @@ public interface OrderDao {
     List<Order> findByUser(User user);
     List<Order> findByUserOrderByOrderTimeDesc(User user);
     List<Order> findByUserOrderByCreatedAtDesc(User user);
+    List<Order> findByOrderTimeBetweenAndBookTitle(String startTime,String endTime,String bookTitle);
 }

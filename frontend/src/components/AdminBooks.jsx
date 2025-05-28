@@ -39,38 +39,6 @@ export function AdminBooks() {
     }
   };
 
-  // 需要实现的新API接口（在 services/book.js 中添加）：
-  /*
-  // 1. 添加新图书
-  export async function addBook(bookData) {
-    return fetch(`${PREFIX}/admin/books`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookData)
-    }).then(handleResponse);
-  }
-
-  // 2. 更新图书信息
-  export async function updateBook(bookId, bookData) {
-    return fetch(`${PREFIX}/admin/books/${bookId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookData)
-    }).then(handleResponse);
-  }
-
-  // 3. 删除图书
-  export async function deleteBook(bookId) {
-    return fetch(`${PREFIX}/admin/books/${bookId}`, {
-      method: 'DELETE',
-    }).then(handleResponse);
-  }
-  */
-
   const handleAdd = () => {
     setEditingBook(null);
     form.resetFields();

@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Integer type = 0;  // 0: 普通用户, 1: 管理员
 
+    @Column(nullable = false)
+    private Integer valid = 0; //0:没有被禁用的用户，1：被禁用的用户
+
     @ToString.Exclude
     @JsonIgnore //避免在序列化时出现循环引用
     //mappedBy 用在关系的非所有者一方（也就是数据库中没有外键的那个实体类里）

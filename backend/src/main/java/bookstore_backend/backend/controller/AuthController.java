@@ -35,12 +35,12 @@ public class AuthController {
         return authService.getCurrentUser(session);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody Map<String, String> credentials, HttpSession session) {
        return authService.login(credentials, session);
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ResponseEntity<Object> logout(HttpSession session) {
         return authService.logout(session);
     }

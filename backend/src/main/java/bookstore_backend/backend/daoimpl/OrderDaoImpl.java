@@ -49,4 +49,9 @@ public class OrderDaoImpl implements OrderDao {
     public void deleteById(Long id) {
         orderRepository.deleteById(id);
     }
+    @Override
+    public List<Order> findByOrderTimeBetweenAndBookTitle(String startTime,String endTime,String bookTitle)
+    {
+        return orderRepository.findByOrderTimeBetweenAndBookTitle(startTime,endTime,bookTitle);
+    }
 }

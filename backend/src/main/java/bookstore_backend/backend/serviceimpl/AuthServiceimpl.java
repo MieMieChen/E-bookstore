@@ -28,11 +28,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import java.time.Duration;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 public class AuthServiceimpl  implements AuthService {
@@ -79,6 +74,7 @@ public class AuthServiceimpl  implements AuthService {
             session.setAttribute("phone", user.getPhone());
             session.setAttribute("address", user.getAddress());
             session.setAttribute("email", user.getEmail());
+            session.setAttribute("valid", user.getValid());
             // 7. 创建响应对象
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.getId());
@@ -90,6 +86,7 @@ public class AuthServiceimpl  implements AuthService {
             response.put("phone", user.getPhone());
             response.put("address", user.getAddress());
             response.put("email", user.getEmail());
+            response.put("valid", user.getValid());
             
             // 8. 直接返回响应，不再设置额外的 Cookie
             return ResponseEntity.ok(response);

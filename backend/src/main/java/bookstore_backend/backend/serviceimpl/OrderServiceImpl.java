@@ -139,5 +139,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status);
         return orderDao.save(order);
     }
-
+    public List<Order> searchOrders(String startTime, String endTime, String bookTitle) {
+        return orderDao.findByOrderTimeBetweenAndBookTitle(startTime, endTime, bookTitle);
+    }
 }

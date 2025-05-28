@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService{
                 .address(address)
                 .phone(phone)
                 .type(0)  // 默认为普通用户
+                .valid(0) // 默认为未禁用用户
                 .build();
 
         // 保存用户基本信息

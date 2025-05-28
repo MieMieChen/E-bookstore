@@ -216,4 +216,20 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/orders/search")
+    public ResponseEntity<List<Order>> searchOrders(
+    @RequestParam(required = false) String startTime,
+    @RequestParam(required = false) String endTime,
+    @RequestParam(required = false) String bookTitle
+ )
+ {
+    try {
+        List<Order> orders = orderService.searchOrders(startTime, endTime, bookTitle);
+        return ResponseEntity.ok(orders);
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().build();
+    }
+ }
+    
+
 }

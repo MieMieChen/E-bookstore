@@ -31,4 +31,6 @@ public interface OrderService {
     public void deleteOrder(Long orderId);
     public Order updateOrder(Long orderId, Order order);
     public Order updateOrderStatus(Long orderId, OrderStatus status);
+    public List<Order> searchOrders(String startTime, String endTime, String bookTitle);
+    
 }

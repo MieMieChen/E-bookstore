@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Typography, Divider, Empty, Spin, Button, message, Card, Statistic, Row, Col, Tag } from 'antd';
+import { Typography, Divider, Empty, Spin, Button, message, Card, Statistic, Row, Col, Tag ,Space,Select,Input, DatePicker} from 'antd';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import OrderTable from '../components/order_table';
 import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/icons';
 import useMessage from "antd/es/message/useMessage";
+import { SearchOutlined } from '@ant-design/icons';
+import {searchOrders} from '../services/order';
 // import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
+
+const { RangePicker } = DatePicker;
 
 const { Title, Text } = Typography;
 
@@ -20,6 +24,8 @@ export function Orders() {
   const [userC, setUserC] = useState(null);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = useMessage();
+  const [timeRange, setTimeRange] = useState(null);
+  const [bookTitle, setBookTitle] = useState('');
   // const {userData} = useShop();
 
   useEffect(() => {
@@ -147,6 +153,33 @@ export function Orders() {
     });
   }, [orders]);
 
+  const handleTimeRangeChange = (dates) => {
+    setTimeRange(dates);
+  };
+
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      // 构建搜索参数
+      const params = {};
+      if (timeRange && timeRange[0] && timeRange[1]) {
+        params.startTime = timeRange[0].format('YYYY-MM-DD HH:mm:ss');
+        params.endTime = timeRange[1].format('YYYY-MM-DD HH:mm:ss');
+      }
+      if (bookTitle) {
+        params.bookTitle = bookTitle;
+      }
+      
+      // 调用搜索API
+      const result = await searchOrders(params);
+      setOrders(result);
+    } catch (error) {
+      message.error('搜索失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <Card 
@@ -203,6 +236,30 @@ export function Orders() {
           </>
         )}
       </Card>
+
+      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+        <Space>
+          <RangePicker 
+            style={{ width: 300 }}
+            onChange={handleTimeRangeChange}
+            placeholder={['开始时间', '结束时间']}
+          />
+          <Input
+            placeholder="请输入书籍名称"
+            allowClear
+            style={{ width: 200 }}
+            onChange={(e) => setBookTitle(e.target.value)}
+          />
+          <Button 
+            type="primary" 
+            icon={<SearchOutlined />}
+            onClick={handleSearch}
+            loading={loading}
+          >
+            搜索
+          </Button>
+        </Space>
+      </Space>
 
       <Title level={2}>
         <ShoppingOutlined style={{ marginRight: 10 }} />

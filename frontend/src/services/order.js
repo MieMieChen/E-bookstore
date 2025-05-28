@@ -59,3 +59,8 @@ export async function getOrderStatus(orderId) {
   const res = await get(url);
   return await res.json();
 }
+export async function searchOrders(query) {
+  const url = `${PREFIX}/orders/search?${query}`;
+  const res = await get(url);
+  return await res.json();
+}
