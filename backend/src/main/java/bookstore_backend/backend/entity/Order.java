@@ -39,7 +39,7 @@ public class Order {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems; 
 
     @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;

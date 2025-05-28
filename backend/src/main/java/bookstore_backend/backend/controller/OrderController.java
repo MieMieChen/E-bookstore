@@ -55,33 +55,7 @@ public class OrderController {
     // 获取用户的所有订单
     @GetMapping("/orders/{userId}")
     public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
-        // try {
-        //     Optional<User> userOpt = userService.findUserById(userId);
-        //     return userOpt
-        //             .map(user -> {
-        //                 List<Order> orders = orderService.getAllOrders(user);
-        //                 // 预先加载关联对象，避免延迟加载异常
-        //                 for (Order order : orders) {
-        //                     // 手动触发集合的初始化加载
-        //                     if (order.getOrderItems() != null) {
-        //                         order.getOrderItems().size();
-        //                         // 预加载book，避免N+1查询问题
-        //                         order.getOrderItems().forEach(item -> {
-        //                             if (item.getBook() != null) {
-        //                                 item.getBook().getTitle();
-        //                             }
-        //                         });
-        //                     }
-        //                 }
-                        
-        //                 return ResponseEntity.ok(orders);
-        //             })
-        //             .orElse(ResponseEntity.notFound().build());
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     return ResponseEntity.internalServerError().build();
-        // }
-         try {
+        try {
             // 直接调用 Service 方法，Service 会处理查找用户、获取订单和预加载细节
             List<Order> orders = orderService.getUserOrders(userId);
 
@@ -105,23 +79,7 @@ public class OrderController {
     @GetMapping("/orders/detail/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         try {
-        //     return orderRepository.findById(orderId)
-        //             .map(order -> {
-        //                 // 预先加载关联对象，避免延迟加载异常
-        //                 if (order.getOrderItems() != null) {
-        //                     order.getOrderItems().forEach(item -> {
-        //                         if (item.getBook() != null) {
-        //                             item.getBook().getTitle();
-        //                         }
-        //                     });
-        //                 }
-        //                 return ResponseEntity.ok(order);
-        //             })
-        //             .orElse(ResponseEntity.notFound().build());
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     return ResponseEntity.internalServerError().build();
-        Order order = orderService.getUsersOrderWithDetails(orderId);
+            Order order = orderService.getUsersOrderWithDetails(orderId);
             if (order != null) {
                 return ResponseEntity.ok(order);
             } else {
@@ -199,12 +157,6 @@ public class OrderController {
     @PutMapping("/orders/{orderId}/cancel")
     public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
         try {
-            // return orderRepository.findById(orderId)
-            //         .map(order -> {
-            //             order.setStatus(OrderStatus.CANCELLED);
-            //             return ResponseEntity.ok(orderRepository.save(order));
-            //         })
-            //         .orElse(ResponseEntity.notFound().build());
             Order order = orderService.cancelOrder(orderId);
             if (order != null) {
                 return ResponseEntity.ok(order);
@@ -243,23 +195,6 @@ public class OrderController {
         } catch (Exception e) {
             // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
             //logger.error("获取用户ID {} 订单时发生内部错误: {}", userId, e.getMessage(), e); // 使用日志记录错误及堆栈
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    // 清除二级缓存的示例方法
-    @PostMapping("/clearCache")
-    public ResponseEntity<String> clearCache() {
-        try {
-            // 清除一级缓存
-            entityManager.clear();
-            
-            // 如果启用了二级缓存，可以这样清理特定实体的缓存
-            // entityManager.getEntityManagerFactory().getCache().evict(Order.class);
-            
-            return ResponseEntity.ok("缓存已清理");
-        } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

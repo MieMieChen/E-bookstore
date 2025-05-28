@@ -24,17 +24,19 @@ import java.util.Collections;
 public class User implements UserDetails {
     @Id //主键
     @GeneratedValue(strategy = GenerationType.IDENTITY) //自增主键
-//  @Column(name = "user_id") //指定列名 现在是使用默认字段名id作为数据库的列名
+//  @Column(name = "user_id") //指定列名 现在是使用默认字段名id作为数据库的列名，如果不同就需要把数据库当中的列名写进去
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String address;
     
+    @Column(nullable = false)
     private String phone;
     
     @Column(nullable = false)
