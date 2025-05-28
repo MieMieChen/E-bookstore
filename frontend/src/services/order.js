@@ -54,3 +54,8 @@ export async function updateOrderStatus(orderId, status) {
   if (!res.ok) throw new Error('更新订单状态失败');
   return await res.json();
 }
+export async function getOrderStatus(orderId) {
+  const url = `${PREFIX}/orders/${orderId}/status`;
+  const res = await get(url);
+  return await res.json();
+}

@@ -198,5 +198,22 @@ public class OrderController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    @GetMapping("/orders/{orderId}/status")
+    public ResponseEntity<OrderStatus> getOrderStatus(@PathVariable Long orderId) {
+        try {
+            Order order = orderService.getOrderById(orderId);
+            if (order != null) {
+                return ResponseEntity.ok(order.getStatus());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (OrderNotFoundException e) {
+            // 如果 Service 抛出 OrderNotFoundException，Controller 捕获并返回 404 Not Found
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
 }

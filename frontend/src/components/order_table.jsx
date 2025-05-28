@@ -8,6 +8,8 @@ import {
   CloseCircleOutlined
 } from '@ant-design/icons';
 
+import { getOrderStatus } from '../services/order';
+
 const { Text } = Typography;
 
 export default function OrderTable({ orders }) {
@@ -44,12 +46,12 @@ export default function OrderTable({ orders }) {
   };
 
   const columns = [
-    {
-      title: '订单号',
-      dataIndex: 'id',
-      key: 'id',
-      render: (id) => <Text copyable>{id}</Text>,
-    },
+    // {
+    //   title: '订单号',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   render: (id) => <Text copyable>{id}</Text>,
+    // },
     {
       title: '日期',
       key: 'date',

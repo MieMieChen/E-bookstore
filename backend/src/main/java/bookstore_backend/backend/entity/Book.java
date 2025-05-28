@@ -43,7 +43,7 @@ public class Book {
     private String imageUrl;
     
     @ToString.Exclude
-    @JsonIgnore
+    @JsonIgnore 
     @OneToMany(mappedBy = "book")
     private List<OrderItem> orderItems;
 } 

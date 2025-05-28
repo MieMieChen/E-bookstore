@@ -49,8 +49,8 @@ public class User implements UserDetails {
     private List<Order> orders;
 
     @ToString.Exclude
-    @JsonIgnore //
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER) 
+    @JsonIgnore //避免在序列化时出现循环引用
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER) //表示一个 User 对象可以对应一个 UserAuth 对象。
     private UserAuth userAuth;
 
     @Override

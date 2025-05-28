@@ -19,17 +19,6 @@ const ShopContext = createContext(); //创建了一个上下文对象 ShopContex
 export function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
-  // const [userData, setUserData] = useState({
-  //   userid: 0,
-  //   username: ' ',
-  //   name: ' ',
-  //   email: ' ',
-  //   phone: ' ',
-  //   address: ' ',
-  //   memberSince: ' ',
-  //   memberLevel: ' ',
-  //   points: 771995
-  // });
   
   // 使用AuthContext获取当前用户
   const { getUser, isAuthenticated, currentUser } = useAuth();

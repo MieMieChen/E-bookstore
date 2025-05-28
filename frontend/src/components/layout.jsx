@@ -7,7 +7,8 @@ import {
   ShoppingCartOutlined, 
   OrderedListOutlined,
   UserOutlined,
-  BookOutlined
+  BookOutlined,
+  BarChartOutlined
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import useMessage from "antd/es/message/useMessage";
@@ -42,11 +43,32 @@ export function MainLayout() {
 
   // 如果未认证，直接重定向到登录页
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />; //通过 state 属性将这个路径传递给登录页面 replace 表示替换当前历史记录，而不是添加新记录
-  }
+      return <Navigate to="/login" replace state={{ from: location.pathname }} />; //通过 state 属性将这个路径传递给登录页面 replace 表示替换当前历史记录，而不是添加新记录
+    }
 
-  // 菜单项配置
-  const menuItems = [
+    const AdminMenuItems =[
+      {
+        key: '/books',
+        icon: <BookOutlined />,
+        label: <Link to="/admin/books">书籍管理</Link>,
+      },
+      {
+         key: '/orders',
+        icon: <OrderedListOutlined />,
+        label: <Link to="/admin/orders">订单管理</Link>,
+      },
+      {
+        key:'/stats',
+        icon: <BarChartOutlined />,
+        label: <Link to="/admin/stats">统计分析</Link>,
+      },
+      {
+        key:'/member',
+        icon: <UserOutlined />,
+        label:<Link to ="/admin/members">用户管理</Link>,
+      },
+    ]
+  const UserMenuItems = [
     {
       key: '/home',
       icon: <HomeOutlined />,
@@ -68,6 +90,10 @@ export function MainLayout() {
       label: <Link to="/profile">个人信息</Link>,
     },
   ];
+  // currentUser.type = 1;
+  console.log ("当前用户信息:", currentUser.type);
+  const menuItems = currentUser?.type ? AdminMenuItems : UserMenuItems;
+  // const menuItems  = UserMenuItems;
 
   return (
     <Layout style={{ width: '100%', minHeight: '100vh' }}>   
@@ -93,7 +119,8 @@ export function MainLayout() {
             <Title level={4} style={{ marginTop: 12, marginBottom: 4 }}>
               欢迎 {currentUser?.username}
             </Title>
-            <Text type="secondary">书城会员</Text>
+            <Text type="secondary">
+              {currentUser?.type ? '管理员' : '书城会员'}</Text>
           </div>
           <Menu
             mode="inline"

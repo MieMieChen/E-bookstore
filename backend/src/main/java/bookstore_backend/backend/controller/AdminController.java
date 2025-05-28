@@ -63,16 +63,19 @@ public class AdminController {
     public List<Book> getBooks() {
         return bookService.getAllBooks();
     }
+    //deleteBook
     @DeleteMapping("/books/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
+    //对应前端的addBook
     @PostMapping("/books")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
         Book createdBook = bookService.createBook(book);
         return ResponseEntity.ok(createdBook);
     }
+    //updateBook
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
         Book updatedBook = bookService.updateBook(id, book);

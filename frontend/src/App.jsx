@@ -7,11 +7,15 @@ import { ShopProvider } from './context/ShopContext';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import { MainLayout } from './components/Layout';
+import { MainLayout } from './components/layout';
 import { Home } from './pages/Home';
 import { Cart } from './pages/Cart';
 import { Orders } from './pages/Orders';
 import { Profile } from './pages/Profile';
+import { AdminMemberPage } from './pages/AdminMember';
+import { AdminOrdersPage } from './pages/AdminOrders';
+import { AdminBooksPage } from './pages/AdminBooks';
+import { AdminStatsPage } from './pages/AdminStats';
 
 function App() {
   return (
@@ -27,6 +31,10 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/admin/members" element={<AdminMemberPage />} />
+                <Route path="/admin/orders" element={<AdminOrdersPage />} />
+                <Route path="/admin/books" element={<AdminBooksPage />} />
+                <Route path="/admin/stats" element={<AdminStatsPage />} />
               </Route>
             </Routes>
           </ShopProvider>

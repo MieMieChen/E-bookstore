@@ -59,6 +59,8 @@ public class AuthController {
             response.put("ok", true);
             response.put("message", "注册成功");
             response.put("data", user);
+            response.put("id", user.getId());
+            System.out.println("注册成功: " + user.getUsername() + ", ID: " + user.getId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
@@ -77,3 +79,17 @@ class RegisterRequest {
     private String address;
     private String phone;
 }
+
+
+// 这个流程是这样的：
+// 用户登录时，通过 AuthenticationManager 进行认证
+// 认证成功后，认证信息被存储在 SecurityContext 中
+// 访问 /api/auth/me 时，Spring Security 的过滤器链会自动检查认证状态
+// AuthServiceImpl 中的 getCurrentUser 方法从 SecurityContext 获取当前用户信息
+// 所以，虽然没有显式的拦截器类（Interceptor），但是通过 Spring Security 的过滤器链（Filter Chain）实现了更强大的认证和授权功能。这些过滤器在请求到达控制器之前就会进行认证检查，实际上起到了拦截器的作用。
+// 主要的安全组件包括：
+// SecurityConfig - 安全配置
+// CustomUserDetailsService - 用户认证服务
+// User 实现 UserDetails - 提供用户认证信息
+// Spring Security 的过滤器链 - 处理认证和授权
+// 这种实现比普通的拦截器更安全和标准化，因为它使用了 Spring Security 提供的完整安全框架。

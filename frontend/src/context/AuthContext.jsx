@@ -26,18 +26,10 @@ export function AuthProvider({ children }) {
   
   // 登录函数
   const login = async (username, password) => {
-    // try {
       const response = await loginApi(username, password);
-      // if (!response.ok) {
-      //   throw new Error(response.message || '登录失败');
-      // }
       const userData = response.data;
       setCurrentUser(userData);
       return response;
-    // } catch (error) {
-    //   console.error('登录失败111:', error);
-    //   throw error;
-    // }
   };
   
   // 登出函数
@@ -110,7 +102,6 @@ export function AuthProvider({ children }) {
     updateUser,
     register
   };
-  // Provider 组件接收一个 value prop，这个 value 就是您希望向下传递的数据
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}

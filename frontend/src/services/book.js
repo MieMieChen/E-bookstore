@@ -1,4 +1,4 @@
-import { PREFIX, get, processResponse } from "./common";
+import { PREFIX, get, processResponse,post,put,del } from "./common";
 //即使后端使用了 @RestController 把数据变成了 JSON 放在响应体里发过来，
 //前端接收到的是包含这个 JSON 字符串的原始响应。你需要调用 res.json() 来读取并解析这个 JSON 字符串，最终得到你在 JavaScript 中可以使用的对象
 export async function getBooks() {
@@ -62,4 +62,23 @@ export async function searchBooks(searchType, query) {
     console.error('Error searching books:', error);
     throw new Error('搜索图书失败');
   }
+}
+
+
+export async function addBook(bookData) {
+  const url = `${PREFIX}/admin/books`;
+  const res = await post(url,bookData);
+  return  await processResponse(res);
+  }
+
+export async function updateBook(bookId, bookData) {
+  const url = `${PREFIX}/admin/books/${bookId}`;
+  const res = await put(url, bookData);
+  return await processResponse(res);
+  }
+
+export async function deleteBook(bookId) {
+  const url = `${PREFIX}/admin/books/${bookId}`;
+  const res = await del(url);
+  return await processResponse(res);
 }

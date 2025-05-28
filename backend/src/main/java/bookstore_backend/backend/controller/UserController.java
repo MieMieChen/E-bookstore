@@ -9,26 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.Spring;
+
 @RestController  //接口方法返回对象 转换成json文本
 @RequestMapping("/api/users")  //后面的路径不能重复！
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-    @Autowired
-    private UserService userService;
 
     
-    // 用户注册 
-    // @PostMapping("/register")
-    // public ResponseEntity<User> register(@RequestBody Map<String, String> body) {
-    //     User user = userService.register(
-    //             body.get("username"),
-    //             body.get("email"),
-    //             body.get("password"),
-    //             body.get("address"),
-    //             body.get("phone")
-    //     );
-    //     return ResponseEntity.ok(user);
-    // }
+//     @Autowired：告诉 Spring 自动从容器中查找匹配的 UserService 实现并注入。
+//     private UserService userService：声明一个 UserService 类型的成员变量，Spring 会在运行时动态注入实例。
+    @Autowired
+    private UserService userService; //创建一个service对象，可以在这个上面调用接口
+
     // 获取用户信息（不含密码）
     @GetMapping("/{id}")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
     public ResponseEntity<User> getUser(@PathVariable Long id) {

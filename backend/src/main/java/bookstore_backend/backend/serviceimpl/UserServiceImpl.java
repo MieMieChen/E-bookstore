@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService{
         UserAuth userAuth = UserAuth.builder()
                 .user(user)
                 .password(password)
+                .type(0)  // 设置为普通用户
                 .build();
 
         // 保存认证信息
