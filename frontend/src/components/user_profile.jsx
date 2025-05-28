@@ -10,7 +10,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(false);
   
   // 获取认证上下文
-  const { currentUser, getMe, refreshUserInfo, updateUser } = useAuth();
+  const { currentUser, getMe, updateUser } = useAuth();
   
   // 获取用户数据
   const user = currentUser || getMe();
@@ -29,7 +29,7 @@ export default function UserProfile() {
       if (user && user.id) {
         setLoading(true);
         try {
-          await refreshUserInfo(user.id);
+          await updateUser(user);
         } catch (error) {
           console.error('加载用户信息失败:', error);
           message.error('加载用户信息失败');

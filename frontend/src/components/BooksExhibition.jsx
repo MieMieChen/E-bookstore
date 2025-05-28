@@ -64,7 +64,7 @@ export function BooksExhibition() {
   };
 
   const handleBookClick = (bookId) => {
-    navigate(`/book/${bookId}`);
+    navigate(`/books/${bookId}`);
   };
 
   return (

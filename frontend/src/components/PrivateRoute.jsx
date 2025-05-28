@@ -11,14 +11,14 @@ export const PrivateRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
     const [messageApi, contextHolder] = useMessage();
-    const {currentUser,getUser,updateUser} = useAuth(); 
+    const {currentUser,getMe,updateUser} = useAuth(); 
     useEffect(() => {
             const checkLogin = async () => {
                 if(!currentUser) {
                     messageApi.error("无权访问当前页面，请先登录！", 0.6)
                         .then(() => navigate("/login"));
                 } else {
-                    let me = await getUser(currentUser.id);
+                    let me = await getMe();
                     if (!me) {
                         messageApi.error("无权访问当前页面，请先登录！", 0.6)
                         .then(() => navigate("/login"));

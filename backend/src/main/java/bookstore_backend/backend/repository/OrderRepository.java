@@ -4,6 +4,8 @@ import bookstore_backend.backend.entity.Order;
 import bookstore_backend.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -15,5 +17,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Add method to sort by created time if orderTime is not reliable
     List<Order> findByUserOrderByCreatedAtDesc(User user);
-    List<Order> findByOrderTimeBetweenAndBookTitle(String startTime,String endTime,String bookTitle);
+    List<Order> findByOrderTimeBetween(LocalDateTime startTime,LocalDateTime endTime);
 } 

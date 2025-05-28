@@ -16,7 +16,7 @@ import { AdminMemberPage } from './pages/AdminMember';
 import { AdminOrdersPage } from './pages/AdminOrders';
 import { AdminBooksPage } from './pages/AdminBooks';
 import { AdminStatsPage } from './pages/AdminStats';
-
+import { BookDetail } from './pages/BookDetail';
 function App() {
   return (
     <ConfigProvider theme={customTheme}>
@@ -29,6 +29,7 @@ function App() {
               <Route path="/" element={<MainLayout />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/books/:id" element={<BookDetail />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/admin/members" element={<AdminMemberPage />} />

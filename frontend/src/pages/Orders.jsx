@@ -15,8 +15,8 @@ const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
 
 export function Orders() {
-  const { orders, loadUserOrders } = useShop();
-  const { isAuthenticated, currentUser, getUser } = useAuth();
+  const { orders, loadUserOrders, updateOrders } = useShop();
+  const { isAuthenticated, currentUser, getMe } = useAuth();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [lastOrdersHash, setLastOrdersHash] = useState('');
@@ -27,12 +27,9 @@ export function Orders() {
   const [timeRange, setTimeRange] = useState(null);
   const [bookTitle, setBookTitle] = useState('');
   // const {userData} = useShop();
-
   useEffect(() => {
           const checkLogin = async () => {
-              const me = await getUser(currentUser.id);
-              // console.log("userData", userData);
-              // let me = await getUser(userData.userid);
+              const me = await getMe();
               console.log("me", me);
               if (!me) {
                   messageApi.error("无权访问当前页面，请先登录！", 0.6)
@@ -44,7 +41,7 @@ export function Orders() {
           checkLogin();
       }, [navigate]);
   // 获取当前用户
-  const user = currentUser || getUser();
+  const user = currentUser || getMe();
 
   // 计算订单列表的哈希值，用于比较是否有变化
   const calculateOrdersHash = useCallback((ordersList) => {
@@ -171,8 +168,10 @@ export function Orders() {
       }
       
       // 调用搜索API
+
       const result = await searchOrders(params);
-      setOrders(result);
+      console.log("result", result);
+      updateOrders(result);
     } catch (error) {
       message.error('搜索失败');
     } finally {

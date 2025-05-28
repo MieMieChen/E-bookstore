@@ -1,4 +1,6 @@
 import { PREFIX,get,post, put } from "./common";
+import { format } from 'date-fns';
+
 export async function getOrders(userId) {
   const url = `${PREFIX}/orders/${userId}`;
   const res = await get(url);
@@ -59,8 +61,38 @@ export async function getOrderStatus(orderId) {
   const res = await get(url);
   return await res.json();
 }
-export async function searchOrders(query) {
-  const url = `${PREFIX}/orders/search?${query}`;
+
+export async function searchOrders(params) {
+  const queryParams = new URLSearchParams();
+
+  // 辅助函数：格式化日期以适应后端需求
+  const formatDateTimeForBackend = (dateString) => {
+    if (!dateString) return null;
+    // 假设 dateString 已经是 date-fns 可以解析的格式
+    // 例如，'YYYY-MM-DD HH:mm:ss' 或 Date 对象
+    // 我们想要将其转换为 'YYYY-MM-DDTHH:mm:ss'
+    return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm:ss");
+  };
+
+  if (params.startTime) {
+    const formattedStartTime = formatDateTimeForBackend(params.startTime);
+    if (formattedStartTime) {
+      queryParams.append('startTime', formattedStartTime);
+    }
+  }
+
+  if (params.endTime) {
+    const formattedEndTime = formatDateTimeForBackend(params.endTime);
+    if (formattedEndTime) {
+      queryParams.append('endTime', formattedEndTime);
+    }
+  }
+
+  if (params.bookTitle) {
+    queryParams.append('bookTitle', params.bookTitle);
+  }
+
+  const url = `${PREFIX}/orders/search?${queryParams.toString()}`;
   const res = await get(url);
   return await res.json();
 }

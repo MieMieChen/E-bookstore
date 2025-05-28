@@ -27,9 +27,9 @@ export function Cart() {
   const [messageApi, contextHolder] = useMessage();
     useEffect(() => {
             const checkLogin = async () => {
-                const userData = await getUser();
+                const userData = await getMe();
                 console.log("userData", userData);
-                let me = await getUser(userData.userid);
+                let me = await getMe();
                 console.log("me", me);
                 if (!me) {
                     messageApi.error("无权访问当前页面，请先登录！", 0.6)

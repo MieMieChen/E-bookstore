@@ -21,7 +21,7 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) //这样能够立刻加载所有的书籍信息
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 

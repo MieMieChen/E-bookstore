@@ -7,6 +7,8 @@ import bookstore_backend.backend.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,8 +52,7 @@ public class OrderDaoImpl implements OrderDao {
         orderRepository.deleteById(id);
     }
     @Override
-    public List<Order> findByOrderTimeBetweenAndBookTitle(String startTime,String endTime,String bookTitle)
-    {
-        return orderRepository.findByOrderTimeBetweenAndBookTitle(startTime,endTime,bookTitle);
+    public List<Order> findByOrderTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        return orderRepository.findByOrderTimeBetween(startTime, endTime);
     }
 }

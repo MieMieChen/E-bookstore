@@ -21,7 +21,7 @@ export function ShopProvider({ children }) {
   const [orders, setOrders] = useState([]);
   
   // 使用AuthContext获取当前用户
-  const { getUser, isAuthenticated, currentUser } = useAuth();
+  const {getMe, isAuthenticated, currentUser } = useAuth();
   
   // 加载用户购物车数据 - 使用useCallback包装以保持引用稳定性
   const loadUserCart = useCallback(async () => {
@@ -30,7 +30,7 @@ export function ShopProvider({ children }) {
     try {
       // console.log('当前用户', userData);
       console.log("localStorage中的用户数据:", localStorage.getItem('currentUser'));
-      const userData = await getUser(currentUser.id);
+      const userData = await getMe();
       console.log("userData111:", userData);
       console.log('当前用户ID:', userData.id);
       const userCartItems = await getCart(userData.id);
@@ -50,7 +50,7 @@ export function ShopProvider({ children }) {
     } catch (error) {
       console.error('加载购物车数据失败:', error);
     }
-  }, [isAuthenticated, getUser]);
+  }, [isAuthenticated, getMe]);
   
   // 加载用户订单历史 - 使用useCallback包装以保持引用稳定性
   const loadUserOrders = useCallback(async () => {
@@ -58,8 +58,6 @@ export function ShopProvider({ children }) {
     
     try {
       console.log('正在加载用户订单历史...');
-      // console.log('当前用户', userData);
-      // const userData = getUser();
       console.log('当前用户ID:', currentUser.id);
       const userOrders = await getOrders(currentUser.id);
       
@@ -68,7 +66,7 @@ export function ShopProvider({ children }) {
     } catch (error) {
       console.error('加载订单历史失败:', error);
     }
-  }, [isAuthenticated, getUser]);
+  }, [isAuthenticated, getMe]);
 
   // 当用户登录状态改变时加载数据
   useEffect(() => {
@@ -78,7 +76,7 @@ export function ShopProvider({ children }) {
           // 加载购物车数据
           await loadUserCart();
           
-          // 加载订单历史
+          // 加载订单历史 
           await loadUserOrders();
         } catch (error) {
           console.error('加载用户数据失败:', error);
@@ -111,7 +109,7 @@ export function ShopProvider({ children }) {
 
     // 然后尝试调用后端API（不影响用户体验）
     try {
-      const user = await getUser(currentUser.id);
+      const user = await getMe();
       const cartItem = {
         user: { id: user.id }, // 从当前登录用户获取ID
         book: { id: book.id },
@@ -135,7 +133,7 @@ export function ShopProvider({ children }) {
     
     // 然后尝试调用后端API
     try {
-      const user = await getUser(currentUser.id);
+      const user = await getMe();
       // 注意：这里需要传递购物车项的数据库ID，而不是书籍ID
       // 由于我们没有在前端存储购物车项的数据库ID，需要先通过API获取
       const userCartItems = await getCart(user.id);
@@ -173,7 +171,7 @@ export function ShopProvider({ children }) {
     
     // 同步到后端
     try {
-      const user = getUser();
+      const user = getMe();
       console.log(`正在更新商品 ${bookId} 的数量为 ${quantity}...`);
       
       // 查找购物车项的数据库ID
@@ -190,11 +188,11 @@ export function ShopProvider({ children }) {
     } catch (error) {
       console.error('更新购物车数量失败:', error);
     }
-  }, [getUser, removeFromCart]);
+  }, [getMe, removeFromCart]);
 
   const createOrder = async (items, total) => {
     try {
-      const user = await getUser(currentUser.id);
+      const user = await getMe();
       
       // 确保items是有效数组且包含必要字段
       if (!Array.isArray(items) || items.length === 0) {
@@ -323,7 +321,9 @@ export function ShopProvider({ children }) {
   const getCartItemsCount = () => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
-
+  const updateOrders = (newOrders) => {
+    setOrders(newOrders);
+  };
   return (
     <ShopContext.Provider value={{
       cartItems,
@@ -334,6 +334,7 @@ export function ShopProvider({ children }) {
       createOrder,
       getCartTotal,
       getCartItemsCount,
+      updateOrders,
       // userData,
       // changeUserData,
       loadUserCart,     // 暴露方法以便手动刷新

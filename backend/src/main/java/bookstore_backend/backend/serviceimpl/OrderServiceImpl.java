@@ -2,6 +2,8 @@ package bookstore_backend.backend.serviceimpl;
 
 
 import java.util.List;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +13,14 @@ import bookstore_backend.backend.dao.OrderDao;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.service.OrderService;
 import bookstore_backend.backend.service.UserService;
+import bookstore_backend.backend.service.BookService;
 
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 import bookstore_backend.backend.exception.UserNotFoundException;
 import bookstore_backend.backend.exception.OrderNotFoundException;
 import bookstore_backend.backend.entity.OrderItem;
+import bookstore_backend.backend.entity.Book;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -28,49 +32,41 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BookService bookService;
+
     // public List<Order> getAllOrders(User user) {
     //     // 这里可以添加获取所有订单的逻辑
     //     return orderDao.findByUserOrderByOrderTimeDesc(user);
     // }
    @Transactional(readOnly = true) // 读取操作，使用只读事务可以提高性能
     public List<Order> getUserOrders(Long userId) throws UserNotFoundException {
-        // 1. 在 Service 层查找用户
-        Optional<User> userOpt = userService.findUserById(userId);
+        // 1. 获取用户
+        User user = userService.findUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        // 2. 处理用户不存在的业务逻辑，抛出自定义异常
-        if (!userOpt.isPresent()) {
-            // logger.warn("用户ID {} 不存在，无法获取订单。", userId); // 使用日志记录警告
-            throw new UserNotFoundException("User not found with ID: " + userId);
-        }
+        // 2. 获取该用户的所有订单，按时间倒序排列
+        List<Order> orders = orderDao.findByUserOrderByOrderTimeDesc(user);
 
-        User user = userOpt.get();
-        // logger.info("获取用户ID {} 的订单列表。", userId); // 使用日志记录信息
-
-        // 3. 调用 Dao 获取订单列表
-        List<Order> orders = orderDao.findByUser(user);
-
-        // 4. 在 Service 层手动触发关联对象的加载，避免 LazyInitializationException
-        // 这是一个解决延迟加载问题的临时方法。更好的方法是在 Repository 层使用 JOIN FETCH 或 @EntityGraph
+        // 3. 预加载所有关联数据
         for (Order order : orders) {
-             // 确保在同一个事务或会话中访问关联集合
             if (order.getOrderItems() != null) {
-                // 触发 OrderItems 集合的加载
-                order.getOrderItems().size(); // 访问集合大小会触发加载
+                order.getOrderItems().size(); // 触发 OrderItems 集合的加载
 
                 for (OrderItem item : order.getOrderItems()) {
-                    // 触发 OrderItem 关联的 Book 的加载
                     if (item.getBook() != null) {
-                         // 访问 Book 的某个属性会触发加载
-                        item.getBook().getTitle(); // 例如访问书名
-                        // 或者 item.getBook().getId();
+                        // 确保加载所有必要的书籍信息
+                        item.getBook().getTitle();
+                        item.getBook().getAuthor();
+                        item.getBook().getPrice();
+                        item.getBook().getImageUrl();
+                    } else {
+                        throw new RuntimeException("Book data not found for OrderItem ID: " + item.getId());
                     }
                 }
             }
         }
 
-       //  logger.info("成功获取并预加载用户ID {} 的 {} 个订单。", userId, orders.size()); // 使用日志记录成功
-
-        // 5. Service 返回处理好的订单列表
         return orders;
     }
     
@@ -91,7 +87,21 @@ public class OrderServiceImpl implements OrderService {
         return order;
 
     }
-    public Order saveOrder(Order order)  {
+    public Order saveOrder(Order order) {
+        if (order.getOrderItems() != null) {
+            for (OrderItem item : order.getOrderItems()) {
+                // 确保book对象被完整加载
+                if (item.getBook() != null && item.getBook().getId() != null) {
+                    // 如果只传入了book id，需要加载完整的book对象
+                    if (item.getBook().getTitle() == null) {
+                        Book fullBook = bookService.getBookById(item.getBook().getId())
+                                .orElseThrow(() -> new RuntimeException("Book not found with ID: " + item.getBook().getId()));
+                        item.setBook(fullBook);
+                    }
+                }
+                item.setOrder(order);
+            }
+        }
         return orderDao.save(order);
     }
 
@@ -140,6 +150,33 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.save(order);
     }
     public List<Order> searchOrders(String startTime, String endTime, String bookTitle) {
-        return orderDao.findByOrderTimeBetweenAndBookTitle(startTime, endTime, bookTitle);
+        try {
+            List<Order> orders;
+            if (startTime != null && endTime != null) {
+                LocalDateTime start = LocalDateTime.parse(startTime);
+                LocalDateTime end = LocalDateTime.parse(endTime);
+                orders = orderDao.findByOrderTimeBetween(start, end);
+            } else {
+                orders = orderDao.findAll();
+            }
+
+            if (orders.isEmpty()) {
+                return List.of();
+            }
+
+            if (bookTitle != null && !bookTitle.trim().isEmpty()) {
+                orders = orders.stream()
+                    .filter(order -> order.getOrderItems() != null && 
+                        order.getOrderItems().stream()
+                            .anyMatch(item -> item.getBook() != null && 
+                                item.getBook().getTitle().contains(bookTitle)))
+                    .collect(Collectors.toList());
+         }
+         System.out.println("orders:"+orders);
+            return orders;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 }

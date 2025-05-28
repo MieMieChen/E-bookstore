@@ -6,7 +6,7 @@ import { useShop } from '../context/ShopContext';
 import '../css/global.css';
 import BookCard from '../components/bookCard';
 
-function BookDetail() {
+export function BookDetail() {
   //每次渲染组件，useParams 都会重新获取路由参数，确保获取的是最新的参数。
   // useState 的初始值仅首次渲染执行	React 会保留状态，只有 setBookPrice 触发时会重新渲染
   const { id } = useParams();

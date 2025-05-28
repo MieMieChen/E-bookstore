@@ -40,18 +40,12 @@ export default function OrderTable({ orders }) {
     }
   };
 
-  // 获取排序日期 (用于表格排序)
+  // 获取排序日期 (用于表格排序) 是 Ant Design Table 组件中代表当前行数据的对象 这个例子中，每个 record 就是 orders 数组中的一个订单对象
   const getOrderDate = (record) => {
     return record.orderTime || record.createdAt || '';
   };
 
   const columns = [
-    // {
-    //   title: '订单号',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   render: (id) => <Text copyable>{id}</Text>,
-    // },
     {
       title: '日期',
       key: 'date',
@@ -100,22 +94,6 @@ export default function OrderTable({ orders }) {
       key: 'totalAmount',
       render: (totalAmount) => `¥${(totalAmount || 0).toFixed(2)}`
     },
-    // {
-    //   title: '操作',
-    //   key: 'action',
-    //   render: (_, record) => (
-    //     <Space size="small">
-    //       <Button type="link" size="small" onClick={() => console.log('查看订单', record.id)}>
-    //         详情
-    //       </Button>
-    //       {record.status === 'PENDING' && (
-    //         <Button type="link" danger size="small" onClick={() => console.log('取消订单', record.id)}>
-    //           取消
-    //         </Button>
-    //       )}
-    //     </Space>
-    //   ),
-    // }
   ];
 
   return (
@@ -130,8 +108,9 @@ export default function OrderTable({ orders }) {
             <Text strong>订单商品：</Text>
             <ul>
               {record.orderItems?.map((item, index) => (
+                // console.log(orderItems);
                 <li key={index}>
-                  {item.book?.title || `商品#${item.id}`} - 
+                  {item.book?.title || '商品数据加载失败'} - 
                   数量: {item.quantity} - 
                   单价: ¥{(item.price || 0).toFixed(2)}
                 </li>
