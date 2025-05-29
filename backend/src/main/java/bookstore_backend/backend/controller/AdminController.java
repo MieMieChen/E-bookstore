@@ -32,7 +32,8 @@ public class AdminController {
     private OrderService orderService;
 
     @GetMapping("/users")
-    public List<User> getUsers() {
+    public List<User> getAllUsers() {
+        
         return userService.listUsers();
     }
     @DeleteMapping("/users/{id}")

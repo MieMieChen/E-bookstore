@@ -11,3 +11,16 @@ export async function updateUserInfo(userId, userData) {
   if (!res.ok) throw new Error('更新用户信息失败');
   return res;
 }
+export async function updateUserInvalid(userId, userData) {
+  const url = `${PREFIX}/users/${userId}/invalid`;
+  const res = await put(url, userData);
+  if (!res.ok) throw new Error('更新用户信息失败');
+  return res;
+}
+export async function getAllUsers() {
+  const url = `${PREFIX}/admin/users`;
+  const res = await get(url);
+  if (!res.ok) throw new Error('获取所有用户信息失败');
+  return await handleResponse(res);
+}
+

@@ -7,6 +7,12 @@ export async function getOrders(userId) {
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
+export async function getAllOrders() {
+  const url = `${PREFIX}/admin/orders`;
+  const res = await get(url);
+  if (!res.ok) throw new Error('获取所有订单失败');
+  return await res.json();
+}
 
 // 获取订单详情
 export async function getOrderDetail(orderId) {
@@ -93,6 +99,20 @@ export async function searchOrders(params) {
   }
 
   const url = `${PREFIX}/orders/search?${queryParams.toString()}`;
+  console.log('Sending request to:', url);
+  
   const res = await get(url);
-  return await res.json();
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Search orders failed:', {
+      status: res.status,
+      statusText: res.statusText,
+      errorBody: errorText
+    });
+    throw new Error(`搜索订单失败: ${res.status} - ${errorText}`);
+  }
+  
+  const data = await res.json();
+  console.log('Search orders response:', data);
+  return data;
 }

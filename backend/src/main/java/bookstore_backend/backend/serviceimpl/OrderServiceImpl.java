@@ -152,15 +152,20 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> searchOrders(String startTime, String endTime, String bookTitle) {
         try {
             List<Order> orders;
+            System.out.println("Search parameters - startTime: " + startTime + ", endTime: " + endTime + ", bookTitle: " + bookTitle);
+
             if (startTime != null && endTime != null) {
                 LocalDateTime start = LocalDateTime.parse(startTime);
                 LocalDateTime end = LocalDateTime.parse(endTime);
                 orders = orderDao.findByOrderTimeBetween(start, end);
+                System.out.println("Searching by time range, found orders: " + orders.size());
             } else {
                 orders = orderDao.findAll();
+                System.out.println("Getting all orders, found: " + orders.size());
             }
 
             if (orders.isEmpty()) {
+                System.out.println("No orders found");
                 return List.of();
             }
 
@@ -171,10 +176,13 @@ public class OrderServiceImpl implements OrderService {
                             .anyMatch(item -> item.getBook() != null && 
                                 item.getBook().getTitle().contains(bookTitle)))
                     .collect(Collectors.toList());
-         }
-         System.out.println("orders:"+orders);
+                System.out.println("After book title filter, found orders: " + orders.size());
+            }
+
+            System.out.println("Final orders result size: " + orders.size());
             return orders;
         } catch (Exception e) {
+            System.err.println("Error in searchOrders: " + e.getMessage());
             e.printStackTrace();
             return List.of();
         }

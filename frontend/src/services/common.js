@@ -16,8 +16,9 @@ export async function fetchWithAuth(url, options = {}) {
         ...options,
         credentials: 'include'
     };
-    
+
     const response = await fetch(url, fetchOptions);
+    console.log("fetchWithAuth response:", response);
     return handleResponse(response);
 }
 
