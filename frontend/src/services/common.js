@@ -52,7 +52,7 @@ export async function put(url, data) {
         }
     };
     const res = await fetchWithAuth(url, opts);
-    return processResponse(res);
+    return res;
 }
 
 export async function del(url, data) {

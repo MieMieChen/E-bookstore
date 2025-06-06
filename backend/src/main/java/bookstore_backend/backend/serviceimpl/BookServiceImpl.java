@@ -63,6 +63,10 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         bookDao.deleteById(id);
     }
+    public void restoreBook(Long id)
+    {
+        bookDao.restoreById(id);
+    }
     public Book createBook(Book book) {
         return bookDao.save(book);
     }

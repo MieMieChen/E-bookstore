@@ -11,5 +11,6 @@ public interface BookDao {
     List<Book> findByAuthorContainingIgnoreCase(String author);
     List<Book> findByIsbnContaining(String isbn);
     void deleteById(Long id);
+    void restoreById(Long id);
     Book save(Book book);
 }

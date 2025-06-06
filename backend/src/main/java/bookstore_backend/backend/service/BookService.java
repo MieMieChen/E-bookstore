@@ -18,6 +18,7 @@ public interface BookService {
     public List<Book> getHotBooks();
     public List<Book> getNewBooks() ;
     public void deleteBook(Long id);
+    public void restoreBook(Long id);
     public Book createBook(Book book);
     public Book updateBook(Long id, Book book);
     public Book updateBookStock(Long id, int stock);

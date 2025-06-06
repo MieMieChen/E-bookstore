@@ -65,7 +65,7 @@ public class AdminController {
         return bookService.getAllBooks();
     }
     //deleteBook
-    @DeleteMapping("/books/{id}")
+    @PutMapping("/books/delete/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
@@ -83,6 +83,13 @@ public class AdminController {
         System.out.println("Updated Book: " + updatedBook);
         return ResponseEntity.ok(updatedBook);
     }
+    //对应前端的restoreBook
+    @PutMapping("/books/restore/{id}")
+    public ResponseEntity<Void> restoreBook(@PathVariable Long id) {
+        bookService.restoreBook(id);
+        return ResponseEntity.noContent().build();
+    }
+    
     @PutMapping("/books/{id}/stock")
     public ResponseEntity<Book> updateBookStock(@PathVariable Long id, @RequestBody int stock) {
         Book updatedBook = bookService.updateBookStock(id, stock);
@@ -102,7 +109,7 @@ public class AdminController {
     @DeleteMapping("orders/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id)
     {
-        orderService.deleteOrder(id);
+        orderService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }
     @GetMapping("orders")

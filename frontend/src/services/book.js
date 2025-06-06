@@ -79,7 +79,12 @@ export async function updateBook(bookId, bookData) {
   }
 
 export async function deleteBook(bookId) {
-  const url = `${PREFIX}/admin/books/${bookId}`;
-  const res = await del(url);
+  const url = `${PREFIX}/admin/books/delete/${bookId}`;
+  const res = await put(url);
+  return res;
+}
+export async function restoreBook(bookId) {
+  const url = `${PREFIX}/admin/books/restore/${bookId}`;
+  const res = await put(url);
   return res;
 }

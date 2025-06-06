@@ -41,8 +41,19 @@ public class BookDaoImpl implements BookDao {
     }
     @Override
     public void deleteById(Long id) {
-        bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        book.setOnShow(0); // 将书籍状态设置为下架
+        bookRepository.save(book); // 保存更新后的书籍状态
     }
+    @Override
+    public void restoreById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        book.setOnShow(1); // 将书籍状态设置为上架
+        bookRepository.save(book); // 保存更新后的书籍状态
+    }
+    
     @Override
     public Book save(Book book) {
         return bookRepository.save(book);
