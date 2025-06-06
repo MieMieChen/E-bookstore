@@ -67,6 +67,11 @@ export function MainLayout() {
         icon: <UserOutlined />,
         label:<Link to ="/admin/members">用户管理</Link>,
       },
+      {
+      key: '/profile',
+      icon: <UserOutlined />,
+      label: <Link to="/profile">个人信息</Link>,
+    },
     ]
   const UserMenuItems = [
     {
