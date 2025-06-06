@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Table, Space, Button, Input,  message } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getAllUsers } from '../services/user';
+import { getAllUsers,setUserInvalid,setUserValid } from '../services/user';
 
-const { Search } = Input;
 
 export function AdminMemberPage() {
   const [loading, setLoading] = useState(false);
@@ -12,29 +10,42 @@ export function AdminMemberPage() {
 
 
   useEffect(() => {
-    console.log("here1111111111111111111111111");
     fetchAllUsers();
   }, []);
 
   const fetchAllUsers = async () => {
     try {
+      setLoading(true);
       const data = await getAllUsers();
-      console.log("users:",data.data);
+      console.log("users:", data);
       setUser(data);
     } catch (error) {
+      console.error('Error fetching users:', error);
       message.error('获取用户列表失败');
+    } finally {
+      setLoading(false);
     }
   };
 
 
-  const validateUser = (record) => {
-    setUserInvalid(record.id);
-    setIsModalVisible(true);
+  const validateUser = async (id) => {
+    try {
+      await setUserValid(id);
+      message.success('用户已解禁');
+      fetchAllUsers(); // 重新获取用户列表
+    } catch (error) {
+      message.error('解禁用户失败');
+    }
   };
 
-  const invalidateUser = (record) => {
-    setUserInvalid(record.id);
-    setIsModalVisible(true);
+  const invalidateUser = async (id) => {
+    try {
+      await setUserInvalid(id);
+      message.success('用户已禁用');
+      fetchAllUsers(); // 重新获取用户列表
+    } catch (error) {
+      message.error('禁用用户失败');
+    }
   }; 
 
 
@@ -60,21 +71,30 @@ export function AdminMemberPage() {
       key: 'address',
     },
     {
-        title: '注册时间',
-      dataIndex: 'registerTime',
-      key: 'registerTime',
+        title: '当前状态',
+      dataIndex: 'valid',
+      key: 'valid',
+      render: (valid) => (
+        <span style={{ color: valid === 1 ? 'green' : 'red' }}>
+          {valid === 1 ? '正常' : '已禁用'}
+        </span>
+      ),
     },
     {
       title: '操作',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type="primary" icon={<EditOutlined />} onClick={() => validateUser(record)}>
-            解禁
-          </Button>
-          <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => invalidateUser(record.id)}>
-            禁用
-          </Button>
+          {record.valid === 0 && (
+            <Button type="primary" icon={<EditOutlined />} onClick={() => validateUser(record.id)}>
+              解禁
+            </Button>
+          )}
+          {record.valid === 1 && (
+            <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => invalidateUser(record.id)}>
+              禁用
+            </Button>
+          )}
         </Space>
       ),
     },

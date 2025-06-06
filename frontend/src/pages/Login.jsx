@@ -36,14 +36,14 @@ export function Login() {
       console.log("res",res);
       console.log("res.ok", res.ok);
       console.log("res.data.valid", res.data.valid);
-      console.log('test',res.ok&&res.data.valid==0);
-      if (res.ok&&res.data.valid==0) {
+      console.log('test',res.ok&&res.data.valid==1);
+      if (res.ok&&res.data.valid==1) {
         messageApi.success("登录成功！").then(() => {
           const from = location.state?.from || '/home';
           console.log('登录成功，即将重定向到:', from);
           navigate(from, { replace: true });
         });
-      } else if(!res.ok&&res.data.valid==0) {
+      } else if(!res.ok&&res.data.valid==1) {
         console.log("登录失败，请检查用户名和密码");
         setError('登录失败，请检查用户名和密码');
         messageApi.error('登录失败，请检查用户名和密码');

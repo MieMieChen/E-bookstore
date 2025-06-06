@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Typography, Divider, Empty, Spin, Button, message, Card, Statistic, Row, Col, Tag ,Space,Select,Input, DatePicker} from 'antd';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
-import OrderTable from '../components/order_table';
+import AdminOrderTable from '../components/AdminOrders_table';
 import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/icons';
 import useMessage from "antd/es/message/useMessage";
 import { SearchOutlined } from '@ant-design/icons';
@@ -232,7 +232,7 @@ export function AdminOrdersPage() {
                        <Spin size="large" tip="加载订单中..." />
                      </div>
                    ) : sortedOrders && sortedOrders.length > 0 ? (
-                     <OrderTable orders={sortedOrders} onUpdate={fetchAllOrders} />
+                     <AdminOrderTable orders={sortedOrders} onUpdate={fetchAllOrders} />
                    ) : (
                      <Empty 
                        description="暂无订单记录" 

@@ -43,7 +43,7 @@ public class User implements UserDetails {
     private Integer type = 0;  // 0: 普通用户, 1: 管理员
 
     @Column(nullable = false)
-    private Integer valid = 0; //0:没有被禁用的用户，1：被禁用的用户
+    private Integer valid = 1; //1:正常用户，0：被禁用的用户
 
     @Column(nullable = false)
     private Integer cash = 10000;

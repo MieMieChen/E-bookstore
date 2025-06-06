@@ -68,25 +68,4 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
-    @PutMapping("/{id}/invalid")
-    public ResponseEntity<User> updateUserInvalid(@PathVariable Long id, @RequestBody User updatedUser) {
-        try {   
-            System.out.println("接收到更新用户请求: " + updatedUser);
-            Optional<User> existingUserOpt = userService.findUserById(id);
-            if (existingUserOpt.isEmpty()) {
-                System.out.println("找不到用户ID: " + id);
-                return ResponseEntity.notFound().build();
-            }
-            User existingUser = existingUserOpt.get();
-            existingUser.setValid(updatedUser.getValid());
-            User savedUser = userService.saveUser(existingUser);
-            System.out.println("用户更新成功: " + savedUser);
-            return ResponseEntity.ok(savedUser);
-            
-        } catch (Exception e) {
-            System.err.println("更新用户信息失败: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 } 

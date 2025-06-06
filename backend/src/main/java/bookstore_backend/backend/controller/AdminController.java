@@ -60,6 +60,48 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PutMapping("/users/invalid/{id}")
+    public ResponseEntity<User> setUserInvalid(@PathVariable Long id) {
+        try {   
+            Optional<User> existingUserOpt = userService.findUserById(id);
+            if (existingUserOpt.isEmpty()) {
+                System.out.println("找不到用户ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            User existingUser = existingUserOpt.get();
+                existingUser.setValid(0);
+            User savedUser = userService.saveUser(existingUser);
+            System.out.println("用户更新成功: " + savedUser);
+            return ResponseEntity.ok(savedUser);
+            
+        } catch (Exception e) {
+            System.err.println("更新用户信息失败: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    @PutMapping("/users/valid/{id}")
+    public ResponseEntity<User> setUserValid(@PathVariable Long id) {
+        try {
+            Optional<User> existingUserOpt = userService.findUserById(id);
+            if (existingUserOpt.isEmpty()) {
+                System.out.println("找不到用户ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            User existingUser = existingUserOpt.get();
+            existingUser.setValid(1);
+            User savedUser = userService.saveUser(existingUser);
+            System.out.println("用户更新成功: " + savedUser);
+            return ResponseEntity.ok(savedUser);
+            
+        } catch (Exception e) {
+            System.err.println("更新用户信息失败: " + e.getMessage());
+            e.printStackTrace();    
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+
     @GetMapping("/books")
     public List<Book> getBooks() {
         return bookService.getAllBooks();
