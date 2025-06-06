@@ -11,7 +11,11 @@ CREATE TABLE books (
     description TEXT,
     price INT NOT NULL,  
     stock INT NOT NULL,
-    image_url VARCHAR(255)
+    isbn VARCHAR(20) UNIQUE,
+    image_url VARCHAR(255),
+    publish_date DATE,
+    publisher VARCHAR(255),
+    on_show INT NOT NULL DEFAULT 1
 );
 
 -- Create users table

@@ -1,13 +1,13 @@
 import {Card, Row, Col, Image, Typography, Space, Tag, Button, Divider} from 'antd';
 import { CalendarOutlined, StockOutlined, ShopOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-
-export default function BookCard({book, handleAddToCart, handleBuyNow}) {
+export default function BookCard({book, handleAddToCart}) {
+    console.log ("BookCard book:", book);
     return (
         <Card>
             <Row gutter={24}>
                 <Col span={8}>
                     <Image 
-                        src={book.cover} 
+                        src={book.imageUrl || book.cover} 
                         alt={book.title}
                         style={{ width: '100%', height: 'auto' }}
                     />
@@ -22,6 +22,9 @@ export default function BookCard({book, handleAddToCart, handleBuyNow}) {
                         <Typography.Text>作者：{book.author}</Typography.Text>
                         <Typography.Text>ISBN：{book.isbn}</Typography.Text>
                         <Typography.Text>出版社：{book.publisher}</Typography.Text>
+                        <Typography.Text>描述：{book.description}</Typography.Text>
+                        <Typography.Text>出版时间：{book.publish_date}</Typography.Text>
+
                     </div>
                     
                     <Space size={[8, 16]} wrap>
@@ -37,13 +40,6 @@ export default function BookCard({book, handleAddToCart, handleBuyNow}) {
                     <Divider />
                     
                     <Space>
-                        {/* <Button 
-                            type="default" 
-                            icon={<ShopOutlined />} 
-                            onClick={()=>handleBuyNow(book.price)}
-                        >
-                            立即购买
-                        </Button> */}
                         <Button 
                             type="primary" 
                             icon={<ShoppingCartOutlined />} 

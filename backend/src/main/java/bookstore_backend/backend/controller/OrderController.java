@@ -175,6 +175,22 @@ public class OrderController {
         }
     }
 
+
+    @PutMapping("/orders/{orderId}/pay")
+    public ResponseEntity<?> payOrder(@PathVariable Long orderId) {
+        try {
+            Order order = orderService.payOrder(orderId);
+            if (order != null) {
+                return ResponseEntity.ok(order);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+        
     // 更新订单状态
     @PutMapping("/orders/{orderId}/status")
     public ResponseEntity<Order> updateOrderStatus(

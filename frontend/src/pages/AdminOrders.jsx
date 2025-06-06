@@ -232,7 +232,7 @@ export function AdminOrdersPage() {
                        <Spin size="large" tip="加载订单中..." />
                      </div>
                    ) : sortedOrders && sortedOrders.length > 0 ? (
-                     <OrderTable orders={sortedOrders} />
+                     <OrderTable orders={sortedOrders} onUpdate={fetchAllOrders} />
                    ) : (
                      <Empty 
                        description="暂无订单记录" 

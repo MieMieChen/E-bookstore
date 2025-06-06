@@ -21,6 +21,7 @@ public interface BookService {
     public Book createBook(Book book);
     public Book updateBook(Long id, Book book);
     public Book updateBookStock(Long id, int stock);
+    public void saveBook(Book book);
 
 
 

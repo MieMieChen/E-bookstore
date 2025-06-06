@@ -52,7 +52,13 @@ export async function cancelOrder(orderId) {
   const url = `${PREFIX}/orders/${orderId}/cancel`;
   const res = await put(url, null);
   if (!res.ok) throw new Error('取消订单失败');
-  return await res.json();
+  return res;
+}
+export async function payOrder(orderId) {
+  const url = `${PREFIX}/orders/${orderId}/pay`;
+  const res = await put(url, null);
+  if (!res.ok) throw new Error('支付订单失败');
+  return res;
 }
 
 // 更新订单状态

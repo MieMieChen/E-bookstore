@@ -74,12 +74,19 @@ public class BookServiceImpl implements BookService {
         existingBook.setIsbn(book.getIsbn());
         existingBook.setStock(book.getStock());
         existingBook.setImageUrl(book.getImageUrl());
+        existingBook.setDescription(book.getDescription());
+        existingBook.setPublisher(book.getPublisher());
+        existingBook.setPublishDate(book.getPublishDate());
+        existingBook.setOnShow(book.getOnShow());
         return bookDao.save(existingBook);
     }   
     public Book updateBookStock(Long id, int stock) {
         Book existingBook = bookDao.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
         existingBook.setStock(stock);
         return bookDao.save(existingBook);
+    }
+    public void saveBook(Book book) {
+        bookDao.save(book);
     }
 
 

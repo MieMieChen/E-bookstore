@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.ToString;
 // import lombok.Builder;
 import java.util.List;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -39,8 +40,16 @@ public class Book {
 
     @Column(length = 20,unique = true)
     private String isbn;
-
+    
     private String imageUrl;
+
+    @Column(name = "publish_date")
+    private LocalDate publishDate;
+
+    private String publisher;
+
+    @Column(nullable = false)
+    private Integer onShow = 1; //1表示上架，0表示下架
     
     @ToString.Exclude
     @JsonIgnore 

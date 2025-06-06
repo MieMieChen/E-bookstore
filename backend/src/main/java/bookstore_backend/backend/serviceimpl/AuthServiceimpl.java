@@ -159,6 +159,9 @@ public class AuthServiceimpl  implements AuthService {
             response.put("username", user.getUsername());
             response.put("email", user.getEmail());
             response.put("type", user.getType());
+            response.put("phone", user.getPhone());
+            response.put("address", user.getAddress());
+            response.put("cash", user.getCash());
             
             return new ResponseEntity<>(response, HttpStatus.OK);
             

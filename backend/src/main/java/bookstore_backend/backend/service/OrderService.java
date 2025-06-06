@@ -25,10 +25,10 @@ public interface OrderService {
     public Order saveOrder(Order order)  ;
 
     public Order cancelOrder(Long orderId) throws OrderNotFoundException;
+    public Order payOrder(Long Orderid);
     public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException;
     public Order getOrderById(Long orderId);
     public List<Order> getAllOrders();
-    public void deleteOrder(Long orderId);
     public Order updateOrder(Long orderId, Order order);
     public Order updateOrderStatus(Long orderId, OrderStatus status);
     public List<Order> searchOrders(String startTime, String endTime, String bookTitle);

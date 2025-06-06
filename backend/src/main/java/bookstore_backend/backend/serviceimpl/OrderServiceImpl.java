@@ -108,12 +108,6 @@ public class OrderServiceImpl implements OrderService {
     public Order cancelOrder(Long orderId) throws OrderNotFoundException{
         Order order = orderDao.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
-        // Optional<Order> orderOpt = orderDao.findById(orderId);
-        // if (orderOpt.isPresent()) {
-        //     Order order = orderOpt.get();
-        //     order.setStatus(OrderStatus.CANCELLED);
-        //     return orderDao.save(order);
-        // }
         if(order.getOrderItems()!=null) 
         {
             order.setStatus(OrderStatus.CANCELLED);
@@ -121,6 +115,24 @@ public class OrderServiceImpl implements OrderService {
         }
         return null;
     }
+    public Order payOrder(Long orderId)
+    {
+        Order order = orderDao.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
+        order.setStatus(OrderStatus.PAID);
+        double totalAmount = order.getTotalAmount();
+        User user = order.getUser();
+        user.setCash(user.getCash() - (int)totalAmount);
+        userService.saveUser(user);
+        List<Book> books = order.getOrderItems().stream().map(OrderItem::getBook).collect(Collectors.toList());
+        for(Book book:books)
+        {
+            book.setStock(book.getStock() - 1);
+            bookService.saveBook(book);
+        }
+        return orderDao.save(order);
+    }
+
     public Order uodateOrderStatus(Long orderId, OrderStatus status) throws OrderNotFoundException {
         Order order = orderDao.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
@@ -135,10 +147,7 @@ public class OrderServiceImpl implements OrderService {
     {
         return orderDao.findAll();
     }
-    public void deleteOrder(Long orderId)
-    {
-        orderDao.deleteById(orderId);
-    }
+
     public Order updateOrder(Long orderId, Order order)
     {
         return orderDao.save(order);

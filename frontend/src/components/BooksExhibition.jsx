@@ -31,7 +31,9 @@ export function BooksExhibition() {
       try {
         setLoading(true);
         const data = await searchBooks(searchType, searchValue);
-        setFilteredBooks(data);
+        // 过滤掉 onShow 为 0 的图书
+        const visibleBooks = data.filter(book => book.onShow === 1);
+        setFilteredBooks(visibleBooks);
       } catch (error) {
         message.error('搜索图书失败');
         setFilteredBooks(books);
@@ -46,8 +48,10 @@ export function BooksExhibition() {
   const fetchBooks = async () => {
     try {
       const data = await getBooks();
-      setBooks(data);
-      setFilteredBooks(data);
+      // 过滤掉 onShow 为 0 的图书
+      const visibleBooks = data.filter(book => book.onShow === 1);
+      setBooks(visibleBooks);
+      setFilteredBooks(visibleBooks);
       setLoading(false);
     } catch (error) {
       message.error('获取图书列表失败');
@@ -102,41 +106,41 @@ export function BooksExhibition() {
               style={{ height: '100%' }}
               bodyStyle={{ padding: '12px' }}
               cover={
-                <div style={{ 
-                  height: '200px', 
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#f5f5f5'
-                }}>
-                  <img 
-                    alt={book.title} 
-                    src={book.imageUrl} 
-                    style={{ 
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }} 
-                  />
+              <div style={{ 
+                height: '200px', 
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5'
+              }}>
+                <img 
+                  alt={book.title} 
+                  src={book.imageUrl} 
+                  style={{ 
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }} 
+                />
+              </div>
+            }
+            onClick={() => handleBookClick(book.id)}
+          >
+            <Card.Meta
+              title={
+                <Typography.Title level={5} style={{ margin: 0, height: '48px', overflow: 'hidden' }}>
+                  {book.title}
+                </Typography.Title>
+              }
+              description={
+                <div style={{ height: '80px' }}>
+                  <p style={{ margin: '4px 0' }}>作者：{book.author}</p>
+                  <p style={{ margin: '4px 0' }}>价格：¥{book.price}</p>
+                  <p style={{ margin: '4px 0' }}>库存：{book.stock}</p>
                 </div>
               }
-              onClick={() => handleBookClick(book.id)}
-            >
-              <Card.Meta
-                title={
-                  <Typography.Title level={5} style={{ margin: 0, height: '48px', overflow: 'hidden' }}>
-                    {book.title}
-                  </Typography.Title>
-                }
-                description={
-                  <div style={{ height: '80px' }}>
-                    <p style={{ margin: '4px 0' }}>作者：{book.author}</p>
-                    <p style={{ margin: '4px 0' }}>价格：¥{book.price}</p>
-                    <p style={{ margin: '4px 0' }}>库存：{book.stock}</p>
-                  </div>
-                }
-              />
+            />
             </Card>
           </Col>
         ))}

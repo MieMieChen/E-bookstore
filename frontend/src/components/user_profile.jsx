@@ -7,51 +7,49 @@ const { Title, Text } = Typography;
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
   
   // 获取认证上下文
   const { currentUser, getMe, updateUser } = useAuth();
-  
-  // 获取用户数据
-  const user = currentUser || getMe();
-  console.log("user",user);
-  
-  // 临时存储编辑中的数据
-  const [tempData, setTempData] = useState({
-    email: user?.email || '',
-    phone: user?.phone || '',
-    address: user?.address || ''
-  });
 
   // 组件加载时获取最新用户信息
   useEffect(() => {
     const loadUserData = async () => {
-      if (user && user.id) {
-        setLoading(true);
-        try {
-          await updateUser(user);
-        } catch (error) {
-          console.error('加载用户信息失败:', error);
-          message.error('加载用户信息失败');
-        } finally {
-          setLoading(false);
+      setLoading(true);
+      try {
+        const me = await getMe();
+        if (me) {
+          setUserData(me);
         }
+      } catch (error) {
+        console.error('加载用户信息失败:', error);
+        message.error('加载用户信息失败');
+      } finally {
+        setLoading(false);
       }
     };
     
     loadUserData();
   }, []);
 
+  // 临时存储编辑中的数据
+  const [tempData, setTempData] = useState({
+    email: '',
+    phone: '',
+    address: ''
+  });
+
   // 当用户信息更新时，更新临时数据
   useEffect(() => {
-    if (user) {
+    if (userData) {
       setTempData({
-        email: user.email || '',
-        phone: user.phone || '',
-        address: user.address || ''
+        email: userData.email || '',
+        phone: userData.phone || '',
+        address: userData.address || ''
       });
     }
-  }, [user]);
+  }, [userData]);
 
   // 处理输入变化
   const handleInputChange = (field, value) => {
@@ -66,7 +64,8 @@ export default function UserProfile() {
     setLoading(true);
     try {
       // 调用后端API更新用户信息
-      await updateUser(tempData);
+      const updatedUser = await updateUser(tempData);
+      setUserData(updatedUser);
       setIsEditing(false);
       message.success('个人信息更新成功！');
     } catch (error) {
@@ -81,26 +80,27 @@ export default function UserProfile() {
   const handleCancel = () => {
     // 恢复为原始数据
     setTempData({
-      email: user.email || '',
-      phone: user.phone || '',
-      address: user.address || ''
+      email: userData?.email || '',
+      phone: userData?.phone || '',
+      address: userData?.address || ''
     });
     setIsEditing(false);
   };
 
   // 刷新用户信息
   const handleRefresh = async () => {
-    if (user && user.id) {
-      setLoading(true);
-      try {
-        await refreshUserInfo(user.id);
+    setLoading(true);
+    try {
+      const me = await getMe();
+      if (me) {
+        setUserData(me);
         message.success('用户信息已刷新');
-      } catch (error) {
-        console.error('刷新用户信息失败:', error);
-        message.error('刷新用户信息失败');
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      console.error('刷新用户信息失败:', error);
+      message.error('刷新用户信息失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,6 +113,14 @@ export default function UserProfile() {
     );
   }
 
+  if (!userData) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px 0' }}>
+        <Text type="secondary">未能加载用户信息</Text>
+      </div>
+    );
+  }
+
   return (
     <Row gutter={24}>
       <Col xs={24} sm={24} md={8}>
@@ -120,9 +128,9 @@ export default function UserProfile() {
           <div style={{ textAlign: 'center' }}>
             <Avatar size={120} icon={<UserOutlined />} />
             <Title level={3} style={{ marginTop: 16 }}>
-              {user.username}
+              {userData.username}
             </Title>
-            <Text type="secondary">ID: {user.id}</Text>
+            <Text type="secondary">ID: {userData.id}</Text>
             <Divider />
             <Button 
               icon={<ReloadOutlined />} 
@@ -154,7 +162,7 @@ export default function UserProfile() {
         <Card title="详细信息">
           <Descriptions bordered column={1}>
             <Descriptions.Item label="用户名">
-              {user.username}
+              {userData.username}
             </Descriptions.Item>
             <Descriptions.Item label="邮箱">
               {isEditing ? (
@@ -167,7 +175,7 @@ export default function UserProfile() {
               ) : (
                 <>
                   <MailOutlined style={{ marginRight: 8 }} />
-                  {user.email || '未设置'}
+                  {userData.email || '未设置'}
                 </>
               )}
             </Descriptions.Item>
@@ -182,7 +190,7 @@ export default function UserProfile() {
               ) : (
                 <>
                   <PhoneOutlined style={{ marginRight: 8 }} />
-                  {user.phone || '未设置'}
+                  {userData.phone || '未设置'}
                 </>
               )}
             </Descriptions.Item>
@@ -197,9 +205,12 @@ export default function UserProfile() {
               ) : (
                 <>
                   <EnvironmentOutlined style={{ marginRight: 8 }} />
-                  {user.address || '未设置'}
+                  {userData.address || '未设置'}
                 </>
               )}
+            </Descriptions.Item>
+            <Descriptions.Item label="账户余额">
+              ¥{userData.cash || 0}
             </Descriptions.Item>
           </Descriptions>
         </Card>

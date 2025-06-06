@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, InputNumber, message, Upload } from 'antd';
+import { Table, Space, Button, Input, Modal, Form, InputNumber, message, Upload, DatePicker } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getBooks, searchBooks,addBook,updateBook,deleteBook } from '../services/book';
 
@@ -242,6 +242,31 @@ const handleModalOk = async () => {
           >
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="书籍描述"
+            rules={[{ required: true, message: '请输入书籍描述' }]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item
+            name="publisher"
+            label="出版社"
+            rules={[{ required: true, message: '请输入出版社' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="publish_date"
+            label="出版时间"
+            rules={[{ required: true, message: '请选择出版时间' }]}
+          >
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+
           <Form.Item
             name="price"
             label="价格"
