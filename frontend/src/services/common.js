@@ -18,8 +18,9 @@ export async function fetchWithAuth(url, options = {}) {
     };
 
     const response = await fetch(url, fetchOptions);
-    console.log("fetchWithAuth response:", response);
-    return handleResponse(response);
+    const res = await handleResponse(response);
+    console.log("fetchWithAuth response:", res);
+    return res;
 }
 
 // 处理API响应的通用函数
@@ -59,7 +60,7 @@ export async function del(url, data) {
         method: "DELETE", 
         body: JSON.stringify(data) 
     });
-    return processResponse(res);
+    return res;
 }
 
 export async function post(url, data) {

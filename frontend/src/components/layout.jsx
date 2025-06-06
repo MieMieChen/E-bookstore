@@ -96,7 +96,7 @@ export function MainLayout() {
     },
   ];
   // currentUser.type = 1;
-  console.log ("当前用户信息:", currentUser.type);
+  // console.log ("当前用户信息:", currentUser.type);
   const menuItems = currentUser?.type ? AdminMenuItems : UserMenuItems;
   // const menuItems  = UserMenuItems;
 

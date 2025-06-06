@@ -37,7 +37,7 @@ public class Book {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(length = 20)
+    @Column(length = 20,unique = true)
     private String isbn;
 
     private String imageUrl;

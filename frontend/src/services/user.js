@@ -20,7 +20,7 @@ export async function updateUserInvalid(userId, userData) {
 export async function getAllUsers() {
   const url = `${PREFIX}/admin/users`;
   const res = await get(url);
-  if (!res.ok) throw new Error('获取所有用户信息失败');
+  console.log("res:",res);
   return await handleResponse(res);
 }
 

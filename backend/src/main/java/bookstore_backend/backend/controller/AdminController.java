@@ -80,6 +80,7 @@ public class AdminController {
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
         Book updatedBook = bookService.updateBook(id, book);
+        System.out.println("Updated Book: " + updatedBook);
         return ResponseEntity.ok(updatedBook);
     }
     @PutMapping("/books/{id}/stock")

@@ -38,6 +38,7 @@ public class AuthServiceimpl  implements AuthService {
     private AuthenticationManager authenticationManager;
 
     @Override
+    //
     public ResponseEntity<Object> login(Map<String, String> credentials, HttpSession session) {
         String username = credentials.get("username");
         String password = credentials.get("password");
@@ -54,7 +55,7 @@ public class AuthServiceimpl  implements AuthService {
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(username.trim(), password);
             
-            // 2. 认证
+            // 2. 认证 当 authenticationManager.authenticate() 被调用时，Spring Security会调用 CustomUserDetailsService.java 来加载用户信息
             Authentication authentication = authenticationManager.authenticate(authRequest);
             
             // 3. 保存认证信息到 SecurityContext

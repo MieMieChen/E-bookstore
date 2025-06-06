@@ -68,17 +68,18 @@ export async function searchBooks(searchType, query) {
 export async function addBook(bookData) {
   const url = `${PREFIX}/admin/books`;
   const res = await post(url,bookData);
-  return  await processResponse(res);
+  return  res;
   }
 
 export async function updateBook(bookId, bookData) {
   const url = `${PREFIX}/admin/books/${bookId}`;
+  console.log("Updating book with ID:", bookId, "Data:", bookData);
   const res = await put(url, bookData);
-  return await processResponse(res);
+  return res;
   }
 
 export async function deleteBook(bookId) {
   const url = `${PREFIX}/admin/books/${bookId}`;
   const res = await del(url);
-  return await processResponse(res);
+  return res;
 }

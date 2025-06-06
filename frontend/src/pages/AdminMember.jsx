@@ -1,18 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, InputNumber, message, Upload } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getBooks, searchBooks,addBook,updateBook,deleteBook } from '../services/book';
+import { useState, useEffect } from 'react';
+import { Table, Space, Button, Input,  message } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getAllUsers } from '../services/user';
 
 const { Search } = Input;
 
 export function AdminMemberPage() {
-  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingBook, setEditingBook] = useState(null);
-  const [form] = Form.useForm();
   const [user, setUser] = useState(null);
 
 
@@ -91,7 +86,7 @@ export function AdminMemberPage() {
         <h1>用户管理</h1>
       <Table
         columns={columns}
-        dataSource={books}
+        dataSource={user}
         rowKey="id"
         loading={loading}
       />

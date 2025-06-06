@@ -71,6 +71,9 @@ public class BookServiceImpl implements BookService {
         existingBook.setTitle(book.getTitle());
         existingBook.setAuthor(book.getAuthor());
         existingBook.setPrice(book.getPrice());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setStock(book.getStock());
+        existingBook.setImageUrl(book.getImageUrl());
         return bookDao.save(existingBook);
     }   
     public Book updateBookStock(Long id, int stock) {
