@@ -21,19 +21,8 @@ export async function register(userData) {
 // 获取当前登录用户信息
 export async function getMe() {
     try {
-        const response = await fetch(`${PREFIX}/auth/me`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            return null;
-        }
-
-        return await response.json();
+        const response = await getJson(`${PREFIX}/auth/me`);
+        return response.ok ? response.data : null;
     } catch (error) {
         console.error('获取用户信息失败:', error);
         return null;

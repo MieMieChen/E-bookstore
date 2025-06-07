@@ -18,6 +18,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("=== Loading User Details for Authentication ===");
+        System.out.println("Username: " + username);
+        
         User user = userDao.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         
@@ -25,13 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user.getUserAuth() == null) {
             throw new UsernameNotFoundException("User authentication details not found for user: " + username);
         }
-        
-        // 打印调试信息
-        System.out.println("=== Debug: Loading User Details ===");
-        System.out.println("Username: " + user.getUsername());
-        System.out.println("Password: " + (user.getPassword() != null ? "[PROTECTED]" : "null"));
-        System.out.println("Authorities: " + user.getAuthorities());
-        System.out.println("==============================");
+
+        // 打印存储的加密密码（只显示前10个字符）
+        String storedPassword = user.getPassword();
+        System.out.println("Stored Password (BCrypt): " + 
+            (storedPassword != null ? storedPassword.substring(0, Math.min(10, storedPassword.length())) + "..." : "null"));
+        System.out.println("User Type: " + user.getType());
+        System.out.println("=== User Details Loaded Successfully ===");
         
         return user;
     }

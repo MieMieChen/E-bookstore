@@ -6,14 +6,14 @@ import '../css/global.css';
 import useMessage from "antd/es/message/useMessage";
 import { useAuth } from '../context/AuthContext';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export function Login() {
   const [error, setError] = useState('');
   const [messageApi, contextHolder] = useMessage();
   const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate(); //这是一个用于编程式导航的 hook 返回一个函数，可以用来实现页面跳转
+  const location = useLocation(); // 这个 hook 返回当前 URL 的 location 对象
 
   const onSubmit = async (values) => {
     try {
@@ -27,16 +27,13 @@ export function Login() {
       }
 
       console.log('当前location状态:', {
-        pathname: location.pathname,
+        pathname: location.pathname, //是 URL 的路径部分，不包含域名和查询参数
         state: location.state,
-        from: location.state?.from
+        from: location.state?.from //通常用于记录用户在被重定向到登录页之前的页面路径 这样在登录成功后可以返回用户原本想访问的页面
       });
 
+      //前端
       const res = await login(username, password);
-      console.log("res",res);
-      console.log("res.ok", res.ok);
-      console.log("res.data.valid", res.data.valid);
-      console.log('test',res.ok&&res.data.valid==1);
       if (res.ok&&res.data.valid==1) {
         messageApi.success("登录成功！").then(() => {
           const from = location.state?.from || '/home';
@@ -50,6 +47,8 @@ export function Login() {
       }
       else 
       {
+        console.log("res.ok&&res.data.valid",res.ok, res.data.valid);
+
         console.log("您的账号已经被禁用");
         setError('您的账号已经被禁用');
         messageApi.error('您的账号已经被禁用');

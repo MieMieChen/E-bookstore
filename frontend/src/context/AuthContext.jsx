@@ -3,6 +3,9 @@ import { getUserInfo, updateUserInfo } from '../services/user';
 import { login as loginApi } from '../services/login';
 import { getMe as getMeApi } from '../services/auth';
 import { register as registerApi } from '../services/auth';//localStorage 是浏览器内置的 Web Storage API，不需要额外声明
+import crypto from 'crypto-js';
+
+
 // 它是前端本地存储机制，用于在浏览器中持久化存储键值对数据
 // 数据会一直保存在浏览器中，除非被明确删除或清除浏览器缓存
 // 存储的数据只能是字符串，所以需要使用 JSON.stringify() 和 JSON.parse()
@@ -26,9 +29,11 @@ export function AuthProvider({ children }) {
   
   // 登录函数
   const login = async (username, password) => {
+      // 直接发送原始密码，让后端处理加密
       const response = await loginApi(username, password);
-      const userData = response.data;
-      setCurrentUser(userData);
+      if (response.ok && response.data) {
+          setCurrentUser(response.data);
+      }
       return response;
   };
   

@@ -28,6 +28,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AuthServiceimpl  implements AuthService {
@@ -36,6 +37,9 @@ public class AuthServiceimpl  implements AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+     @Autowired
+    private BCryptPasswordEncoder bcryptEncoder;  
 
     @Override
     //
@@ -55,7 +59,7 @@ public class AuthServiceimpl  implements AuthService {
             UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(username.trim(), password);
             
-            // 2. 认证 当 authenticationManager.authenticate() 被调用时，Spring Security会调用 CustomUserDetailsService.java 来加载用户信息
+            // 2. 认证 当 authenticationManager.authenticate() 被调用时，Spring Security会调用 CustomUserDetailsService.java 来加载用户信息，然后使用配置的 BCryptPasswordEncoder 进行密码验证。
             Authentication authentication = authenticationManager.authenticate(authRequest);
             
             // 3. 保存认证信息到 SecurityContext

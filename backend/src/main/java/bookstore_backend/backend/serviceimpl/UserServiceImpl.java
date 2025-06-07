@@ -7,6 +7,7 @@ import bookstore_backend.backend.dao.UserDao;
 import bookstore_backend.backend.dao.UserAuthDao;
 import bookstore_backend.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +20,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserAuthDao userAuthDao;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     // 注册用户
     @Override
@@ -46,10 +50,10 @@ public class UserServiceImpl implements UserService{
         // 保存用户基本信息
         user = userDao.save(user);
 
-        // 创建用户认证信息
+        // 创建用户认证信息，使用BCrypt加密密码
         UserAuth userAuth = UserAuth.builder()
                 .user(user)
-                .password(password)
+                .password(passwordEncoder.encode(password)) //注册时使用BCrypt加密
                 .type(0)  // 设置为普通用户
                 .build();
 
@@ -67,7 +71,7 @@ public class UserServiceImpl implements UserService{
     // 登录校验
     public Optional<User> login(String username, String password) {
         Optional<UserAuth> userAuthOpt = userAuthDao.findByUser_Username(username);
-        if (userAuthOpt.isPresent() && userAuthOpt.get().getPassword().equals(password)) {
+        if (userAuthOpt.isPresent() && passwordEncoder.matches(password, userAuthOpt.get().getPassword())) {
             return Optional.of(userAuthOpt.get().getUser());
         }
         return Optional.empty();

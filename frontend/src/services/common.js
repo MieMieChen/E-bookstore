@@ -65,9 +65,8 @@ export async function del(url, data) {
 
 export async function post(url, data) {
     try {
-        const response = await fetch(url, {
+        const response = await fetchWithAuth(url, {
             method: 'POST',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -88,7 +87,7 @@ export async function post(url, data) {
             ok: response.ok,
             status: response.status,
             message: responseData.message || '操作失败',
-            data: responseData.data || responseData
+            data: responseData
         };
     } catch (error) {
         console.error('POST request failed:', error);

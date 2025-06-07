@@ -1,12 +1,12 @@
 package bookstore_backend.backend.serviceimpl;
 
-
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.entity.UserAuth;
 import bookstore_backend.backend.dao.UserDao;
 import bookstore_backend.backend.dao.UserAuthDao;
 import bookstore_backend.backend.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +17,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     
     @Autowired
     private UserAuthDao userAuthDao;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     
     public User authenticateUser(String username, String password) {
         // 1. 通过用户名查找用户
@@ -35,8 +38,8 @@ public class UserAuthServiceImpl implements UserAuthService {
             return null; // 认证信息不存在
         }
         
-        // 3. 验证密码
-        if (userAuth.getPassword().equals(password)) {
+        // 3. 使用BCrypt验证密码
+        if (passwordEncoder.matches(password, userAuth.getPassword())) { // 使用BCrypt验证密码
             return user; // 密码正确，返回用户信息
         }
         

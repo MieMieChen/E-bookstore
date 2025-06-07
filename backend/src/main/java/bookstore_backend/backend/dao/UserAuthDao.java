@@ -7,4 +7,5 @@ public interface UserAuthDao {
     UserAuth save(UserAuth userAuth);
     Optional<UserAuth> findByUserId(Long userId);
     Optional<UserAuth> findByUser_Username(String username);
+    Iterable<UserAuth> findAll();
 }

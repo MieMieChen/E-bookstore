@@ -16,6 +16,7 @@ import bookstore_backend.backend.entity.OrderStatus;
 import bookstore_backend.backend.service.UserService;
 import bookstore_backend.backend.service.BookService;
 import bookstore_backend.backend.service.OrderService;
+import bookstore_backend.backend.util.PasswordMigrationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ public class AdminController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private PasswordMigrationUtil passwordMigrationUtil;
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
@@ -164,5 +168,14 @@ public class AdminController {
     {
         Order updatedOrder = orderService.updateOrder(id, order);
         return ResponseEntity.ok(updatedOrder);
+    }
+    @PostMapping("/migrate-passwords")
+    public ResponseEntity<String> migratePasswords() {
+        try {
+            passwordMigrationUtil.migratePasswords();
+            return ResponseEntity.ok("Password migration completed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Password migration failed: " + e.getMessage());
+        }
     }
 }

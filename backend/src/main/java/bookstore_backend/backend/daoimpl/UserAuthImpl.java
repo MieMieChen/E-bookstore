@@ -28,4 +28,9 @@ public class UserAuthImpl implements UserAuthDao {
     public Optional<UserAuth> findByUser_Username(String username) {
         return userAuthRepository.findByUser_Username(username);
     }
+
+    @Override
+    public Iterable<UserAuth> findAll() {
+        return userAuthRepository.findAll();
+    }
 }

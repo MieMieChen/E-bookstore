@@ -11,8 +11,6 @@ export async function login(username, password) {
         message: "用户名和密码不能为空"
       };
     }
-
-    console.log('Sending login request:', { username, password: '***' });
     const response = await post(`${PREFIX}/auth/login`, { username, password });
     // console.log('Login response:', response);
     
