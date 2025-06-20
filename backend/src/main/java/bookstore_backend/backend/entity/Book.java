@@ -43,6 +43,9 @@ public class Book {
     @Column(nullable = false)
     private Integer stock;
 
+    private Integer soldNum;
+
+
     @Column(length = 20,unique = true)
     private String isbn;
     
@@ -52,6 +55,7 @@ public class Book {
     private LocalDate publishDate;
 
     private String publisher;
+    
 
     @Column(nullable = false)
     private Integer onShow = 1; //1表示上架，0表示下架 自动给我转变成on_show

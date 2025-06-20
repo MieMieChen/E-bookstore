@@ -1,11 +1,17 @@
 package bookstore_backend.backend.controller;
 
+import bookstore_backend.backend.dto.OrderFilterDTO;
+import bookstore_backend.backend.dto.OrderStatsDTO;
+import bookstore_backend.backend.dto.UserStatsDTO;
 import bookstore_backend.backend.entity.User;
 import bookstore_backend.backend.service.UserService;
+import bookstore_backend.backend.service.StatsService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,9 +28,13 @@ public class UserController {
     @Autowired
     private UserService userService; //创建一个service对象，可以在这个上面调用接口
 
-    // 获取用户信息（不含密码）
-    @GetMapping("/{id}")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    @Autowired
+    private StatsService statsService; // 创建一个统计服务对象，用于获取用户购书
+
+    // 获取用户信息（不含密码） 
+    @GetMapping("/me")  //表示查询 可以使用http://localhost:8080/api/users/2 来查询
+    public ResponseEntity<User> getUser(@AuthenticationPrincipal User user) {
+        Long id = user.getId();
         Optional<User> userOpt = userService.findUserById(id);
         System.out.println("获取用户信息请求，用户ID: " + id);
         return userOpt
@@ -32,8 +42,9 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
     // 更新用户信息
-    @PutMapping("/{id}")  //表示修改
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    @PutMapping("/me")  //表示修改
+    public ResponseEntity<User> updateUser(@AuthenticationPrincipal User user, @RequestBody User updatedUser) {
+        Long id = user.getId();
         try {
             System.out.println("接收到更新用户请求: " + updatedUser);
             
@@ -67,5 +78,19 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
+    }
+     @GetMapping("/stats")
+    public ResponseEntity<List<UserStatsDTO>> getUserBookStats(
+            @RequestParam String start,
+            @RequestParam String end,
+            @AuthenticationPrincipal User user) {
+        Long userId = user.getId();
+        OrderFilterDTO filter = OrderFilterDTO.builder()
+            .startTime(start)
+            .endTime(end)
+            .userId(userId)
+            .build();
+        List<UserStatsDTO> result = statsService.getUserBookStats(filter);
+        return ResponseEntity.ok(result);
     }
 } 

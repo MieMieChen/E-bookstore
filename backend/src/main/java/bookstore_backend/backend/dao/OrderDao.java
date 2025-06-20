@@ -15,4 +15,6 @@ public interface OrderDao {
     List<Order> findByUserOrderByOrderTimeDesc(User user);
     List<Order> findByUserOrderByCreatedAtDesc(User user);
     List<Order> findByOrderTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+    List<Order> findByTimeRange(LocalDateTime start, LocalDateTime end);
+    List<Order> findByUserIdAndTimeRange(Long userId, LocalDateTime start, LocalDateTime end);
 }

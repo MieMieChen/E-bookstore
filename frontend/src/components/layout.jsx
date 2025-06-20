@@ -97,7 +97,7 @@ export function MainLayout() {
     {
       key:'/stats',
       icon: <BarChartOutlined />,
-      label: <Link to="/admin/stats">统计分析</Link>,
+      label: <Link to="/user/stats">统计分析</Link>,
     },
   ];
   // currentUser.type = 1;

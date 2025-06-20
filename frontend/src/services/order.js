@@ -1,12 +1,14 @@
-import { PREFIX,get,post, put } from "./common";
+import { PREFIX, get, post, put } from "./common";
 import { format } from 'date-fns';
 
-export async function getOrders(userId) {
-  const url = `${PREFIX}/orders/${userId}`;
+// 获取当前登录用户订单
+export async function getOrders() {
+  const url = `${PREFIX}/orders/me`;
   const res = await get(url);
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
+
 export async function getAllOrders() {
   const url = `${PREFIX}/admin/orders`;
   const res = await get(url);
@@ -121,4 +123,14 @@ export async function searchOrders(params) {
   const data = await res.json();
   console.log('Search orders response:', data);
   return data;
+}
+
+
+export async function getOrdersFromStartToEnd(start,end)
+{
+  const url = `${PREFIX}/admin/stats/books?start=${start}&end=${end}`;
+  const res = await get(url);
+  if (!res.ok) throw new Error('获取订单统计失败');
+  return res;
+
 }

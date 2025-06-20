@@ -10,6 +10,7 @@ import bookstore_backend.backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
@@ -39,13 +40,14 @@ public class CartController {
 
 
 
-    @GetMapping("/{userId}") //处理 GET 请求，用于获取指定用户的购物车信息。前端会用 AJAX 发送 GET 请求到这个URL
-    public ResponseEntity<List<Cart>> getCartItems(@PathVariable Long userId) {
+    @GetMapping("/me") //处理 GET 请求，用于获取指定用户的购物车信息。前端会用 AJAX 发送 GET 请求到这个URL
+    public ResponseEntity<List<Cart>> getCartItems(@AuthenticationPrincipal User user) {
+        Long userId = user.getId();
         // 从数据库中查找指定用户
         Optional<User> userOpt = userService.findUserById(userId);
         return userOpt //当你调用 findById(userId) 方法时，Spring Data JPA 会自动为你生成并执行一条 SQL 查询语句（类似 SELECT * FROM users WHERE id = userId），去数据库中查找对应 userId 的用户记录。
         // 如果找到用户，则返回购物车列表
-            .map(user -> ResponseEntity.ok(cartService.getCartItemsByUser(user))) //如果找到用户，则返回购物车列表
+            .map(u -> ResponseEntity.ok(cartService.getCartItemsByUser(u))) //如果找到用户，则返回购物车列表
             // 如果找不到用户，则返回404 Not Found  
             .orElse(ResponseEntity.notFound().build());
     }
@@ -131,9 +133,10 @@ public class CartController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeFromCart(@PathVariable Long id) {
-     boolean deleted = cartService.removeCartItemById(id);
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> removeFromCart(@AuthenticationPrincipal User user) {
+        Long userId = user.getId();
+        boolean deleted = cartService.removeCartItemById(userId);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
@@ -141,7 +144,8 @@ public class CartController {
         }
     }
    
-    public ResponseEntity<Void> clearUserCart(@PathVariable Long userId) {
+    public ResponseEntity<Void> clearUserCart(@AuthenticationPrincipal User user) {
+        Long userId = user.getId();
         try {
             cartService.clearUserCart(userId);
             return ResponseEntity.ok().build();

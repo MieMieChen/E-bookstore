@@ -8,10 +8,7 @@ import lombok.Data;
 import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.List;
-import bookstore_backend.backend.entity.OrderStatus;
-// import lombok.Builder;
 
-// @Builder
 @Data
 @Entity
 @Table(name = "orders")
@@ -38,7 +35,7 @@ public class Order {
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) //所有操作都级联（保存、更新、删除等）
     private List<OrderItem> orderItems; 
 
     @Column(name = "order_time", nullable = false)

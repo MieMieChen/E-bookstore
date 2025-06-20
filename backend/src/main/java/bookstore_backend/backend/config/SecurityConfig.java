@@ -89,11 +89,14 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
+    // Spring Security 的过滤器链（SecurityFilterChain）的作用：
+    // 预防性拦截：在请求到达控制器之前就进行权限检查
+    // 全局性保护：统一的安全策略，对所有匹配的路径都生效
+    // 声明式安全：通过配置就能实现权限控制，不需要在每个控制器中编写判断代码
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 配置CORS，
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity in this context
             .authenticationProvider(authenticationProvider()) // 添加认证提供者
             .sessionManagement(session -> session

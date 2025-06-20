@@ -26,15 +26,8 @@ export function ShopProvider({ children }) {
   // 加载用户购物车数据 - 使用useCallback包装以保持引用稳定性
   const loadUserCart = useCallback(async () => {
     if (!isAuthenticated()) return;
-    
     try {
-      // console.log('当前用户', userData);
-      console.log("localStorage中的用户数据:", localStorage.getItem('currentUser'));
-      const userData = await getMe();
-      console.log("userData111:", userData);
-      console.log('当前用户ID:', userData.id);
-      const userCartItems = await getCart(userData.id);
-      
+      const userCartItems = await getCart();
       // 转换为前端购物车格式
       const frontendCartItems = userCartItems.map(item => ({
         id: item.book.id,
@@ -44,29 +37,22 @@ export function ShopProvider({ children }) {
         quantity: item.quantity,
         cover: item.book.imageUrl
       }));
-      
-      console.log('成功加载购物车数据:', frontendCartItems);
       setCartItems(frontendCartItems);
     } catch (error) {
       console.error('加载购物车数据失败:', error);
     }
-  }, [isAuthenticated, getMe]);
+  }, [isAuthenticated]);
   
   // 加载用户订单历史 - 使用useCallback包装以保持引用稳定性
   const loadUserOrders = useCallback(async () => {
     if (!isAuthenticated()) return;
-    
     try {
-      console.log('正在加载用户订单历史...');
-      console.log('当前用户ID:', currentUser.id);
-      const userOrders = await getOrders(currentUser.id);
-      
-      console.log('成功加载订单历史:', userOrders);
+      const userOrders = await getOrders();
       setOrders(userOrders);
     } catch (error) {
       console.error('加载订单历史失败:', error);
     }
-  }, [isAuthenticated, getMe]);
+  }, [isAuthenticated]);
 
   // 当用户登录状态改变时加载数据
   useEffect(() => {

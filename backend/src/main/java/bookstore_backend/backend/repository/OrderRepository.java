@@ -18,4 +18,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Add method to sort by created time if orderTime is not reliable
     List<Order> findByUserOrderByCreatedAtDesc(User user);
     List<Order> findByOrderTimeBetween(LocalDateTime startTime,LocalDateTime endTime);
+    List<Order> findByUser_IdAndOrderTimeBetween(Long userId, LocalDateTime start, LocalDateTime end);
 } 

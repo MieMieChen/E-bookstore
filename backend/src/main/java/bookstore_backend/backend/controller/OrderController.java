@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
@@ -53,8 +53,9 @@ public class OrderController {
     }
 
     // 获取用户的所有订单
-    @GetMapping("/orders/{userId}")
-    public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
+    @GetMapping("/orders/me")
+    public ResponseEntity<List<Order>> getUserOrders(@AuthenticationPrincipal User user) {
+        Long userId = user.getId();
         try {
             // 直接调用 Service 方法，Service 会处理查找用户、获取订单和预加载细节
             List<Order> orders = orderService.getUserOrders(userId);

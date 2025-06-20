@@ -55,4 +55,14 @@ public class OrderDaoImpl implements OrderDao {
     public List<Order> findByOrderTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
         return orderRepository.findByOrderTimeBetween(startTime, endTime);
     }
+    @Override
+    public List<Order> findByTimeRange(LocalDateTime start, LocalDateTime end)
+    {
+        return orderRepository.findByOrderTimeBetween(start, end);
+    }
+    @Override
+    public List<Order> findByUserIdAndTimeRange(Long userId, LocalDateTime start, LocalDateTime end)
+    {
+        return orderRepository.findByUser_IdAndOrderTimeBetween(userId, start, end);
+    }
 }

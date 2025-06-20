@@ -72,11 +72,7 @@ export function AuthProvider({ children }) {
   // 更新用户信息
   const updateUser = async (userData) => {
     try {
-      if (!currentUser || !currentUser.id) {
-        throw new Error('未登录，无法更新用户信息');
-      }
-      
-      const updatedUser = await updateUserInfo(currentUser.id, userData);
+      const updatedUser = await updateUserInfo(userData);
       setCurrentUser(prev => ({ ...prev, ...updatedUser }));
       return updatedUser;
     } catch (error) {
@@ -92,6 +88,7 @@ export function AuthProvider({ children }) {
         address,
         phone
     };
+        console.log("userdata",userData);
     const response = await registerApi(userData);
     return response;
   };

@@ -11,16 +11,16 @@ export async function register(user) {
   return await res.json();
 }
 
-// 获取用户信息
-export async function getUserInfo(userId) {
-  const res = await fetchWithAuth(`${PREFIX}/users/${userId}`);
+// 获取当前登录用户信息
+export async function getUserInfo() {
+  const res = await fetchWithAuth(`${PREFIX}/users/me`);
   if (!res.ok) throw new Error('获取用户信息失败');
   return await res.json();
 }
 
-// 更新用户信息
-export async function updateUserInfo(userId, userData) {
-  const res = await fetchWithAuth(`${PREFIX}/users/${userId}`, {
+// 更新当前登录用户信息
+export async function updateUserInfo(userData) {
+  const res = await fetchWithAuth(`${PREFIX}/users/me`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData)
@@ -69,11 +69,9 @@ export async function searchBooks(searchType, query) {
   return await res.json();
 }
 
-// 获取购物车
-export async function getCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/${userId}`, {
-    credentials:'include'
-  });
+// 获取购物车（当前用户）
+export async function getCart() {
+  const res = await fetchWithAuth(`${PREFIX}/cart/me`);
   if (!res.ok) throw new Error('获取购物车失败');
   return await res.json();
 }
@@ -108,17 +106,15 @@ export async function removeFromCart(cartId) {
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 
-// 清空用户的所有购物车项
-export async function clearUserCart(userId) {
-  const res = await fetch(`${PREFIX}/cart/user/${userId}`, { method: 'DELETE' ,credentials:'include'});
+// 清空当前用户购物车
+export async function clearUserCart() {
+  const res = await fetchWithAuth(`${PREFIX}/cart/me`, { method: 'DELETE' });
   if (!res.ok) throw new Error('清空购物车失败');
 }
 
-// 获取用户订单列表
-export async function getOrders(userId) {
-  const res = await fetch(`${PREFIX}/orders/${userId}`, {
-    credentials:'include'
-  });
+// 获取当前用户订单列表
+export async function getOrders() {
+  const res = await fetchWithAuth(`${PREFIX}/orders/me`);
   if (!res.ok) throw new Error('获取订单失败');
   return await res.json();
 }
