@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { message, Modal } from 'antd';
 import {
   addToCart as addToCartApi, 
   removeFromCart as removeFromCartApi,
@@ -13,6 +14,7 @@ import{
 }from '../services/order';
 
 import { useAuth } from './AuthContext';
+import { getBookById } from '../services/book';
 
 const ShopContext = createContext(); //创建了一个上下文对象 ShopContext，用于在组件树中共享购物车的状态和方法。
 
@@ -182,123 +184,92 @@ export function ShopProvider({ children }) {
       
       // 确保items是有效数组且包含必要字段
       if (!Array.isArray(items) || items.length === 0) {
-        throw new Error('无效的订单项：购物车为空或格式不正确');
+        console.error('购物车错误：', items);
+        Modal.error({
+          title: '购物车错误',
+          content: '购物车为空或格式不正确，请检查后重试。',
+          okText: '确定'
+        });
+        return null;
       }
       
-      // 验证商品项格式
-      const invalidItems = items.filter(item => 
-        !item || !item.id || typeof item.quantity !== 'number' || !item.price
+      // 获取所有书籍的最新状态
+      const booksStatus = await Promise.all(
+        items.map(item => getBookById(item.id))
       );
       
-      if (invalidItems.length > 0) {
-        console.error('检测到无效的商品项:', invalidItems);
-        throw new Error('无效的订单项：部分商品信息不完整');
+      // 找出已下架的商品
+      const unavailableItems = items.filter((item, index) => {
+        const bookInfo = booksStatus[index];
+        return !bookInfo.onShow;
+      });
+
+      // 如果有下架商品，显示弹窗
+      if (unavailableItems.length > 0) {
+        // console.log("发现下架商品：", unavailableItems);
+        const unavailableNames = unavailableItems
+          .map(item => item.title)
+          .join('、');
+
+        Modal.error({
+          title: '商品已下架',
+          content: `以下商品已下架，无法完成结算：${unavailableNames}。请从购物车中移除这些商品后再试。`,
+          okText: '我知道了'
+        });
+        return null;
       }
       
-      // 在创建订单前，先获取所有购物车项
-      console.log('获取数据库中的购物车数据...');
-      const dbCartItems = await getCart(user.id);
-      console.log('数据库中的购物车数据:', dbCartItems);
-      
-      // 获取所有要结算的书籍ID
-      const bookIdsToCheckout = items.map(item => item.id);
-      console.log('要结算的书籍ID:', bookIdsToCheckout);
+      // 过滤出可购买的商品
+      const validItems = items.filter((item, index) => {
+        const bookInfo = booksStatus[index];
+        return bookInfo.onShow;
+      });
+
+      // 重新计算总价
+      const validTotal = validItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
       
       // 创建订单对象
       const newOrder = {
-        user: { id: user.id }, // 从当前登录用户获取ID
-        totalAmount: total,
-        status: 'PENDING', // 使用后端定义的枚举值
-        orderItems: items.map(item => ({
+        user: { id: user.id },
+        totalAmount: validTotal,
+        status: 'PENDING',
+        orderItems: validItems.map(item => ({
           book: { id: item.id },
           quantity: item.quantity,
           price: item.price
         }))
       };
 
-      console.log('正在创建订单...', JSON.stringify(newOrder, null, 2));
-      
       // 调用后端API创建订单
       const savedOrder = await createOrderApi(newOrder);
-      console.log('订单创建成功:', savedOrder);
       
       // 更新前端状态
       setOrders(prevOrders => [savedOrder, ...prevOrders]);
-      
-      // 创建订单后清空购物车（前端状态）
       setCartItems([]);
       
-      // 精确删除数据库中对应的购物车项
-      console.log('正在删除数据库中的购物车项...');
-      let deletionSuccess = true;
+      // 清空购物车
       try {
-        // 找出数据库中对应要结算的购物车项
-        const cartItemsToDelete = dbCartItems.filter(cartItem => 
-          bookIdsToCheckout.includes(cartItem.book.id)
-        );
-        
-        console.log('要删除的购物车项:', cartItemsToDelete);
-        
-        // 逐个删除购物车项
-        for (const cartItem of cartItemsToDelete) {
-          console.log(`删除购物车项ID: ${cartItem.id}, 书籍ID: ${cartItem.book.id}`);
-          await removeFromCartApi(cartItem.id);
-        }
-        
-        console.log('购物车项删除成功');
-      } catch (deleteError) {
-        console.error('删除购物车项出错:', deleteError);
-        deletionSuccess = false;
-        
-        // 尝试使用备用方法 - 清空整个购物车
-        try {
-          console.log('尝试使用备用方法清空购物车...');
-          await clearUserCartApi(user.id);
-          console.log('备用方法清空购物车成功');
-        } catch (fallbackError) {
-          console.error('备用清空方法也失败:', fallbackError);
-        }
-      }
-      
-      // 结算后验证购物车是否为空
-      if (!deletionSuccess) {
-        console.log('尝试验证购物车是否清空...');
-        try {
-          const remainingItems = await getCart(user.id);
-          if (remainingItems && remainingItems.length > 0) {
-            console.warn('购物车清空不完全，剩余项目:', remainingItems);
-          } else {
-            console.log('验证成功: 购物车已清空');
-          }
-        } catch (verifyError) {
-          console.error('验证购物车状态失败:', verifyError);
-        }
+        await clearUserCartApi(user.id);
+      } catch (error) {
+        Modal.warning({
+          title: '提示',
+          content: '订单已创建，但购物车清空失败，请刷新页面。'
+        });
       }
       
       return savedOrder;
     } catch (error) {
-      console.error('订单创建失败:', error);
-      // 详细记录错误信息以便调试
-      if (error.message) console.error('错误消息:', error.message);
-      if (error.stack) console.error('错误堆栈:', error.stack);
-      
-      // 即使API调用失败，仍然更新前端状态以保持良好的用户体验
-      const fallbackOrder = {
-        id: Date.now(),
-        items: items,
-        total: total,
-        status: '待付款',
-        date: new Date().toISOString(),
-      };
-      setOrders(prevOrders => [fallbackOrder, ...prevOrders]);
-      setCartItems([]);
-      return fallbackOrder;
+      console.error('创建订单时发生错误:', error);
+      Modal.error({
+        title: '创建订单失败',
+        content: error.message || '创建订单时发生错误，请稍后重试。',
+        okText: '确定'
+      });
+      return null;
     }
   };
 
-  // const changeUserData = (newData) => {
-  //   setUserData(newData);
-  // };
+
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);

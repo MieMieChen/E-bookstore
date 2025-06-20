@@ -57,7 +57,10 @@ export async function put(url, data) {
 
 export async function del(url, data) {
     const res = await fetchWithAuth(url, { 
-        method: "DELETE", 
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(data) 
     });
     return res;

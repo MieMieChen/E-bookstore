@@ -45,6 +45,7 @@ public class UserServiceImpl implements UserService{
                 .phone(phone)
                 .type(0)  // 默认为普通用户
                 .valid(1) // 默认为正常用户
+                .cash(10000) // 设置初始余额
                 .build();
 
         // 保存用户基本信息

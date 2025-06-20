@@ -50,6 +50,7 @@ public class BookDaoImpl implements BookDao {
     public void restoreById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        System.out.println("Restoring book with ID: " + id);        
         book.setOnShow(1); // 将书籍状态设置为上架
         bookRepository.save(book); // 保存更新后的书籍状态
     }

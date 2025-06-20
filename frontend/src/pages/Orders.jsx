@@ -58,7 +58,8 @@ export function Orders() {
     if (!orders || orders.length === 0) return {};
     
     return orders.reduce((stats, order) => {
-      const status = order.status?.toLowerCase() || 'unknown';
+      // 确保status是字符串类型
+      const status = (order.status?.toString() || 'unknown').toLowerCase();
       stats[status] = (stats[status] || 0) + 1;
       return stats;
     }, {});

@@ -21,8 +21,8 @@ export function Register() {
                 values.username,
                 values.email,
                 values.password,
-                values.address,
-                values.phone
+                values.address || '',
+                values.phone || ''
             );
 
             if (result.ok) {
@@ -33,7 +33,7 @@ export function Register() {
             }
         } catch (error) {
             console.error('Registration error:', error);
-            message.error('注册过程中发生错误，请重试');
+            message.error(error.message || '注册过程中发生错误，请重试');
         }
     };
 

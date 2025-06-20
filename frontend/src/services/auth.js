@@ -4,16 +4,19 @@ import { PREFIX, getJson, post } from './common';
 export async function register(userData) {
     try {
         const response = await post(`${PREFIX}/auth/register`, userData);
+        if (!response.ok) {
+            throw new Error(response.message || "注册失败");
+        }
         return {
-            ok: response.ok,
-            message: response.ok ? "注册成功！" : (response.message || "注册失败"),
+            ok: true,
+            message: "注册成功！",
             data: response.data
         };
     } catch (error) {
         console.error('Register error:', error);
         return {
             ok: false,
-            message: "注册失败，请稍后重试"
+            message: error.message || "注册失败，请稍后重试"
         };
     }
 }
@@ -46,21 +49,4 @@ export function getReturnUrl() {
 // 保存当前页面URL（用于登录后重定向）
 export function saveReturnUrl(url) {
     sessionStorage.setItem('returnUrl', url);
-}
-
-export async function registerApi(userData) {
-    try {
-        const response = await post(`${PREFIX}/auth/register`, userData);
-        return {
-            ok: response.ok,
-            message: response.ok ? "注册成功！" : (response.message || "注册失败"),
-            data: response.data
-        };
-    } catch (error) {
-        console.error('Register error:', error);
-        return {
-            ok: false,
-            message: "注册失败，请稍后重试"
-        };
-    }
 } 

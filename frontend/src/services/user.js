@@ -9,8 +9,8 @@ export async function getUserInfo() {
 }
 
 // 获取用户购书统计
-export async function getUserStats({ startTime, endTime }) {
-  const url = `${PREFIX}/users/stats?start=${startTime}&end=${endTime}`;
+export async function getUserStats({ startTime, endTime, userId }) {
+  const url = `${PREFIX}/users/stats?start=${startTime}&end=${endTime}&isPersonalStats=true`;
   const res = await get(url);
   if (!res.ok) throw new Error('获取用户购书统计失败');
   return await res.json();
@@ -18,7 +18,7 @@ export async function getUserStats({ startTime, endTime }) {
 
 // 获取管理员书籍销量统计（热销榜）
 export async function getAdminBookStats({ startTime, endTime }) {
-  const url = `${PREFIX}/admin/stats/books?start=${startTime}&end=${endTime}`;
+  const url = `${PREFIX}/admin/stats/books?start=${startTime}&end=${endTime}&isPersonalStats=false`;
   const res = await get(url);
   if (!res.ok) throw new Error('获取书籍销量统计失败');
   return await res.json();
@@ -26,7 +26,7 @@ export async function getAdminBookStats({ startTime, endTime }) {
 
 // 获取管理员用户消费统计（消费榜）
 export async function getAdminUserStats({ startTime, endTime }) {
-  const url = `${PREFIX}/admin/stats/users?start=${startTime}&end=${endTime}`;
+  const url = `${PREFIX}/admin/stats/users?start=${startTime}&end=${endTime}&isPersonalStats=false`;
   const res = await get(url);
   if (!res.ok) throw new Error('获取用户消费统计失败');
   return await res.json();

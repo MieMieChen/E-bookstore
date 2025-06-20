@@ -25,11 +25,13 @@ import bookstore_backend.backend.util.PasswordMigrationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Optional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/admin/")
+@PreAuthorize("hasRole('ADMIN')")  // 类级别的权限控制，要求具有ADMIN角色
 public class AdminController {
     @Autowired
     private UserService userService;
@@ -46,28 +48,45 @@ public class AdminController {
     @Autowired
     private PasswordMigrationUtil passwordMigrationUtil;
 
+    // 验证当前用户是否为管理员的辅助方法
+    private void validateAdminAccess() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new org.springframework.security.access.AccessDeniedException("需要管理员权限");
+        }
+    }
+
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        
+        validateAdminAccess();
         return userService.listUsers();
     }
+
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        validateAdminAccess();
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        validateAdminAccess();
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
+
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        validateAdminAccess();
         User updatedUser = userService.updateUser(id, user);
         return ResponseEntity.ok(updatedUser);
     }
+
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        validateAdminAccess();
         Optional<User> user = userService.findUserById(id);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
@@ -75,8 +94,10 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PutMapping("/users/invalid/{id}")
     public ResponseEntity<User> setUserInvalid(@PathVariable Long id) {
+        validateAdminAccess();
         try {   
             Optional<User> existingUserOpt = userService.findUserById(id);
             if (existingUserOpt.isEmpty()) {
@@ -84,7 +105,7 @@ public class AdminController {
                 return ResponseEntity.notFound().build();
             }
             User existingUser = existingUserOpt.get();
-                existingUser.setValid(0);
+            existingUser.setValid(0);
             User savedUser = userService.saveUser(existingUser);
             System.out.println("用户更新成功: " + savedUser);
             return ResponseEntity.ok(savedUser);
@@ -95,8 +116,10 @@ public class AdminController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
     @PutMapping("/users/valid/{id}")
     public ResponseEntity<User> setUserValid(@PathVariable Long id) {
+        validateAdminAccess();
         try {
             Optional<User> existingUserOpt = userService.findUserById(id);
             if (existingUserOpt.isEmpty()) {
@@ -115,73 +138,85 @@ public class AdminController {
             return ResponseEntity.internalServerError().build();
         }
     }
-    
 
     @GetMapping("/books")
     public List<Book> getBooks() {
+        validateAdminAccess();
         return bookService.getAllBooks();
     }
-    //deleteBook
+
     @PutMapping("/books/delete/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        validateAdminAccess();
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
-    //对应前端的addBook
+
     @PostMapping("/books")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        validateAdminAccess();
         Book createdBook = bookService.createBook(book);
         return ResponseEntity.ok(createdBook);
     }
-    //updateBook
+
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+        validateAdminAccess();
         Book updatedBook = bookService.updateBook(id, book);
         System.out.println("Updated Book: " + updatedBook);
         return ResponseEntity.ok(updatedBook);
     }
-    //对应前端的restoreBook
+
     @PutMapping("/books/restore/{id}")
     public ResponseEntity<Void> restoreBook(@PathVariable Long id) {
+        validateAdminAccess();
         bookService.restoreBook(id);
         return ResponseEntity.noContent().build();
     }
     
     @PutMapping("/books/{id}/stock")
     public ResponseEntity<Book> updateBookStock(@PathVariable Long id, @RequestBody int stock) {
+        validateAdminAccess();
         Book updatedBook = bookService.updateBookStock(id, stock);
         return ResponseEntity.ok(updatedBook);
     }
+
     @GetMapping("orders/{id}")
-    public Order getOrder(@PathVariable Long id)
-    {
+    public Order getOrder(@PathVariable Long id) {
+        validateAdminAccess();
         return orderService.getOrderById(id);
     }
+
     @PutMapping("orders/{id}/status")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status)
-    {
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status) {
+        validateAdminAccess();
         Order updatedOrder = orderService.updateOrderStatus(id, status);
         return ResponseEntity.ok(updatedOrder);
     }
+
     @DeleteMapping("orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id)
-    {
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        validateAdminAccess();
         orderService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("orders")
-    public List<Order> getAllOrders()
-    {
+    public List<Order> getAllOrders() {
+        validateAdminAccess();
         return orderService.getAllOrders();
     }
+
     @PutMapping("orders/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order)
-    {
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
+        validateAdminAccess();
         Order updatedOrder = orderService.updateOrder(id, order);
         return ResponseEntity.ok(updatedOrder);
     }
+
     @PostMapping("/migrate-passwords")
     public ResponseEntity<String> migratePasswords() {
+        validateAdminAccess();
         try {
             passwordMigrationUtil.migratePasswords();
             return ResponseEntity.ok("Password migration completed successfully");
@@ -189,16 +224,12 @@ public class AdminController {
             return ResponseEntity.internalServerError().body("Password migration failed: " + e.getMessage());
         }
     }
-    // ========== 统计相关接口 ==========
 
-    /**
-     * 管理员：获取书籍销量统计（热销榜）
-     */
     @GetMapping("/stats/books")
     public ResponseEntity<List<OrderStatsDTO>> getBookSalesStats(
             @RequestParam String start,
             @RequestParam String end) {
-        
+        validateAdminAccess();
         OrderFilterDTO filter = OrderFilterDTO.builder()
             .startTime(start)
             .endTime(end)
@@ -209,14 +240,11 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * 管理员：获取用户消费统计（消费榜）
-     */
     @GetMapping("/stats/users")
     public ResponseEntity<List<UserStatsDTO>> getUserConsumeStats(
             @RequestParam String start,
             @RequestParam String end) {
-        
+        validateAdminAccess();
         OrderFilterDTO filter = OrderFilterDTO.builder()
             .startTime(start)
             .endTime(end)
@@ -226,19 +254,15 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * 用户：获取个人购书统计（不再依赖前端传userId）
-     */
-    // 获取当前登录用户信息
     @GetMapping("/users/me")
     public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal User user) {
+        validateAdminAccess();
         return ResponseEntity.ok(user);
     }
 
-    // 更新当前登录用户信息
     @PutMapping("/users/me")
     public ResponseEntity<User> updateCurrentUser(@AuthenticationPrincipal User user, @RequestBody User userData) {
-        // 只允许更新部分字段（如email、phone、address等），不允许改id/username/type等
+        validateAdminAccess();
         user.setEmail(userData.getEmail());
         user.setPhone(userData.getPhone());
         user.setAddress(userData.getAddress());

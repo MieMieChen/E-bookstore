@@ -27,8 +27,8 @@ export async function updateCartQuantity(cartId, quantity) {
 
 // 删除购物车项
 export async function removeFromCart(cartId) {
-  const url = `${PREFIX}/cart/${cartId}`;
-  const res = await del(url);
+  const url = `${PREFIX}/cart`;
+  const res = await del(url, { cartId });
   if (!res.ok) throw new Error('删除购物车项失败');
 }
 

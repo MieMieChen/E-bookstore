@@ -78,10 +78,12 @@ public class OrderServiceImpl implements OrderService {
             order.getOrderItems().size();
             for(OrderItem item:order.getOrderItems())
             {
-                if(item.getBook() != null)
+                Book tmpBook   = item.getBook();
+                if(tmpBook!= null&&tmpBook.getOnShow()==1)
                 {
                     item.getBook().getTitle();
                 }
+                
             }
         }
         return order;

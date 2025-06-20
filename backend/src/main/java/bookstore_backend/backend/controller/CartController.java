@@ -133,14 +133,23 @@ public class CartController {
         }
     }
 
-    @DeleteMapping("/me")
-    public ResponseEntity<Void> removeFromCart(@AuthenticationPrincipal User user) {
-        Long userId = user.getId();
-        boolean deleted = cartService.removeCartItemById(userId);
+    /**
+     * 从购物车中删除商品
+     * @param cartId 购物车项ID
+     * @return ResponseEntity
+     */
+    @DeleteMapping
+    public ResponseEntity<Void> removeFromCart(@RequestBody Map<String, Long> payload) {
+        Long cartId = payload.get("cartId");
+        if (cartId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        boolean deleted = cartService.removeCartItemById(cartId);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build(); // 返回 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
    
@@ -160,6 +169,9 @@ public class CartController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    
+
+    
 
 
 

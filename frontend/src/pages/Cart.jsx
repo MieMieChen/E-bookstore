@@ -23,6 +23,8 @@ export function Cart() {
     loadUserCart,
     // userData
   } = useShop();
+
+  const {getMe} = useAuth();
   const [userC, setUserC] = useState(null);
   const [messageApi, contextHolder] = useMessage();
     useEffect(() => {

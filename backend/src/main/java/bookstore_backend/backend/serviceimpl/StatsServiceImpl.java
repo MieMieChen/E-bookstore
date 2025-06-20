@@ -86,11 +86,15 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<UserStatsDTO> getUserConsumeStats(OrderFilterDTO filter) {
-        // 1. 根据过滤条件查询订单
+        // 1. 获取所有用户
+        List<User> allUsers = userDao.findAll();
+        System.out.println("总用户数: " + allUsers.size());
+
+        // 2. 根据过滤条件查询订单
         List<Order> orders = getOrdersByFilter(filter);
         System.out.println("查询到的订单数量: " + orders.size());
         
-        // 2. 统计每个用户的消费总额（排除已取消的订单）
+        // 3. 统计每个用户的消费总额（排除已取消的订单）
         Map<String, Double> userConsume = orders.stream()
             .filter(order -> {
                 boolean isNotCancelled = order.getStatus() != OrderStatus.CANCELLED;
@@ -102,16 +106,17 @@ public class StatsServiceImpl implements StatsService {
                 Collectors.summingDouble(order -> order.getTotalAmount().doubleValue())
             ));
         
-        System.out.println("统计结果: " + userConsume);
-        
-        // 3. 转换为DTO并按消费额排序
-        return userConsume.entrySet().stream()
-            .map(entry -> UserStatsDTO.builder()
-                .username(entry.getKey())
-                .total(entry.getValue())
+        // 4. 确保所有用户都在统计中，没有订单的用户消费金额为0
+        List<UserStatsDTO> result = allUsers.stream()
+            .map(user -> UserStatsDTO.builder()
+                .username(user.getUsername())
+                .total(userConsume.getOrDefault(user.getUsername(), 0.0))
                 .build())
             .sorted((a, b) -> b.getTotal().compareTo(a.getTotal())) // 按消费额降序
             .collect(Collectors.toList());
+
+        System.out.println("统计结果: " + result);
+        return result;
     }
 
     @Override
@@ -166,9 +171,10 @@ public class StatsServiceImpl implements StatsService {
         
         System.out.println("查询时间范围: " + startTime + " 到 " + endTime);
         
-        // 如果有用户ID，则只查询该用户的订单
+        // 如果是用户个人统计，则只查询该用户的订单；否则查询所有订单
         List<Order> orders;
-        if (filter.getUserId() != null) {
+        boolean isPersonalStats = filter.getIsPersonalStats() != null && filter.getIsPersonalStats();
+        if (filter.getUserId() != null && isPersonalStats) {
             orders = orderDao.findByUserIdAndTimeRange(filter.getUserId(), startTime, endTime);
         } else {
             orders = orderDao.findByTimeRange(startTime, endTime);

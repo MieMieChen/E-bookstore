@@ -40,9 +40,8 @@ export async function createOrder(order) {
       throw new Error(`创建订单失败: HTTP ${res.status} - ${errorText}`);
     }
     
-    const data = await res.json();
-    console.log('API调用成功: 创建订单，返回数据:', data);
-    return data;
+    // const data = await res.json();
+    return res;
   } catch (error) {
     console.error('创建订单异常:', error);
     throw error;

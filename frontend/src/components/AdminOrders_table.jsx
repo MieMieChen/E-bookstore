@@ -27,12 +27,10 @@ export default function AdminOrderTable({ orders, onUpdate }) {
     return statusMap[status] || { text: status, color: 'default', icon: null };
   };
 
-  // 格式化日期时间显示
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return '未知';
     try {
       const date = new Date(dateTimeStr);
-      // 检查日期是否有效
       if (isNaN(date.getTime())) return '无效日期';
       return date.toLocaleString('zh-CN');
     } catch (error) {
@@ -41,7 +39,6 @@ export default function AdminOrderTable({ orders, onUpdate }) {
     }
   };
 
-  // 获取排序日期 (用于表格排序)
   const getOrderDate = (record) => {
     return record.orderTime || record.createdAt || '';
   };
@@ -103,7 +100,7 @@ export default function AdminOrderTable({ orders, onUpdate }) {
         if (user && user.id) { // 检查 user 是否存在以及 user.id 是否存在，以防万一数据结构不完整
         return user.id;
         }
-        return ''; // 或者返回其他默认值，例如 'N/A'
+        return ''; 
     }
     },
 

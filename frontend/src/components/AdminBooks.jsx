@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Modal, Form, InputNumber, message, Upload, DatePicker } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getBooks, searchBooks,addBook,updateBook,deleteBook,restoreBook } from '../services/book';
+import dayjs from 'dayjs';
 
 const { Search } = Input;
 
@@ -50,7 +51,12 @@ export function AdminBooks(){
   const handleEdit = (record) => {
     console.log(record);
     setEditingBook(record);
-    form.setFieldsValue(record);
+    // 转换日期字符串为dayjs对象
+    const formValues = {
+      ...record,
+      publishDate: record.publishDate ? dayjs(record.publishDate) : null
+    };
+    form.setFieldsValue(formValues);
     setIsModalVisible(true);
   };
 
@@ -143,6 +149,12 @@ export function AdminBooks(){
       dataIndex: 'price',
       key: 'price',
       render: (price) => `¥${price}`,
+    },
+    {
+      title:'出版时间',
+      dataIndex :'publishDate',
+      key :'publishDate',
+      render : (publishDate) => publishDate ? dayjs(publishDate).format('YYYY-MM-DD') : ''
     },
     {
       title: '操作',
@@ -241,11 +253,14 @@ export function AdminBooks(){
           </Form.Item>
 
           <Form.Item
-            name="publish_date"
+            name="publishDate"
             label="出版时间"
             rules={[{ required: true, message: '请选择出版时间' }]}
           >
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker 
+              style={{ width: '100%' }} 
+              format="YYYY-MM-DD"
+            />
           </Form.Item>
 
           <Form.Item

@@ -81,16 +81,29 @@ export function AuthProvider({ children }) {
     }
   };
   const register = async (username, email, password, address, phone) => {
-    const userData = {
+    try {
+      const userData = {
         username,
         email,
         password,
-        address,
-        phone
-    };
-        console.log("userdata",userData);
-    const response = await registerApi(userData);
-    return response;
+        address: address || '',
+        phone: phone || ''
+      };
+      console.log("Registering with data:", userData);
+      const response = await registerApi(userData);
+      
+      if (!response.ok) {
+        throw new Error(response.message || '注册失败');
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return {
+        ok: false,
+        message: error.message || '注册失败，请稍后重试'
+      };
+    }
   };
 
 

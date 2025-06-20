@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -53,6 +54,10 @@ import bookstore_backend.backend.serviceimpl.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(
+    prePostEnabled = true,
+    securedEnabled = true,
+    jsr250Enabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -106,8 +111,8 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow all OPTIONS requests
-                .requestMatchers("/api/auth/login", "/api/auth/me", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
                 .requestMatchers("/api/auth/register").permitAll() // Allow registration
+                .requestMatchers("/api/auth/login", "/api/auth/me", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
                 .requestMatchers("/api/auth/migrate-passwords-test").permitAll() // Allow password migration test
                 .requestMatchers("/api/auth/checkLogin").permitAll() // Allow checking login status
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
