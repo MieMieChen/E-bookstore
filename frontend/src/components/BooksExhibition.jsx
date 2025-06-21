@@ -31,22 +31,39 @@ export function BooksExhibition() {
         // We assume the `searchBooks` service function has been updated to accept
         // pagination parameters and will call your new backend endpoint.
         // The backend is expected to return a Page object: { content: [], totalElements: ... }
-        const result = await (
+        // or a plain array for non-paginated results.
+        const result = await searchBooks(
           searchType,
           searchValue,
           pagination.current,
           pagination.pageSize
         );
 
+        // FINAL SAFEGUARD: Intelligently handle both Page objects and plain arrays.
+        let newBooks = [];
+        let totalElements = 0;
+
+        if (Array.isArray(result)) {
+          // It's a plain array
+          newBooks = result;
+          totalElements = result.length; // For non-paginated array, total is just its length
+        } else if (result && result.content) {
+          // It's a Page object
+          newBooks = result.content;
+          totalElements = result.totalElements;
+        }
+
         // Filter out books that are not meant to be shown
-        const visibleBooks = result.content.filter(book => book.onShow === 1);
+        const visibleBooks = newBooks.filter(book => book.onShow === 1);
+        
         setBooks(visibleBooks);
         setPagination(prev => ({
           ...prev,
-          total: result.totalElements,
+          total: totalElements,
         }));
       } catch (error) {
         message.error('获取图书列表失败');
+        setBooks([]); // In case of error, always set to an empty array
       } finally {
         setLoading(false);
       }
@@ -56,7 +73,7 @@ export function BooksExhibition() {
   }, [searchValue, searchType, pagination.current, pagination.pageSize]);
 
   const handleSearch = (value) => {
-    // When a new search is performed, reset to the first page
+    // Correct implementation: Only update state, let useEffect handle the API call.
     setPagination(prev => ({ ...prev, current: 1 }));
     setSearchValue(value);
   };

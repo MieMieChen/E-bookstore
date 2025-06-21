@@ -25,30 +25,39 @@ export function AdminBooks() {
     setLoading(true);
     try {
       const result = await searchBooks('title', searchVal, page, size);
-      setBooks(result.content);
+
+      let newBooks = [];
+      let totalElements = 0;
+
+      if (Array.isArray(result)) {
+        newBooks = result;
+        totalElements = result.length;
+      } else if (result && result.content) {
+        newBooks = result.content;
+        totalElements = result.totalElements;
+      }
+
+      setBooks(newBooks);
       setPagination(prev => ({
         ...prev,
-        total: result.totalElements,
+        total: totalElements,
       }));
-      // Handle case where user deletes the last item on a page and it becomes empty
-      if (result.content.length === 0 && page > 1) {
+      if (newBooks.length === 0 && page > 1) {
           setPagination(prev => ({ ...prev, current: prev.current - 1 }));
       }
     } catch (error) {
       message.error('获取图书列表失败');
+      setBooks([]); 
     } finally {
       setLoading(false);
     }
   };
 
-  // Unified useEffect for fetching data whenever search or pagination changes
   useEffect(() => {
-    // We pass the state values directly to the fetch function
     fetchPaginatedBooks(pagination.current, pagination.pageSize, searchValue);
   }, [searchValue, pagination.current, pagination.pageSize]);
 
   const handleSearch = (value) => {
-    // When a new search starts, always go back to the first page
     setPagination(prev => ({ ...prev, current: 1 }));
     setSearchValue(value);
   };
@@ -69,7 +78,6 @@ export function AdminBooks() {
     setIsModalVisible(true);
   };
 
-  // This function is now just a wrapper around the main fetch logic
   const refreshCurrentPage = () => {
     fetchPaginatedBooks(pagination.current, pagination.pageSize, searchValue);
   }
