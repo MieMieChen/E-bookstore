@@ -3,6 +3,7 @@ package bookstore_backend.backend.service;
 import bookstore_backend.backend.entity.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 import java.util.List;
@@ -23,6 +24,7 @@ public interface BookService {
     public Book updateBook(Long id, Book book);
     public Book updateBookStock(Long id, int stock);
     public void saveBook(Book book);
+    public Page<Book> findBooksPaginated(int page, int size) ;
 
 
 

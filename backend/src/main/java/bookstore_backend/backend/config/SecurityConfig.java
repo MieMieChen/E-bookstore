@@ -115,7 +115,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login", "/api/auth/me", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
                 .requestMatchers("/api/auth/migrate-passwords-test").permitAll() // Allow password migration test
                 .requestMatchers("/api/auth/checkLogin").permitAll() // Allow checking login status
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") //要求所有的人都必须是管理员才能够访问这个url下的内容。
                 .requestMatchers("/api/cart/**", "/api/orders/**", "/api/users/**", "/api/profile/**")
                     .hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated() // All other requests require authentication

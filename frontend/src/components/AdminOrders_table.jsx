@@ -13,7 +13,6 @@ import { cancelOrder, payOrder } from '../services/order';
 const { Text } = Typography;
 
 export default function AdminOrderTable({ orders, onUpdate }) {
-    console.log(orders);
   // 将后端的状态映射到前端显示状态
   const getStatusDisplay = (status) => {
     const statusMap = {
@@ -94,7 +93,7 @@ export default function AdminOrderTable({ orders, onUpdate }) {
     },
     {
     title: '用户',
-    dataIndex: 'user', // dataIndex 指向 dataSource 中每行数据的 'user' 属性
+    dataIndex: 'user',
     key: 'user',
     render: (user) => { // render 函数的第一个参数 'user' 就是当前行数据的 'user' 属性的值
         if (user && user.id) { // 检查 user 是否存在以及 user.id 是否存在，以防万一数据结构不完整

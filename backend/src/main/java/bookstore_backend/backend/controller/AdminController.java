@@ -31,7 +31,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/admin/")
-@PreAuthorize("hasRole('ADMIN')")  // 类级别的权限控制，要求具有ADMIN角色
+@PreAuthorize("hasRole('ADMIN')")  // 类级别的权限控制，要求具有ADMIN角色,但其实钱
 public class AdminController {
     @Autowired
     private UserService userService;
@@ -49,44 +49,31 @@ public class AdminController {
     private PasswordMigrationUtil passwordMigrationUtil;
 
     // 验证当前用户是否为管理员的辅助方法
-    private void validateAdminAccess() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new org.springframework.security.access.AccessDeniedException("需要管理员权限");
-        }
-    }
-
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        validateAdminAccess();
         return userService.listUsers();
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        validateAdminAccess();
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        validateAdminAccess();
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        validateAdminAccess();
         User updatedUser = userService.updateUser(id, user);
         return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        validateAdminAccess();
         Optional<User> user = userService.findUserById(id);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
@@ -97,7 +84,6 @@ public class AdminController {
 
     @PutMapping("/users/invalid/{id}")
     public ResponseEntity<User> setUserInvalid(@PathVariable Long id) {
-        validateAdminAccess();
         try {   
             Optional<User> existingUserOpt = userService.findUserById(id);
             if (existingUserOpt.isEmpty()) {
@@ -119,7 +105,6 @@ public class AdminController {
 
     @PutMapping("/users/valid/{id}")
     public ResponseEntity<User> setUserValid(@PathVariable Long id) {
-        validateAdminAccess();
         try {
             Optional<User> existingUserOpt = userService.findUserById(id);
             if (existingUserOpt.isEmpty()) {
@@ -141,27 +126,23 @@ public class AdminController {
 
     @GetMapping("/books")
     public List<Book> getBooks() {
-        validateAdminAccess();
         return bookService.getAllBooks();
     }
 
     @PutMapping("/books/delete/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        validateAdminAccess();
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/books")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        validateAdminAccess();
         Book createdBook = bookService.createBook(book);
         return ResponseEntity.ok(createdBook);
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
-        validateAdminAccess();
         Book updatedBook = bookService.updateBook(id, book);
         System.out.println("Updated Book: " + updatedBook);
         return ResponseEntity.ok(updatedBook);
@@ -169,54 +150,46 @@ public class AdminController {
 
     @PutMapping("/books/restore/{id}")
     public ResponseEntity<Void> restoreBook(@PathVariable Long id) {
-        validateAdminAccess();
         bookService.restoreBook(id);
         return ResponseEntity.noContent().build();
     }
     
     @PutMapping("/books/{id}/stock")
     public ResponseEntity<Book> updateBookStock(@PathVariable Long id, @RequestBody int stock) {
-        validateAdminAccess();
         Book updatedBook = bookService.updateBookStock(id, stock);
         return ResponseEntity.ok(updatedBook);
     }
 
     @GetMapping("orders/{id}")
     public Order getOrder(@PathVariable Long id) {
-        validateAdminAccess();
         return orderService.getOrderById(id);
     }
 
     @PutMapping("orders/{id}/status")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status) {
-        validateAdminAccess();
         Order updatedOrder = orderService.updateOrderStatus(id, status);
         return ResponseEntity.ok(updatedOrder);
     }
 
     @DeleteMapping("orders/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        validateAdminAccess();
         orderService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("orders")
     public List<Order> getAllOrders() {
-        validateAdminAccess();
         return orderService.getAllOrders();
     }
 
     @PutMapping("orders/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
-        validateAdminAccess();
         Order updatedOrder = orderService.updateOrder(id, order);
         return ResponseEntity.ok(updatedOrder);
     }
 
     @PostMapping("/migrate-passwords")
     public ResponseEntity<String> migratePasswords() {
-        validateAdminAccess();
         try {
             passwordMigrationUtil.migratePasswords();
             return ResponseEntity.ok("Password migration completed successfully");
@@ -229,7 +202,6 @@ public class AdminController {
     public ResponseEntity<List<OrderStatsDTO>> getBookSalesStats(
             @RequestParam String start,
             @RequestParam String end) {
-        validateAdminAccess();
         OrderFilterDTO filter = OrderFilterDTO.builder()
             .startTime(start)
             .endTime(end)
@@ -244,7 +216,6 @@ public class AdminController {
     public ResponseEntity<List<UserStatsDTO>> getUserConsumeStats(
             @RequestParam String start,
             @RequestParam String end) {
-        validateAdminAccess();
         OrderFilterDTO filter = OrderFilterDTO.builder()
             .startTime(start)
             .endTime(end)
@@ -256,13 +227,11 @@ public class AdminController {
 
     @GetMapping("/users/me")
     public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal User user) {
-        validateAdminAccess();
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/users/me")
     public ResponseEntity<User> updateCurrentUser(@AuthenticationPrincipal User user, @RequestBody User userData) {
-        validateAdminAccess();
         user.setEmail(userData.getEmail());
         user.setPhone(userData.getPhone());
         user.setAddress(userData.getAddress());

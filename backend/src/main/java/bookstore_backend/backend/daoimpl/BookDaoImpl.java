@@ -5,7 +5,8 @@ import bookstore_backend.backend.entity.Book;
 import bookstore_backend.backend.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,5 +59,9 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Book save(Book book) {
         return bookRepository.save(book);
+    }
+    @Override
+    public Page<Book> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 }

@@ -1,7 +1,6 @@
 export const API_BASE = 'http://localhost:8080';
 export const PREFIX = 'http://localhost:8080/api';
 
-// 处理响应的通用函数
 async function handleResponse(response) {
     if (response.status === 401) {
         throw new Error('未登录或登录已过期');
@@ -19,7 +18,6 @@ export async function fetchWithAuth(url, options = {}) {
 
     const response = await fetch(url, fetchOptions);
     const res = await handleResponse(response);
-    console.log("fetchWithAuth response:", res);
     return res;
 }
 
@@ -46,69 +44,45 @@ export async function get(url) {
 export async function put(url, data) {
     let opts = {
         method: "PUT",
-        body: JSON.stringify(data),
         headers: {
             'Content-Type': 'application/json'
         }
     };
+     if (data) {
+        opts.body = JSON.stringify(data);
+    }
     const res = await fetchWithAuth(url, opts);
     return res;
 }
 
 export async function del(url, data) {
-    const res = await fetchWithAuth(url, { 
+    let opts = {
         method: "DELETE",
         headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data) 
-    });
+        }
+    };
+    if (data) {
+        opts.body = JSON.stringify(data);
+    }
+    const res = await fetchWithAuth(url, opts);
     return res;
 }
 
 export async function post(url, data) {
-    try {
-        const response = await fetchWithAuth(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        let responseData;
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-            responseData = await response.json();
-        } else {
-            const text = await response.text();
-            responseData = { message: text };
+    let opts = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         }
-
-        return {
-            ok: response.ok,
-            status: response.status,
-            message: responseData.message || '操作失败',
-            data: responseData
-        };
-    } catch (error) {
-        console.error('POST request failed:', error);
-        return {
-            ok: false,
-            status: 500,
-            message: '请求失败，请稍后重试',
-            data: null
-        };
+    };
+    if (data) {
+        opts.body = JSON.stringify(data);
     }
+    // 使用fetchWithAuth来确保包含认证信息
+    const res = await fetchWithAuth(url, opts);
+    return processResponse(res);
+  
 }
 
-// export const BASEURL = process.env.REACT_APP_BASE_URL ?? 'http://localhost:8080';
-//如果使用了vite
-//export const BASEURL = import.meta.env.VITE_REACT_APP_BASE_URL ?? "http://localhost:8080";
-// export const PREFIX = `${BASEURL}/api`;
-// export const API_DOCS_URL = `${BASEURL}/api-docs`;
-export const DUMMY_RESPONSE = {
-    ok: false,
-    message: "网络错误！"
-}

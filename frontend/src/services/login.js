@@ -12,7 +12,6 @@ export async function login(username, password) {
       };
     }
     const response = await post(`${PREFIX}/auth/login`, { username, password });
-    // console.log('Login response:', response);
     
     // response 现在包含 { ok, status, data, message }
     result = {
@@ -27,7 +26,5 @@ export async function login(username, password) {
       message: "登录失败"
     };
   }
-  
-  // console.log('Final login result:', result);
   return result;
 }

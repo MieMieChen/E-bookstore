@@ -13,6 +13,7 @@ export async function getBooks() {
     throw new Error('获取图书失败');
   }
 }
+
 // 获取图书详情
 export async function getBookById(id) {
   try {
@@ -29,7 +30,7 @@ export async function getBookById(id) {
 export async function getHotBooks() {
   try {
     const url = `${PREFIX}/books/hot`;
-    const res = await get(url);
+    const res = await get(url); //因为这些返回的都是response响应体，需要自己解析成json
     return await res.json();
   } catch (error) {
     console.error('Error fetching hot books:', error);
@@ -49,13 +50,29 @@ export async function getNewBooks() {
   }
 }
 
-// 搜索图书
-export async function searchBooks(searchType, query) {
+export async function searchBooks(searchType, query, page, pageSize) {
   try {
     const params = new URLSearchParams();
-    params.append('keyword', query);
-    params.append('type', searchType);
-    const url = `${PREFIX}/books/search?${params.toString()}`;
+    
+    // 只有当搜索关键词不为空时，才添加搜索相关的参数
+    if (query) {
+      params.append('keyword', query);
+      params.append('type', searchType);
+    }
+
+    // 添加分页参数 (后端需要 0-based index)
+    params.append('page', page - 1); 
+    params.append('size', pageSize);
+
+    let url;
+    if (query) {
+      // 当有搜索词时，调用搜索接口
+      url = `${PREFIX}/books/search?${params.toString()}`;
+    } else {
+      // 当没有搜索词时，调用你提供的 paged 接口
+      url = `${PREFIX}/books/paged?${params.toString()}`;
+    }
+    
     const res = await get(url);
     return await res.json();
   } catch (error) {

@@ -6,6 +6,7 @@ import bookstore_backend.backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,16 @@ public class BookController {
     @Autowired
     private BookService bookService;
     // 获取所有图书
+
+    @GetMapping("/books/paged")
+        public ResponseEntity<Page<Book>> getBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Book> bookPage = bookService.findBooksPaginated(page, size);
+        return ResponseEntity.ok(bookPage);
+    }
+    // 获取所有图书（用户端）
+
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks() {
         try {

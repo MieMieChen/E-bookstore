@@ -39,8 +39,6 @@ export async function createOrder(order) {
       });
       throw new Error(`创建订单失败: HTTP ${res.status} - ${errorText}`);
     }
-    
-    // const data = await res.json();
     return res;
   } catch (error) {
     console.error('创建订单异常:', error);
@@ -78,12 +76,8 @@ export async function getOrderStatus(orderId) {
 export async function searchOrders(params) {
   const queryParams = new URLSearchParams();
 
-  // 辅助函数：格式化日期以适应后端需求
   const formatDateTimeForBackend = (dateString) => {
     if (!dateString) return null;
-    // 假设 dateString 已经是 date-fns 可以解析的格式
-    // 例如，'YYYY-MM-DD HH:mm:ss' 或 Date 对象
-    // 我们想要将其转换为 'YYYY-MM-DDTHH:mm:ss'
     return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm:ss");
   };
 
@@ -131,5 +125,4 @@ export async function getOrdersFromStartToEnd(start,end)
   const res = await get(url);
   if (!res.ok) throw new Error('获取订单统计失败');
   return res;
-
 }

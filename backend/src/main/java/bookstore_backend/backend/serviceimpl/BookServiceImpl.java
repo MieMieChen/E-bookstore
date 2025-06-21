@@ -5,11 +5,11 @@ import bookstore_backend.backend.dao.BookDao;
 import bookstore_backend.backend.service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
-
-
-
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.List;
 import java.util.Collections;
@@ -91,6 +91,14 @@ public class BookServiceImpl implements BookService {
     }
     public void saveBook(Book book) {
         bookDao.save(book);
+    }
+
+    public Page<Book> findBooksPaginated(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        
+        // 调用 JpaRepository 内置的分页查询方法
+        return bookDao.findAll(pageable);
     }
 
 

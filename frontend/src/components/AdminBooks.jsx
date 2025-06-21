@@ -1,45 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Modal, Form, InputNumber, message, Upload, DatePicker } from 'antd';
+import { Table, Space, Button, Input, Modal, Form, InputNumber, message, DatePicker, Pagination } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
-import { getBooks, searchBooks,addBook,updateBook,deleteBook,restoreBook } from '../services/book';
+import { searchBooks, addBook, updateBook, deleteBook, restoreBook } from '../services/book';
 import dayjs from 'dayjs';
 
 const { Search } = Input;
 
-export function AdminBooks(){ 
+export function AdminBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [form] = Form.useForm();
+  const [searchValue, setSearchValue] = useState('');
 
-  // 复用已有的获取图书列表和搜索API
-  useEffect(() => {
-    fetchBooks();
-  }, []);
+  // State for pagination
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const fetchBooks = async () => {
+  const fetchPaginatedBooks = async (page, size, searchVal) => {
+    setLoading(true);
     try {
-      console.log("fetching books");
-      // setLoading(true);
-      const data = await getBooks();
-      setBooks(data);
+      const result = await searchBooks('title', searchVal, page, size);
+      setBooks(result.content);
+      setPagination(prev => ({
+        ...prev,
+        total: result.totalElements,
+      }));
+      // Handle case where user deletes the last item on a page and it becomes empty
+      if (result.content.length === 0 && page > 1) {
+          setPagination(prev => ({ ...prev, current: prev.current - 1 }));
+      }
     } catch (error) {
       message.error('获取图书列表失败');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSearch = async (value) => {
-    if (!value) {
-      fetchBooks();
-      return;
-    }
-    try {
-      const data = await searchBooks('title', value);
-      setBooks(data);
-    } catch (error) {
-      message.error('搜索图书失败');
-    }
+  // Unified useEffect for fetching data whenever search or pagination changes
+  useEffect(() => {
+    // We pass the state values directly to the fetch function
+    fetchPaginatedBooks(pagination.current, pagination.pageSize, searchValue);
+  }, [searchValue, pagination.current, pagination.pageSize]);
+
+  const handleSearch = (value) => {
+    // When a new search starts, always go back to the first page
+    setPagination(prev => ({ ...prev, current: 1 }));
+    setSearchValue(value);
   };
 
   const handleAdd = () => {
@@ -49,9 +60,7 @@ export function AdminBooks(){
   };
 
   const handleEdit = (record) => {
-    console.log(record);
     setEditingBook(record);
-    // 转换日期字符串为dayjs对象
     const formValues = {
       ...record,
       publishDate: record.publishDate ? dayjs(record.publishDate) : null
@@ -60,12 +69,16 @@ export function AdminBooks(){
     setIsModalVisible(true);
   };
 
+  // This function is now just a wrapper around the main fetch logic
+  const refreshCurrentPage = () => {
+    fetchPaginatedBooks(pagination.current, pagination.pageSize, searchValue);
+  }
+
   const handleDelete = async (bookId) => {
     try {
-      const bookData = { onShow: 0 };
       await deleteBook(bookId);
       message.success('下架成功');
-      await fetchBooks();
+      refreshCurrentPage();
     } catch (error) {
       console.error('下架失败:', error);
       message.error('下架失败');
@@ -74,10 +87,9 @@ export function AdminBooks(){
 
   const handleRestore = async (bookId) => {
     try {
-      const bookData = { onShow: 1 };
       await restoreBook(bookId);
       message.success('恢复成功');
-      await fetchBooks();
+      refreshCurrentPage();
     } catch (error) {
       console.error('恢复失败:', error);
       message.error('恢复失败');
@@ -86,33 +98,29 @@ export function AdminBooks(){
 
   const handleModalOk = async () => {
     try {
-      console.log("1. handleModalOk started"); // 调试点 1
-      setIsModalVisible(false); // 这一步通常在验证前就执行，用户体验会好一点
-      
-      console.log("2. Attempting to validate fields..."); // 调试点 2
       const values = await form.validateFields();
-      console.log("3. Fields validated successfully. Values:", values); // 调试点 3
+      setIsModalVisible(false);
 
       if (editingBook) {
-        console.log("4. Editing mode. Calling updateBook..."); // 调试点 4a
         await updateBook(editingBook.id, values);
-        console.log("5. updateBook finished."); // 调试点 5a
         message.success('更新成功');
       } else {
-        console.log("4. Add mode. Calling addBook..."); // 调试点 4b
         await addBook(values);
-        console.log("5. addBook finished."); // 调试点 5b
         message.success('添加成功');
       }
-
-      console.log("6. Calling fetchBooks..."); // 调试点 6 <-- 关键检查点
-      await fetchBooks();
-      console.log("7. fetchBooks finished."); // 调试点 7
-
+      refreshCurrentPage();
     } catch (error) {
-      console.error("Error caught in handleModalOk:", error); // 调试点 8
+      console.error("Error caught in handleModalOk:", error);
       message.error('操作失败');
     }
+  };
+
+  const handlePaginationChange = (page, pageSize) => {
+    setPagination({
+      ...pagination,
+      current: page,
+      pageSize: pageSize,
+    });
   };
 
   const columns = [
@@ -151,10 +159,10 @@ export function AdminBooks(){
       render: (price) => `¥${price}`,
     },
     {
-      title:'出版时间',
-      dataIndex :'publishDate',
-      key :'publishDate',
-      render : (publishDate) => publishDate ? dayjs(publishDate).format('YYYY-MM-DD') : ''
+      title: '出版时间',
+      dataIndex: 'publishDate',
+      key: 'publishDate',
+      render: (publishDate) => publishDate ? dayjs(publishDate).format('YYYY-MM-DD') : ''
     },
     {
       title: '操作',
@@ -198,6 +206,18 @@ export function AdminBooks(){
         dataSource={books}
         rowKey="id"
         loading={loading}
+        pagination={false}
+      />
+
+      <Pagination
+        style={{ marginTop: 16, textAlign: 'right' }}
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        onChange={handlePaginationChange}
+        showSizeChanger
+        showQuickJumper
+        showTotal={(total) => `共 ${total} 条`}
       />
 
       <Modal
@@ -207,78 +227,18 @@ export function AdminBooks(){
         onCancel={() => setIsModalVisible(false)}
       >
         <Form form={form} layout="vertical">
-          <Form.Item
-            name="title"
-            label="书名"
-            rules={[{ required: true, message: '请输入书名' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="author"
-            label="作者"
-            rules={[{ required: true, message: '请输入作者' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="isbn"
-            label="ISBN"
-            rules={[{ required: true, message: '请输入ISBN' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="stock"
-            label="库存"
-            rules={[{ required: true, message: '请输入库存' }]}
-          >
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label="书籍描述"
-            rules={[{ required: true, message: '请输入书籍描述' }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-
-          <Form.Item
-            name="publisher"
-            label="出版社"
-            rules={[{ required: true, message: '请输入出版社' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="publishDate"
-            label="出版时间"
-            rules={[{ required: true, message: '请选择出版时间' }]}
-          >
-            <DatePicker 
-              style={{ width: '100%' }} 
-              format="YYYY-MM-DD"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="price"
-            label="价格"
-            rules={[{ required: true, message: '请输入价格' }]}
-          >
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item
-            name="imageUrl"
-            label="封面图片URL"
-            rules={[{ required: true, message: '请输入封面图片URL' }]}
-          >
-            <Input />
-          </Form.Item>
+          <Form.Item name="title" label="书名" rules={[{ required: true, message: '请输入书名' }]}><Input /></Form.Item>
+          <Form.Item name="author" label="作者" rules={[{ required: true, message: '请输入作者' }]}><Input /></Form.Item>
+          <Form.Item name="isbn" label="ISBN" rules={[{ required: true, message: '请输入ISBN' }]}><Input /></Form.Item>
+          <Form.Item name="stock" label="库存" rules={[{ required: true, message: '请输入库存' }]}><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+          <Form.Item name="description" label="书籍描述" rules={[{ required: true, message: '请输入书籍描述' }]}><Input.TextArea rows={4} /></Form.Item>
+          <Form.Item name="publisher" label="出版社" rules={[{ required: true, message: '请输入出版社' }]}><Input /></Form.Item>
+          <Form.Item name="publishDate" label="出版时间" rules={[{ required: true, message: '请选择出版时间' }]}><DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" /></Form.Item>
+          <Form.Item name="price" label="价格" rules={[{ required: true, message: '请输入价格' }]}><InputNumber min={0} precision={2} style={{ width: '100%' }} /></Form.Item>
+          <Form.Item name="imageUrl" label="封面图片URL" rules={[{ required: true, message: '请输入封面图片URL' }]}><Input /></Form.Item>
         </Form>
       </Modal>
+      
     </div>
   );
 }

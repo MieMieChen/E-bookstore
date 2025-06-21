@@ -177,7 +177,7 @@ public class OrderController {
     }
 
 
-    @PutMapping("/orders/{orderId}/pay")
+    @PutMapping("/orders/{orderId}/pay") //参数名必须与路径中的占位符名称一致
     public ResponseEntity<?> payOrder(@PathVariable Long orderId) {
         try {
             Order order = orderService.payOrder(orderId);
