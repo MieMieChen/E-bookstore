@@ -12,7 +12,6 @@ export async function getCart() {
 export async function addToCart(cartItem) {
   const url = `${PREFIX}/cart`;
   const res = await post(url, cartItem);
-  // 注意：这里的 res 是一个 Response 对象，包含了状态码、头信息等
   if (!res.ok) throw new Error('加入购物车失败');
   return await res.json();
 }

@@ -23,8 +23,7 @@ import bookstore_backend.backend.dto.OrderFilterDTO;
 import bookstore_backend.backend.dto.UserStatsDTO;
 import bookstore_backend.backend.util.PasswordMigrationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Optional;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -103,7 +102,7 @@ public class AdminController {
         }
     }
 
-    @PutMapping("/users/valid/{id}")
+    @PutMapping("/users/{id}/valid")
     public ResponseEntity<User> setUserValid(@PathVariable Long id) {
         try {
             Optional<User> existingUserOpt = userService.findUserById(id);

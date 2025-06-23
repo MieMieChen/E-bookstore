@@ -54,22 +54,18 @@ export async function searchBooks(searchType, query, page, pageSize) {
   try {
     const params = new URLSearchParams();
     
-    // 只有当搜索关键词不为空时，才添加搜索相关的参数
     if (query) {
       params.append('keyword', query);
       params.append('type', searchType);
     }
 
-    // 添加分页参数 (后端需要 0-based index)
     params.append('page', page - 1); 
     params.append('size', pageSize);
 
     let url;
     if (query) {
-      // 当有搜索词时，调用搜索接口
       url = `${PREFIX}/books/search?${params.toString()}`;
     } else {
-      // 当没有搜索词时，调用你提供的 paged 接口
       url = `${PREFIX}/books/paged?${params.toString()}`;
     }
     

@@ -130,6 +130,11 @@ public class OrderServiceImpl implements OrderService {
         for(Book book:books)
         {
             book.setStock(book.getStock() - 1);
+            if(book.getStock()<=0)
+            {
+                book.setStock(0);
+                book.setOnShow(0); //下架
+            }
             bookService.saveBook(book);
         }
         return orderDao.save(order);
@@ -163,16 +168,12 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> searchOrders(String startTime, String endTime, String bookTitle) {
         try {
             List<Order> orders;
-            System.out.println("Search parameters - startTime: " + startTime + ", endTime: " + endTime + ", bookTitle: " + bookTitle);
-
             if (startTime != null && endTime != null) {
                 LocalDateTime start = LocalDateTime.parse(startTime);
                 LocalDateTime end = LocalDateTime.parse(endTime);
                 orders = orderDao.findByOrderTimeBetween(start, end);
-                System.out.println("Searching by time range, found orders: " + orders.size());
             } else {
                 orders = orderDao.findAll();
-                System.out.println("Getting all orders, found: " + orders.size());
             }
 
             if (orders.isEmpty()) {

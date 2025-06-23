@@ -5,7 +5,6 @@ import bookstore_backend.backend.dao.BookDao;
 import bookstore_backend.backend.service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +29,7 @@ public class BookServiceImpl implements BookService {
          if (keyword == null || keyword.trim().isEmpty()) {
              return bookDao.findAll();
          }
-
          keyword = keyword.trim();
-
-         // 注意：这里可以将更复杂的搜索逻辑、异常处理等放在Service层
          switch (type) {
              case "title":
                  return bookDao.findByTitleContainingIgnoreCase(keyword);
@@ -42,8 +38,7 @@ public class BookServiceImpl implements BookService {
              case "isbn":
                  return bookDao.findByIsbnContaining(keyword);
              default:
-                 // 如果type未知，可以返回空列表或所有书籍，取决于业务需求
-                 return bookDao.findAll(); // 或者 Collections.emptyList();
+                 return bookDao.findAll(); 
          }
     }
     public List<Book> getHotBooks() {
@@ -95,10 +90,8 @@ public class BookServiceImpl implements BookService {
 
     public Page<Book> findBooksPaginated(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
-        
-        // 调用 JpaRepository 内置的分页查询方法
-        return bookDao.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, size); //创建分页请求，page是页码，size是每页数量
+        return bookDao.findAll(pageable); 
     }
 
 

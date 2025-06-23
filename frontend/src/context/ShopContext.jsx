@@ -21,6 +21,7 @@ const ShopContext = createContext(); //创建了一个上下文对象 ShopContex
 export function ShopProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [modal, contextHolder] = Modal.useModal();
   
   // 使用AuthContext获取当前用户
   const {getMe, isAuthenticated, currentUser } = useAuth();
@@ -80,7 +81,6 @@ export function ShopProvider({ children }) {
   }, [isAuthenticated, currentUser, loadUserCart, loadUserOrders]); // 依赖项包含稳定的函数引用
 
   const addToCart = async (book) => {
-    // 先更新前端状态，确保UI立即响应
     let newQuantity = 1;
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === book.id);
@@ -95,19 +95,16 @@ export function ShopProvider({ children }) {
       return [...prevItems, { ...book, quantity: 1 }];
     });
 
-    // 然后尝试调用后端API（不影响用户体验）
     try {
       const user = await getMe();
       const cartItem = {
-        user: { id: user.id }, // 从当前登录用户获取ID
+        user: { id: user.id }, 
         book: { id: book.id },
-        quantity: newQuantity, // 使用计算后的数量
+        quantity: newQuantity, 
         price: book.price
       };
       await addToCartApi(cartItem);
-      //console.log('购物车同步到服务器成功');
     } catch (error) {
-      // console.error('购物车同步到服务器失败:', error);
     }
   };
 
@@ -179,88 +176,94 @@ export function ShopProvider({ children }) {
   }, [getMe, removeFromCart]);
 
   const createOrder = async (items, total) => {
+    const user = await getMe();
+    
+    // 确保items是有效数组且包含必要字段
+    if (!Array.isArray(items) || items.length === 0) {
+      console.error('购物车错误：', items);
+      modal.error({
+        title: '购物车错误',
+        content: '购物车为空或格式不正确，请检查后重试。',
+        okText: '确定'
+      });
+      return null;
+    }
+    
+    // 获取所有书籍的最新状态
+    const booksStatus = await Promise.all(
+      items.map(item => getBookById(item.id))
+    );
+    
+    // 找出已下架的商品
+    const unavailableItems = items.filter((item, index) => {
+      const bookInfo = booksStatus[index];
+      return !bookInfo.onShow;
+    });
+
+    // 如果有下架商品，显示弹窗
+    if (unavailableItems.length > 0) {
+      // console.log("发现下架商品：", unavailableItems);
+      const unavailableNames = unavailableItems
+        .map(item => item.title)
+        .join('、');
+
+      modal.error({
+        title: '商品已下架',
+        content: `以下商品已下架，无法完成结算：${unavailableNames}。请从购物车中移除这些商品后再试。`,
+        okText: '我知道了'
+      });
+      return null;
+    }
+    
+    const validItems = items.filter((item, index) => {
+      const bookInfo = booksStatus[index];
+      return bookInfo.onShow;
+    });
+
+    const validTotal = validItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    
+    const newOrder = {
+      user: { id: user.id },
+      totalAmount: validTotal,
+      status: 'PENDING',
+      orderItems: validItems.map(item => ({
+        book: { id: item.id },
+        quantity: item.quantity,
+        price: item.price
+      }))
+    };
+    
+    const confirmed = await new Promise((resolve) => {
+      modal.confirm({
+        title: '确认订单',
+        content: `您确定要提交这个订单吗？总金额为 ￥${validTotal.toFixed(2)}`,
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+    });
+
+    if (!confirmed) {
+      return null;
+    }
+
     try {
-      const user = await getMe();
-      
-      // 确保items是有效数组且包含必要字段
-      if (!Array.isArray(items) || items.length === 0) {
-        console.error('购物车错误：', items);
-        Modal.error({
-          title: '购物车错误',
-          content: '购物车为空或格式不正确，请检查后重试。',
-          okText: '确定'
-        });
-        return null;
-      }
-      
-      // 获取所有书籍的最新状态
-      const booksStatus = await Promise.all(
-        items.map(item => getBookById(item.id))
-      );
-      
-      // 找出已下架的商品
-      const unavailableItems = items.filter((item, index) => {
-        const bookInfo = booksStatus[index];
-        return !bookInfo.onShow;
-      });
-
-      // 如果有下架商品，显示弹窗
-      if (unavailableItems.length > 0) {
-        // console.log("发现下架商品：", unavailableItems);
-        const unavailableNames = unavailableItems
-          .map(item => item.title)
-          .join('、');
-
-        Modal.error({
-          title: '商品已下架',
-          content: `以下商品已下架，无法完成结算：${unavailableNames}。请从购物车中移除这些商品后再试。`,
-          okText: '我知道了'
-        });
-        return null;
-      }
-      
-      // 过滤出可购买的商品
-      const validItems = items.filter((item, index) => {
-        const bookInfo = booksStatus[index];
-        return bookInfo.onShow;
-      });
-
-      // 重新计算总价
-      const validTotal = validItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      
-      // 创建订单对象
-      const newOrder = {
-        user: { id: user.id },
-        totalAmount: validTotal,
-        status: 'PENDING',
-        orderItems: validItems.map(item => ({
-          book: { id: item.id },
-          quantity: item.quantity,
-          price: item.price
-        }))
-      };
-
-      // 调用后端API创建订单
       const savedOrder = await createOrderApi(newOrder);
-      
-      // 更新前端状态
       setOrders(prevOrders => [savedOrder, ...prevOrders]);
       setCartItems([]);
-      
-      // 清空购物车
       try {
         await clearUserCartApi(user.id);
       } catch (error) {
-        Modal.warning({
+        modal.warning({
           title: '提示',
-          content: '订单已创建，但购物车清空失败，请刷新页面。'
+          content: '订单已创建'
         });
       }
-      
       return savedOrder;
     } catch (error) {
       console.error('创建订单时发生错误:', error);
-      Modal.error({
+      modal.error({
         title: '创建订单失败',
         content: error.message || '创建订单时发生错误，请稍后重试。',
         okText: '确定'
@@ -292,10 +295,9 @@ export function ShopProvider({ children }) {
       getCartTotal,
       getCartItemsCount,
       updateOrders,
-      // userData,
-      // changeUserData,
-      loadUserCart,     // 暴露方法以便手动刷新
-      loadUserOrders    // 暴露方法以便手动刷新
+      contextHolder,
+      loadUserCart,     
+      loadUserOrders   
     }}>
       {children}
     </ShopContext.Provider>

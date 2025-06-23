@@ -121,11 +121,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<UserStatsDTO> getUserBookStats(OrderFilterDTO filter) {
-        // 1. 根据过滤条件查询订单（包含用户ID过滤）
         List<Order> orders = getOrdersByFilter(filter);
-        System.out.println("查询到的订单数量: " + orders.size());
-        
-        // 2. 统计用户购买的每本书的数量和总金额（排除已取消的订单）
         Map<String, BookSalesStat> userBookStats = orders.stream()
             .filter(order -> {
                 boolean isNotCancelled = order.getStatus() != OrderStatus.CANCELLED;
@@ -148,10 +144,7 @@ public class StatsServiceImpl implements StatsService {
                     }
                 )
             ));
-        
-        System.out.println("统计结果: " + userBookStats);
-        
-        // 3. 转换为DTO
+
         return userBookStats.entrySet().stream()
             .map(entry -> UserStatsDTO.builder()
                 .title(entry.getKey())
@@ -162,14 +155,11 @@ public class StatsServiceImpl implements StatsService {
             .collect(Collectors.toList());
     }
 
-    /**
-     * 根据过滤条件查询订单
-     */
+
     private List<Order> getOrdersByFilter(OrderFilterDTO filter) {
         LocalDateTime startTime = parseDateTime(filter.getStartTime());
         LocalDateTime endTime = parseDateTime(filter.getEndTime());
         
-        System.out.println("查询时间范围: " + startTime + " 到 " + endTime);
         
         // 如果是用户个人统计，则只查询该用户的订单；否则查询所有订单
         List<Order> orders;
@@ -180,13 +170,10 @@ public class StatsServiceImpl implements StatsService {
             orders = orderDao.findByTimeRange(startTime, endTime);
         }
         
-        System.out.println("查询到订单数量: " + orders.size());
         return orders;
     }
 
-    /**
-     * 解析时间字符串
-     */
+
     private LocalDateTime parseDateTime(String dateTimeStr) {
         if (dateTimeStr == null || dateTimeStr.isEmpty()) {
             return LocalDateTime.now().minusDays(30); // 默认查询最近30天

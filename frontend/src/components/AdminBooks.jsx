@@ -14,7 +14,6 @@ export function AdminBooks() {
   const [form] = Form.useForm();
   const [searchValue, setSearchValue] = useState('');
 
-  // State for pagination
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -63,8 +62,8 @@ export function AdminBooks() {
   };
 
   const handleAdd = () => {
-    setEditingBook(null);
-    form.resetFields();
+    setEditingBook(null); 
+    form.resetFields(); //它会清空所有表单项的内容，让表单回到最初的状态 通常在打开新建/编辑表单前调用，确保表单是干净的，不会显示上一次的数据
     setIsModalVisible(true);
   };
 
@@ -107,13 +106,20 @@ export function AdminBooks() {
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
+      
+      // 确保 imageUrl 是完整的 URL
+      const formData = {
+        ...values,
+        imageUrl: values.imageUrl // 直接使用完整的 URL，不做任何处理
+      };
+
       setIsModalVisible(false);
 
       if (editingBook) {
-        await updateBook(editingBook.id, values);
+        await updateBook(editingBook.id, formData);
         message.success('更新成功');
       } else {
-        await addBook(values);
+        await addBook(formData);
         message.success('添加成功');
       }
       refreshCurrentPage();
@@ -243,7 +249,14 @@ export function AdminBooks() {
           <Form.Item name="publisher" label="出版社" rules={[{ required: true, message: '请输入出版社' }]}><Input /></Form.Item>
           <Form.Item name="publishDate" label="出版时间" rules={[{ required: true, message: '请选择出版时间' }]}><DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" /></Form.Item>
           <Form.Item name="price" label="价格" rules={[{ required: true, message: '请输入价格' }]}><InputNumber min={0} precision={2} style={{ width: '100%' }} /></Form.Item>
-          <Form.Item name="imageUrl" label="封面图片URL" rules={[{ required: true, message: '请输入封面图片URL' }]}><Input /></Form.Item>
+          <Form.Item 
+            name="imageUrl" 
+            label="封面图片URL" 
+            rules={[{ required: true, message: '请输入完整的图片URL' }]}
+            tooltip="请输入完整的图片URL地址，包含http://或https://"
+          >
+            <Input placeholder="请输入完整的图片URL，例如：https://example.com/image.jpg" />
+          </Form.Item>
         </Form>
       </Modal>
       

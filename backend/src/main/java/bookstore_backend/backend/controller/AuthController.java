@@ -36,7 +36,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody Map<String, String> credentials, HttpSession session) {
+    public ResponseEntity<Object> login(@RequestBody Map<String, String> credentials, HttpSession session) //服务器根据请求中的 JSESSIONID cookie 找到对应的 Session 对象，并注入到 Controller 方法中。
+    {
        return authService.login(credentials, session);
     }
 

@@ -1,10 +1,8 @@
 import { PREFIX, post } from './common';
 
-// 登录
 export async function login(username, password) {
   let result;
   try {
-    // 添加输入验证
     if (!username || !password) {
       return {
         ok: false,
@@ -12,8 +10,6 @@ export async function login(username, password) {
       };
     }
     const response = await post(`${PREFIX}/auth/login`, { username, password });
-    
-    // response 现在包含 { ok, status, data, message }
     result = {
       ok: response.ok,
       data: response.data,

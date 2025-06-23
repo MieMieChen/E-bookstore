@@ -29,7 +29,6 @@ export function AuthProvider({ children }) {
   
   // 登录函数
   const login = async (username, password) => {
-      // 直接发送原始密码，让后端处理加密
       const response = await loginApi(username, password);
       if (response.ok && response.data) {
           setCurrentUser(response.data);

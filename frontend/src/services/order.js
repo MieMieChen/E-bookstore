@@ -100,7 +100,6 @@ export async function searchOrders(params) {
   }
 
   const url = `${PREFIX}/orders/search?${queryParams.toString()}`;
-  console.log('Sending request to:', url);
   
   const res = await get(url);
   if (!res.ok) {
@@ -114,7 +113,6 @@ export async function searchOrders(params) {
   }
   
   const data = await res.json();
-  console.log('Search orders response:', data);
   return data;
 }
 

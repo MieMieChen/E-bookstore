@@ -6,10 +6,8 @@ import {
   CarOutlined, 
   FileTextOutlined, 
   CloseCircleOutlined,
-  DeleteOutlined
 } from '@ant-design/icons';
 
-import { cancelOrder, payOrder } from '../services/order';
 const { Text } = Typography;
 
 export default function AdminOrderTable({ orders, onUpdate }) {
@@ -97,7 +95,7 @@ export default function AdminOrderTable({ orders, onUpdate }) {
     key: 'user',
     render: (user) => { // render 函数的第一个参数 'user' 就是当前行数据的 'user' 属性的值
         if (user && user.id) { // 检查 user 是否存在以及 user.id 是否存在，以防万一数据结构不完整
-        return user.id;
+        return user.username;
         }
         return ''; 
     }

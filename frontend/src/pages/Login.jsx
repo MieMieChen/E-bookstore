@@ -26,13 +26,6 @@ export function Login() {
         return;
       }
 
-      console.log('当前location状态:', {
-        pathname: location.pathname, //是 URL 的路径部分，不包含域名和查询参数
-        state: location.state,
-        from: location.state?.from //通常用于记录用户在被重定向到登录页之前的页面路径 这样在登录成功后可以返回用户原本想访问的页面
-      });
-
-      //前端
       const res = await login(username, password);
       if (res.ok&&res.data.valid==1) {
         messageApi.success("登录成功！").then(() => {

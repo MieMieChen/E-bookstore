@@ -9,28 +9,18 @@ import { getBookById } from '../services/book';
 export function BookDetail() {
   //每次渲染组件，useParams 都会重新获取路由参数，确保获取的是最新的参数。
   // useState 的初始值仅首次渲染执行	React 会保留状态，只有 setBookPrice 触发时会重新渲染
-  const { id } = useParams();
+  const { id } = useParams(); //
   const navigate = useNavigate();
-  const { addToCart, getCartTotal, createOrder, cartItems } = useShop();
-  const [bookPrice, setBookPrice] = useState(0);
+  const { addToCart} = useShop();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // const book = books.find((book) => {
-  //   return book.id == id;
-  // });
-  
-  // const book = async()=>
-  // {
-  //   await getBookById(id);
-  // }
   useEffect(() => {
     const fetchBook = async () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching book with ID:', id);
         const bookData = await getBookById(id);
         if (!bookData) {
           throw new Error('图书不存在');
@@ -49,12 +39,6 @@ export function BookDetail() {
   const handleAddToCart = () => {
     addToCart(book);
     navigate('/cart');
-  };
-
-  const handleBuyNow = (price) => {
-    setBookPrice(price);
-    createOrder(cartItems, price);
-    navigate('/orders');
   };
 
   if (loading) {
@@ -98,7 +82,6 @@ export function BookDetail() {
       <BookCard 
         book={book}
         handleAddToCart={handleAddToCart}
-        // handleBuyNow={handleBuyNow}
       />
     </div>
   );

@@ -15,5 +15,5 @@ public interface BookDao {
     void deleteById(Long id);
     void restoreById(Long id);
     Book save(Book book);
-    Page<Book> findAll(Pageable pageable); // 分页查询方法
+    Page<Book> findAll(Pageable pageable); 
 }

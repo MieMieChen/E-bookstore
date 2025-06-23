@@ -156,7 +156,6 @@ export function Orders() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      // 构建搜索参数
       const params = {};
       if (timeRange && timeRange[0] && timeRange[1]) {
         params.startTime = timeRange[0].format('YYYY-MM-DD HH:mm:ss');
@@ -166,8 +165,6 @@ export function Orders() {
         params.bookTitle = bookTitle;
       }
       
-      // 调用搜索API
-
       const result = await searchOrders(params);
       console.log("result", result);
       updateOrders(result);

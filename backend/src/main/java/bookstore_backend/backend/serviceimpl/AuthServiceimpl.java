@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
-import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,14 +31,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AuthServiceimpl  implements AuthService {
-    @Autowired
-    private UserService userService;
+
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
-     @Autowired
-    private BCryptPasswordEncoder bcryptEncoder;  
 
     @Override
     //

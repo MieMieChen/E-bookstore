@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Typography, Divider, Empty, Spin, Button, message, Card, Statistic, Row, Col, Tag ,Space,Select,Input, DatePicker} from 'antd';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
-import AdminOrderTable from '../components/AdminOrders_table';
 import { ReloadOutlined, ShoppingOutlined, FileTextOutlined } from '@ant-design/icons';
 import useMessage from "antd/es/message/useMessage";
 import { SearchOutlined } from '@ant-design/icons';
@@ -10,6 +9,7 @@ import {searchOrders} from '../services/order';
 // import { getUserInfo } from '../services/user';
 import { useNavigate } from "react-router-dom";
 import { getAllOrders } from '../services/order';
+import AdminOrderTable from '../components/AdminOrders_table';
 
 const { RangePicker } = DatePicker;
 

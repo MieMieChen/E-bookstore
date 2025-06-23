@@ -50,16 +50,12 @@ export function Cart() {
     })));
   }, []);
 
-  // 当组件加载时，确保获取最新的购物车数据，但避免不必要的重新渲染
   useEffect(() => {
     const fetchCartData = async () => {
       if (isAuthenticated()) {
         setLoading(true);
         try {
-          // 获取最新购物车数据
           await loadUserCart();
-          
-          // 更新最后一次加载的购物车哈希值
           setLastCartHash(calculateCartHash(cartItems));
         } catch (error) {
           console.error('加载购物车失败:', error);
@@ -69,20 +65,15 @@ export function Cart() {
       }
     };
     
-    // 仅在组件首次加载时获取购物车数据
     fetchCartData();
     
-    // 设置定时器，定期检查购物车是否有变化
     const intervalId = setInterval(() => {
       if (isAuthenticated()) {
-        // 执行静默检查，不显示加载状态
         const checkCartUpdates = async () => {
           try {
-            const tempItems = [...cartItems]; // 暂存当前购物车数据
             await loadUserCart(); // 获取最新数据
             
             const newHash = calculateCartHash(cartItems);
-            // 如果购物车内容没有变化，恢复原来的数据，避免重新渲染
             if (newHash !== lastCartHash) {
               console.log('购物车数据有更新，刷新显示');
               setLastCartHash(newHash);

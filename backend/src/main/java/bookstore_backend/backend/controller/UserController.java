@@ -83,8 +83,10 @@ public class UserController {
     public ResponseEntity<List<UserStatsDTO>> getUserBookStats(
             @RequestParam String start,
             @RequestParam String end,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal User user) //自动从当前的 SecurityContext 中提取认证用户的信息，并转换成 User 对象
+    {
         Long userId = user.getId();
+        //使用DTO的filter，将前端传来的参数转换成DTO对象
         OrderFilterDTO filter = OrderFilterDTO.builder()
             .startTime(start)
             .endTime(end)

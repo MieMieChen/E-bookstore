@@ -3,7 +3,7 @@ import { ConfigProvider } from 'antd';
 import { customTheme } from './theme/themeConfigs';
 import './css/global.css';
 import { AuthProvider } from './context/AuthContext';
-import { ShopProvider } from './context/ShopContext';
+import { ShopProvider, useShop } from './context/ShopContext';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -18,28 +18,39 @@ import { AdminBooksPage } from './pages/AdminBooks';
 import { AdminStatsPage } from './pages/AdminStats';
 import { BookDetail } from './pages/BookDetail';
 import { UserStatsPage} from './pages/UserStatsPage';
+
+function AppRoutes() {
+  const { contextHolder } = useShop();
+  return (
+    <>
+      {contextHolder}
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/books/:id" element={<BookDetail />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin/members" element={<AdminMemberPage />} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/books" element={<AdminBooksPage />} />
+          <Route path="/admin/stats" element={<AdminStatsPage />} />
+          <Route path="/user/stats" element={<UserStatsPage />} />
+        </Route>
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <ConfigProvider theme={customTheme}>
       <BrowserRouter>
         <AuthProvider>
           <ShopProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/" element={<MainLayout />}>
-                <Route path="/home" element={<Home />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/books/:id" element={<BookDetail />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/admin/members" element={<AdminMemberPage />} />
-                <Route path="/admin/orders" element={<AdminOrdersPage />} />
-                <Route path="/admin/books" element={<AdminBooksPage />} />
-                <Route path="/admin/stats" element={<AdminStatsPage />} />
-                <Route path="/user/stats" element={<UserStatsPage />} />
-              </Route>
-            </Routes>
+            <AppRoutes />
           </ShopProvider>
         </AuthProvider>
       </BrowserRouter>

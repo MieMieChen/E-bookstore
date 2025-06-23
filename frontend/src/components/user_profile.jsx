@@ -9,6 +9,7 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+  const [tempData, setTempData] = useState(null);
   
   // 获取认证上下文
   const { currentUser, getMe, updateUser } = useAuth();
@@ -21,6 +22,15 @@ export default function UserProfile() {
         const me = await getMe();
         if (me) {
           setUserData(me);
+          // 初始化 tempData
+          setTempData({
+            username: me.username,
+            email: me.email || '',
+            phone: me.phone || '',
+            address: me.address || '',
+            cash: me.cash || 0,
+            id: me.id
+          });
         }
       } catch (error) {
         console.error('加载用户信息失败:', error);
@@ -32,24 +42,6 @@ export default function UserProfile() {
     
     loadUserData();
   }, []);
-
-  // 临时存储编辑中的数据
-  const [tempData, setTempData] = useState({
-    email: '',
-    phone: '',
-    address: ''
-  });
-
-  // 当用户信息更新时，更新临时数据
-  useEffect(() => {
-    if (userData) {
-      setTempData({
-        email: userData.email || '',
-        phone: userData.phone || '',
-        address: userData.address || ''
-      });
-    }
-  }, [userData]);
 
   // 处理输入变化
   const handleInputChange = (field, value) => {
@@ -63,9 +55,22 @@ export default function UserProfile() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 调用后端API更新用户信息
-      const updatedUser = await updateUser(tempData);
+      // 调用后端API更新用户信息，确保发送所有必要的字段
+      const updatedUser = await updateUser({
+        ...tempData,
+        id: userData.id  // 确保包含用户ID
+      });
+      
+      // 更新本地状态
       setUserData(updatedUser);
+      setTempData({
+        ...updatedUser,
+        email: updatedUser.email || '',
+        phone: updatedUser.phone || '',
+        address: updatedUser.address || '',
+        cash: updatedUser.cash || 0
+      });
+      
       setIsEditing(false);
       message.success('个人信息更新成功！');
     } catch (error) {
@@ -80,6 +85,7 @@ export default function UserProfile() {
   const handleCancel = () => {
     // 恢复为原始数据
     setTempData({
+      ...userData,
       email: userData?.email || '',
       phone: userData?.phone || '',
       address: userData?.address || ''
@@ -94,6 +100,12 @@ export default function UserProfile() {
       const me = await getMe();
       if (me) {
         setUserData(me);
+        setTempData({
+          ...me,
+          email: me.email || '',
+          phone: me.phone || '',
+          address: me.address || ''
+        });
         message.success('用户信息已刷新');
       }
     } catch (error) {
@@ -113,7 +125,7 @@ export default function UserProfile() {
     );
   }
 
-  if (!userData) {
+  if (!userData || !tempData) {
     return (
       <div style={{ textAlign: 'center', padding: '50px 0' }}>
         <Text type="secondary">未能加载用户信息</Text>
@@ -139,7 +151,7 @@ export default function UserProfile() {
             >
               刷新用户信息
             </Button>
-            <Divider />
+            {/* <Divider />
             {!isEditing ? (
               <Button type="primary" block onClick={() => setIsEditing(true)} icon={<EditOutlined />}>
                 编辑资料
@@ -152,8 +164,8 @@ export default function UserProfile() {
                 <Button block onClick={handleCancel}>
                   取消
                 </Button>
-              </div>
-            )}
+              </div> */}
+            {/* )} */}
           </div>
         </Card>
       </Col>

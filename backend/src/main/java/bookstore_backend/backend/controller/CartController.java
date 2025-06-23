@@ -27,7 +27,7 @@ public class CartController {
 
     @Autowired //自动装配，将 CartRepository 注入到 CartController 中 
     // 注入就是：
-    // 你的类 (如 CartController) 告诉框架 (如 Spring) 它需要什么 (如 CartRepository)。
+    // 类 (如 CartController) 告诉框架 (如 Spring) 它需要什么 (如 CartRepository)。
     // 框架负责创建或找到这个需要的东西，并自动地把它提供给你的类。你的类不用关心这个东西是怎么来的，只需要直接使用它。
     // 松耦合 (Loose Coupling)：CartController 不再与 CartRepository 的具体实现类硬编码绑定。它只依赖于 CartRepository 接口。这样，更换 CartRepository 的实现或在测试时使用模拟对象都变得更容易。
     private CartService cartService;
@@ -57,10 +57,7 @@ public class CartController {
     //@RequestBody 注解用于将 HTTP 请求体的内容绑定到方法的参数上。它通常用于处理包含复杂数据结构的请求，例如 JSON 或 XML 格式的数据。
     public ResponseEntity<Cart> addToCart(@RequestBody Cart cart) {
         try {
-            // System.out.println("收到购物车请求: " + cart);
-            
             if (cart.getUser() == null || cart.getUser().getId() == null) {
-                // System.out.println("用户信息为空");
                 return ResponseEntity.badRequest().build(); //400
             }
             
@@ -70,27 +67,21 @@ public class CartController {
             // 如果 findUserById 方法没有找到用户，它会返回一个空的 Optional。这时，.orElse(null) 方法会返回你作为参数传递的 null。
 
             if (user == null) {
-                //System.out.println("找不到用户ID: " + cart.getUser().getId());
                 return ResponseEntity.badRequest().build();
             }
 
             if (cart.getBook() == null || cart.getBook().getId() == null) {
-                //System.out.println("图书信息为空");
                 return ResponseEntity.badRequest().build();
             }
             
             Book book = bookService.getBookById(cart.getBook().getId())
                     .orElse(null);
             if (book == null) {
-                //System.out.println("找不到图书ID: " + cart.getBook().getId());
                 return ResponseEntity.badRequest().build();
             }
-
             cart.setUser(user);
             cart.setBook(book);
-            
             Cart savedCart;
-            
             Optional<Cart> existingCartItem = cartService.findCartByUserAndBook(user, book);
             
             if (existingCartItem.isPresent()) {
@@ -115,7 +106,6 @@ public class CartController {
         }
     }
 
-    // 更新购物车商品数量
     @PutMapping("/{cartId}/quantity")
     public ResponseEntity<Cart> updateCartQuantity(
             @PathVariable Long cartId,
@@ -133,11 +123,6 @@ public class CartController {
         }
     }
 
-    /**
-     * 从购物车中删除商品
-     * @param cartId 购物车项ID
-     * @return ResponseEntity
-     */
     @DeleteMapping
     public ResponseEntity<Void> removeFromCart(@RequestBody Map<String, Long> payload) {
         Long cartId = payload.get("cartId");

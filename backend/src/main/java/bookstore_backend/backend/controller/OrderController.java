@@ -52,7 +52,6 @@ public class OrderController {
         this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    // 获取用户的所有订单
     @GetMapping("/orders/me")
     public ResponseEntity<List<Order>> getUserOrders(@AuthenticationPrincipal User user) {
         Long userId = user.getId();
@@ -76,7 +75,6 @@ public class OrderController {
         }
     }
 
-    // 获取订单详情
     @GetMapping("/orders/detail/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         try {
@@ -92,7 +90,6 @@ public class OrderController {
         }
     }
 
-    // 创建新订单
     @PostMapping("/orders")
     @Transactional
     //@RequestBody 数据来源： 该方法期望从 HTTP 请求的消息体 (Request Body) 中读取数据。
@@ -191,8 +188,6 @@ public class OrderController {
         }
     }
 
-        
-    // 更新订单状态
     @PutMapping("/orders/{orderId}/status")
     public ResponseEntity<Order> updateOrderStatus(
             @PathVariable Long orderId,
@@ -225,10 +220,8 @@ public class OrderController {
                 return ResponseEntity.notFound().build();
             }
         } catch (OrderNotFoundException e) {
-            // 如果 Service 抛出 OrderNotFoundException，Controller 捕获并返回 404 Not Found
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            // 捕获 Service 层或其他地方抛出的其他意外异常，返回 500 Internal Server Error
             return ResponseEntity.internalServerError().build();
         }
     }

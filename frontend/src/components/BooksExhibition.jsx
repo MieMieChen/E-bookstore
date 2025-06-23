@@ -27,35 +27,23 @@ export function BooksExhibition() {
     const fetchPaginatedBooks = async () => {
       setLoading(true);
       try {
-        // We call a single API endpoint that handles both searching and pagination.
-        // We assume the `searchBooks` service function has been updated to accept
-        // pagination parameters and will call your new backend endpoint.
-        // The backend is expected to return a Page object: { content: [], totalElements: ... }
-        // or a plain array for non-paginated results.
-        const result = await searchBooks(
+          const result = await searchBooks(
           searchType,
           searchValue,
           pagination.current,
           pagination.pageSize
         );
-
-        // FINAL SAFEGUARD: Intelligently handle both Page objects and plain arrays.
         let newBooks = [];
         let totalElements = 0;
 
         if (Array.isArray(result)) {
-          // It's a plain array
           newBooks = result;
-          totalElements = result.length; // For non-paginated array, total is just its length
+          totalElements = result.length; 
         } else if (result && result.content) {
-          // It's a Page object
           newBooks = result.content;
           totalElements = result.totalElements;
         }
-
-        // Filter out books that are not meant to be shown
         const visibleBooks = newBooks.filter(book => book.onShow === 1);
-        
         setBooks(visibleBooks);
         setPagination(prev => ({
           ...prev,
@@ -73,13 +61,11 @@ export function BooksExhibition() {
   }, [searchValue, searchType, pagination.current, pagination.pageSize]);
 
   const handleSearch = (value) => {
-    // Correct implementation: Only update state, let useEffect handle the API call.
     setPagination(prev => ({ ...prev, current: 1 }));
     setSearchValue(value);
   };
 
   const handleSearchTypeChange = (value) => {
-    // Also reset to the first page when search type changes
     setPagination(prev => ({ ...prev, current: 1 }));
     setSearchType(value);
   };
@@ -96,7 +82,6 @@ export function BooksExhibition() {
     navigate(`/books/${bookId}`);
   };
 
-  // Chunk the books array into rows of 5
   const bookRows = [];
   for (let i = 0; i < books.length; i += 5) {
     bookRows.push(books.slice(i, i + 5));
@@ -109,23 +94,23 @@ export function BooksExhibition() {
           <Typography.Title level={2}>图书搜索</Typography.Title>
           <Search
             addonBefore={
-              <Select
-                value={searchType}
-                style={{ width: 120 }}
-                onChange={handleSearchTypeChange}
-              >
-                <Option value="title">书名</Option>
-                <Option value="author">作者</Option>
-                <Option value="isbn">ISBN</Option>
-              </Select>
+            <Select
+              value={searchType}
+              style={{ width: 120 }}
+              onChange={handleSearchTypeChange}
+            >
+              <Option value="title">书名</Option>
+              <Option value="author">作者</Option>
+              <Option value="isbn">ISBN</Option>
+            </Select>
             }
-            placeholder="请输入搜索内容"
-            allowClear
-            enterButton={<SearchOutlined />}
-            onSearch={handleSearch}
+              placeholder="请输入搜索内容"
+              allowClear
+              enterButton={<SearchOutlined />}
+              onSearch={handleSearch}
             style={{ width: 450 }}
-            loading={loading}
-          />
+              loading={loading}
+            />
         </Space>
       </div>
 
@@ -134,50 +119,50 @@ export function BooksExhibition() {
           <Row key={rowIndex} gutter={[24, 24]} className="book-list" justify="center">
             {row.map((book) => (
               <Col xs={24} sm={12} md={8} lg={6} xl={4} key={book.id}>
-                <Card
-                  hoverable
-                  style={{ height: '100%' }}
-                  bodyStyle={{ padding: '12px' }}
-                  cover={
-                  <div style={{ 
-                    height: '200px', 
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#f5f5f5'
-                  }}>
-                    <img 
-                      alt={book.title} 
-                      src={book.imageUrl} 
-                      style={{ 
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }} 
-                    />
-                  </div>
-                }
-                onClick={() => handleBookClick(book.id)}
-              >
-                <Card.Meta
-                  title={
-                    <Typography.Title level={5} style={{ margin: 0, height: '48px', overflow: 'hidden' }}>
-                      {book.title}
-                    </Typography.Title>
-                  }
-                  description={
-                    <div style={{ height: '80px' }}>
-                      <p style={{ margin: '4px 0' }}>作者：{book.author}</p>
-                      <p style={{ margin: '4px 0' }}>价格：¥{book.price}</p>
-                      <p style={{ margin: '4px 0' }}>库存：{book.stock}</p>
-                    </div>
-                  }
+            <Card
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '12px' }}
+              cover={
+              <div style={{ 
+                height: '200px', 
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5'
+              }}>
+                <img 
+                  alt={book.title} 
+                  src={book.imageUrl} 
+                  style={{ 
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }} 
                 />
-                </Card>
-              </Col>
-            ))}
-          </Row>
+              </div>
+            }
+            onClick={() => handleBookClick(book.id)}
+          >
+            <Card.Meta
+              title={
+                <Typography.Title level={5} style={{ margin: 0, height: '48px', overflow: 'hidden' }}>
+                  {book.title}
+                </Typography.Title>
+              }
+              description={
+                <div style={{ height: '80px' }}>
+                  <p style={{ margin: '4px 0' }}>作者：{book.author}</p>
+                  <p style={{ margin: '4px 0' }}>价格：¥{book.price}</p>
+                  <p style={{ margin: '4px 0' }}>库存：{book.stock}</p>
+                </div>
+              }
+            />
+            </Card>
+          </Col>
+        ))}
+      </Row>
         ))}
       </Spin>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '24px' }}>

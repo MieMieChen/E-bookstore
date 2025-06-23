@@ -18,13 +18,14 @@ export default function BookCard({book, handleAddToCart}) {
                         ¥{book.price.toFixed(2)}
                     </Typography.Title>
                     
-                    <div style={{ marginBottom: 16 }}>
-                        <Typography.Text>作者：{book.author}</Typography.Text>
-                        <Typography.Text>ISBN：{book.isbn}</Typography.Text>
-                        <Typography.Text>出版社：{book.publisher}</Typography.Text>
-                        <Typography.Text>描述：{book.description}</Typography.Text>
-                        <Typography.Text>出版时间：{book.publish_date}</Typography.Text>
-
+                    <div style={{ marginBottom: 16,fontSize: '20px' }}>
+                        <Space direction="vertical">
+                            <Typography.Text>作者：{book.author}</Typography.Text>
+                            <Typography.Text>ISBN：{book.isbn}</Typography.Text>
+                            <Typography.Text>出版社：{book.publisher}</Typography.Text>
+                            <Typography.Text>描述：{book.description}</Typography.Text>
+                            <Typography.Text>出版时间：{book.publish_date}</Typography.Text>
+                        </Space>
                     </div>
                     
                     <Space size={[8, 16]} wrap>

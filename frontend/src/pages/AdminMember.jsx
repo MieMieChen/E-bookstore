@@ -71,12 +71,22 @@ export function AdminMemberPage() {
       key: 'address',
     },
     {
-        title: '当前状态',
+      title: '当前状态',
       dataIndex: 'valid',
       key: 'valid',
       render: (valid) => (
         <span style={{ color: valid === 1 ? 'green' : 'red' }}>
           {valid === 1 ? '正常' : '已禁用'}
+        </span>
+      ),
+    },
+    {
+      title: '用户类型',
+      dataIndex: 'type',
+      key: 'type',
+            render: (type) => (
+        <span style={{ color: type === 1 ? 'red' : 'blue' }}>
+          {type === 1 ? '管理员' : '普通用户'}
         </span>
       ),
     },
@@ -108,7 +118,7 @@ export function AdminMemberPage() {
         columns={columns}
         dataSource={user}
         rowKey="id"
-        loading={loading}
+        loading={loading} //它的作用就是在异步获取数据时提供一个友好的用户提示，改善用户体验
       />
     </div>
   );

@@ -9,7 +9,7 @@ export async function getUserInfo() {
 }
 
 // 获取用户购书统计
-export async function getUserStats({ startTime, endTime, userId }) {
+export async function getUserStats({ startTime, endTime}) {
   const url = `${PREFIX}/users/stats?start=${startTime}&end=${endTime}&isPersonalStats=true`;
   const res = await get(url);
   if (!res.ok) throw new Error('获取用户购书统计失败');
@@ -40,13 +40,6 @@ export async function updateUserInfo(userData) {
   return res;
 }
 
-// 管理员操作：禁用指定用户
-export async function updateUserInvalid(userId, userData) {
-  const url = `${PREFIX}/users/${userId}/invalid`;
-  const res = await put(url, userData);
-  if (!res.ok) throw new Error('更新用户信息失败');
-  return res;
-}
 
 // 获取所有用户（管理员）
 export async function getAllUsers() {
@@ -66,7 +59,7 @@ export async function setUserInvalid(userId) {
 
 // 管理员操作：设置用户有效
 export async function setUserValid(userId) {
-  const url = `${PREFIX}/admin/users/valid/${userId}`;
+  const url = `${PREFIX}/admin/users/${userId}/valid`;
   const res = await put(url);
   if (!res.ok) throw new Error('设置用户有效失败');
   return res;

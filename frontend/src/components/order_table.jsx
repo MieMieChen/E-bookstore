@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, Tag, Typography, Button, Space, Tooltip, message } from 'antd';
 import { 
   ClockCircleOutlined, 
@@ -10,10 +10,59 @@ import {
 } from '@ant-design/icons';
 
 import { cancelOrder, payOrder } from '../services/order';
+import { getBookById } from '../services/book';
 const { Text } = Typography;
+const { useEffect } = React;
 
 export default function OrderTable({ orders, onUpdate }) {
   // 将后端的状态映射到前端显示状态
+  const [booksMap, setBooksMap] = useState({});
+  useEffect(() => {
+    const fetchRequiredBooks = async () => {
+      if (!orders || orders.length === 0) {
+        return;
+      }
+
+      const bookIdsToFetch = new Set();
+      
+      orders.forEach(order => {
+        order.orderItems?.forEach(item => {
+          if (!item.book) return;
+
+          if (typeof item.book !== 'object' || item.book === null) {
+            if (!booksMap[item.book]) {
+              bookIdsToFetch.add(item.book);
+            }
+          }
+        });
+      });
+
+      if (bookIdsToFetch.size === 0) {
+        return;
+      }
+
+      try {
+        const bookPromises = Array.from(bookIdsToFetch).map(id => getBookById(id));
+        const fetchedBooks = await Promise.all(bookPromises);
+
+        const newBooks = fetchedBooks.reduce((acc, book) => {
+          if (book && book.id) {
+            acc[book.id] = book;
+          }
+          return acc;
+        }, {});
+
+        setBooksMap(prevMap => ({ ...prevMap, ...newBooks }));
+
+      } catch (error) {
+        console.error("Failed to fetch book details:", error);
+        message.error("无法加载部分商品信息");
+      }
+    };
+
+    fetchRequiredBooks();
+  }, [orders, booksMap]);
+
   const getStatusDisplay = (status) => {
     const statusMap = {
       'PENDING': { text: '待付款', color: 'orange', icon: <ClockCircleOutlined /> },
@@ -153,13 +202,22 @@ export default function OrderTable({ orders, onUpdate }) {
           <div style={{ padding: '0 12px' }}>
             <Text strong>订单商品：</Text>
             <ul>
-              {record.orderItems?.map((item, index) => (
-                <li key={index}>
-                  {item.book?.title || '商品数据加载失败'} - 
-                  数量: {item.quantity} - 
-                  单价: ¥{(item.price || 0).toFixed(2)}
-                </li>
-              ))}
+              {record.orderItems?.map((item, index) => {
+                let bookInfo;
+                if (typeof item.book === 'object' && item.book !== null) {
+                  bookInfo = item.book;
+                } else {
+                  bookInfo = booksMap[item.book];
+                }
+                
+                return (
+                  <li key={index}>
+                    {bookInfo?.title || '商品信息加载中...'} - 
+                    数量: {item.quantity} - 
+                    单价: ¥{(item.price || 0).toFixed(2)}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ),
