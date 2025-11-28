@@ -34,6 +34,7 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
+    // description字段已迁移到MongoDB的BookDetails集合中
     @Column(length = 1000)
     private String description;
 
@@ -59,6 +60,13 @@ public class Book {
 
     @Column(nullable = false)
     private Integer onShow = 1; //1表示上架，0表示下架 自动给我转变成on_show
+    
+    /**
+     * 书籍标签（逗号分隔的字符串，例如："科幻,小说,太空"）
+     * 这些标签对应Neo4j中的Tag节点名称
+     */
+    @Column(length = 500)
+    private String tags;
     
     @ToString.Exclude // 使用 Lombok 的 @ToString 注解来排除这个字段在 toString 方法中的输出
     @JsonIgnore  // 忽略在 JSON 序列化时包含这个字段，避免循环引用

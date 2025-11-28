@@ -39,12 +39,38 @@ public class BookController {
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+    public ResponseEntity<?> getBookById(@PathVariable Long id) {
         try {
-            Optional<Book> bookOpt = bookService.getBookById(id);
-            return bookOpt
+            // 返回包含MongoDB详情的完整书籍信息
+            Optional<bookstore_backend.backend.dto.BookWithDetailsDTO> bookWithDetailsOpt = bookService.getBookWithDetails(id);
+            if (bookWithDetailsOpt.isPresent()) {
+                return ResponseEntity.ok(bookWithDetailsOpt.get());
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    // 新增：获取书籍详情（仅MongoDB中的description）
+    @GetMapping("/books/{id}/details")
+    public ResponseEntity<?> getBookDetails(@PathVariable Long id) {
+        try {
+            Optional<bookstore_backend.backend.entity.BookDetails> detailsOpt = bookService.getBookDetails(id);
+            return detailsOpt
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    // 新增：更新书籍详情
+    @PostMapping("/books/{id}/details")
+    public ResponseEntity<?> saveBookDetails(@PathVariable Long id, @RequestBody String description) {
+        try {
+            bookstore_backend.backend.entity.BookDetails details = bookService.saveBookDetails(id, description);
+            return ResponseEntity.ok(details);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

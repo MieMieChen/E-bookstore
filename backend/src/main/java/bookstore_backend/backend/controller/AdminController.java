@@ -135,16 +135,66 @@ public class AdminController {
     }
 
     @PostMapping("/books")
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book createdBook = bookService.createBook(book);
-        return ResponseEntity.ok(createdBook);
+    public ResponseEntity<?> createBook(@RequestBody bookstore_backend.backend.dto.BookCreateUpdateDTO bookDTO) {
+        try {
+            // 创建Book实体（MySQL）
+            Book book = new Book();
+            book.setTitle(bookDTO.getTitle());
+            book.setAuthor(bookDTO.getAuthor());
+            book.setPrice(bookDTO.getPrice());
+            book.setStock(bookDTO.getStock());
+            book.setSoldNum(bookDTO.getSoldNum() != null ? bookDTO.getSoldNum() : 0);
+            book.setIsbn(bookDTO.getIsbn());
+            book.setImageUrl(bookDTO.getImageUrl());
+            book.setPublishDate(bookDTO.getPublishDate());
+            book.setPublisher(bookDTO.getPublisher());
+            book.setOnShow(bookDTO.getOnShow() != null ? bookDTO.getOnShow() : 1);
+            book.setTags(bookDTO.getTags());
+            
+            Book createdBook = bookService.createBook(book);
+            
+            // 保存description到MongoDB
+            if (bookDTO.getDescription() != null && !bookDTO.getDescription().isEmpty()) {
+                bookService.saveBookDetails(createdBook.getId(), bookDTO.getDescription());
+            }
+            
+            return ResponseEntity.ok(createdBook);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/books/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
-        Book updatedBook = bookService.updateBook(id, book);
-        System.out.println("Updated Book: " + updatedBook);
-        return ResponseEntity.ok(updatedBook);
+    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody bookstore_backend.backend.dto.BookCreateUpdateDTO bookDTO) {
+        try {
+            // 更新Book实体（MySQL）
+            Book book = new Book();
+            book.setTitle(bookDTO.getTitle());
+            book.setAuthor(bookDTO.getAuthor());
+            book.setPrice(bookDTO.getPrice());
+            book.setStock(bookDTO.getStock());
+            book.setSoldNum(bookDTO.getSoldNum());
+            book.setIsbn(bookDTO.getIsbn());
+            book.setImageUrl(bookDTO.getImageUrl());
+            book.setPublishDate(bookDTO.getPublishDate());
+            book.setPublisher(bookDTO.getPublisher());
+            book.setOnShow(bookDTO.getOnShow());
+            book.setTags(bookDTO.getTags());
+            
+            Book updatedBook = bookService.updateBook(id, book);
+            
+            // 更新description到MongoDB
+            if (bookDTO.getDescription() != null) {
+                bookService.saveBookDetails(id, bookDTO.getDescription());
+            }
+            
+            System.out.println("Updated Book: " + updatedBook);
+            return ResponseEntity.ok(updatedBook);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/books/restore/{id}")
