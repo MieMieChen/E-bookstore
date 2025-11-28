@@ -5,12 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/**
- * BookDetails - MongoDB文档实体
- * 存储书籍的详细描述信息
- */
 @Data
-@Document(collection = "book_details") // 指定MongoDB集合名称
+@Document(collection = "book_details") 
 public class BookDetails {
     
     @Id
@@ -21,16 +17,8 @@ public class BookDetails {
     
     @Field("description")
     private String description; // 书籍详细描述
-    
-    /**
-     * 构造函数
-     */
     public BookDetails() {
     }
-    
-    /**
-     * 带参构造函数
-     */
     public BookDetails(Long bookId, String description) {
         this.bookId = bookId;
         this.description = description;
