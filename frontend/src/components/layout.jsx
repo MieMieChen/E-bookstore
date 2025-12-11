@@ -8,7 +8,8 @@ import {
   OrderedListOutlined,
   UserOutlined,
   BookOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  RobotOutlined
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import useMessage from "antd/es/message/useMessage";
@@ -72,7 +73,12 @@ export function MainLayout() {
       icon: <UserOutlined />,
       label: <Link to="/profile">个人信息</Link>,
     },
-    ]
+    {
+      key: '/assistant',
+      icon: <RobotOutlined />,
+      label: <Link to="/assistant">智能助理</Link>,
+    },
+    ];
   const UserMenuItems = [
     {
       key: '/home',
@@ -98,6 +104,11 @@ export function MainLayout() {
       key:'/stats',
       icon: <BarChartOutlined />,
       label: <Link to="/user/stats">统计分析</Link>,
+    },
+    {
+      key: '/assistant',
+      icon: <RobotOutlined />,
+      label: <Link to="/assistant">智能助理</Link>,
     },
   ];
   // currentUser.type = 1;

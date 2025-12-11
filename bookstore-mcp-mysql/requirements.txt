@@ -1,0 +1,4 @@
+fastmcp
+SQLAlchemy
+pymysql
+uvicorn

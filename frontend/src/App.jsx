@@ -18,6 +18,7 @@ import { AdminBooksPage } from './pages/AdminBooks';
 import { AdminStatsPage } from './pages/AdminStats';
 import { BookDetail } from './pages/BookDetail';
 import { UserStatsPage} from './pages/UserStatsPage';
+import { ChatBotPage } from './pages/ChatBot';
 
 function AppRoutes() {
   const { contextHolder } = useShop();
@@ -38,6 +39,7 @@ function AppRoutes() {
           <Route path="/admin/books" element={<AdminBooksPage />} />
           <Route path="/admin/stats" element={<AdminStatsPage />} />
           <Route path="/user/stats" element={<UserStatsPage />} />
+          <Route path="/assistant" element={<ChatBotPage />} />
         </Route>
       </Routes>
     </>
