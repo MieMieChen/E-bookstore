@@ -19,6 +19,45 @@ const SUGGEST_PROMPTS = [
 
 const MAX_HISTORY = 12;
 
+// 将任意响应结构转换为可显示的字符串，方便调试不同 Agent 输出。
+const formatAssistantReply = (payload) => {
+  if (payload == null) {
+    return '';
+  }
+
+  if (typeof payload === 'string') {
+    return payload;
+  }
+
+  if (Array.isArray(payload)) {
+    const combined = payload
+      .map((item) => formatAssistantReply(item))
+      .filter(Boolean)
+      .join('\n\n');
+    return combined || JSON.stringify(payload, null, 2);
+  }
+
+  if (typeof payload === 'object') {
+    const knownFields =
+      payload.answer ||
+      payload.result ||
+      payload?.data?.answer ||
+      payload.message ||
+      payload.output ||
+      payload.text;
+    if (knownFields) {
+      return knownFields;
+    }
+    try {
+      return JSON.stringify(payload, null, 2);
+    } catch (error) {
+      return String(payload);
+    }
+  }
+
+  return String(payload);
+};
+
 export function ChatBotPage() {
   const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [inputValue, setInputValue] = useState('');
@@ -78,11 +117,7 @@ export function ChatBotPage() {
         history: historyForAgent,
       });
       const assistantReply =
-        response?.answer ||
-        response?.result ||
-        response?.data?.answer ||
-        response?.message ||
-        '机器人已经处理完毕，但没有返回任何文本。';
+        formatAssistantReply(response) || '机器人已经处理完毕，但没有返回任何文本。';
 
       appendMessage({
         id: `assistant-${Date.now()}`,

@@ -1,4 +1,4 @@
-const DEFAULT_CHATBOT_ENDPOINT = 'http://localhost:5678/chat';
+const DEFAULT_CHATBOT_ENDPOINT = 'http://localhost:5678/webhook/chat';
 
 const CHATBOT_ENDPOINT = import.meta.env?.VITE_CHATBOT_ENDPOINT || DEFAULT_CHATBOT_ENDPOINT;
 
