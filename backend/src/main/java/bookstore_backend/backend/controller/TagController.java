@@ -15,7 +15,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/tags")
-@CrossOrigin(origins = "http://localhost:3000")
 public class TagController {
     
     @Autowired

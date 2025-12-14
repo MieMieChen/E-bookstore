@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController // 最常用于创建 RESTful API。因为 RESTful API 的核心在于资源的表示和交互，后端通常直接返回数据（如 JSON 格式的对象列表、单个对象、状态码等），而不是返回渲染好的 HTML 页面。
 @RequestMapping("/api/cart") //将所有在这个控制器中定义的请求映射到以 /api/cart 开头的URL路径下。例如，获取购物车项的接口可能是 GET /api/cart/{userId}
-@CrossOrigin(origins = "http://localhost:3000") //正是告诉浏览器，允许来自 http://localhost:3000 的前端应用访问这些购物车API接口。
 
 
 

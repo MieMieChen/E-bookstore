@@ -19,7 +19,8 @@ export async function login(username, password) {
     console.error('Login error:', e);
     result = {
       ok: false,
-      message: "登录失败"
+      data: null,
+      message: e.message || "登录失败"
     };
   }
   return result;

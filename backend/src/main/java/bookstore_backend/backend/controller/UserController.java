@@ -19,7 +19,6 @@ import javax.swing.Spring;
 
 @RestController  //接口方法返回对象 转换成json文本
 @RequestMapping("/api/users")  //后面的路径不能重复！
-@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     

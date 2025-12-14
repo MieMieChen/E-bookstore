@@ -1,5 +1,6 @@
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\BackendApplication.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\config\Neo4jConfig.java
+C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\config\RequestLoggingInterceptor.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\config\SecurityConfig.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\config\WebConfig.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\AdminController.java

@@ -1,19 +1,23 @@
 // 创建新文件 backend/src/main/java/bookstore_backend/backend/config/WebConfig.java
 package bookstore_backend.backend.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-//这是一个 Spring Boot 后端配置类，主要用于配置 CORS（跨域资源共享） 规则，解决前端应用（如 React、Vue）访问后端 API 时的跨域问题
+//这是一个 Spring Boot 后端配置类，主要用于配置拦截器
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Autowired
+    private RequestLoggingInterceptor requestLoggingInterceptor;
+
+    // CORS 配置已移至 SecurityConfig.java，避免重复配置
+
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 添加请求日志拦截器，拦截所有 /api/ 开头的请求
+        registry.addInterceptor(requestLoggingInterceptor)
+                .addPathPatterns("/api/**");
     }
 }

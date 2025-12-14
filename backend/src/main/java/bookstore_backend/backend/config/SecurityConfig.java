@@ -1,7 +1,6 @@
 package bookstore_backend.backend.config;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -84,7 +83,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend URL
+        // 使用 setAllowedOriginPatterns 代替 setAllowedOrigins，避免重复
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*")); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true); // Important for cookies
@@ -101,7 +101,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 配置CORS，
+            .cors(cors -> cors.disable()) // 禁用 Spring Security 的 CORS，由 Nginx 处理
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity in this context
             .authenticationProvider(authenticationProvider()) // 添加认证提供者
             .sessionManagement(session -> session

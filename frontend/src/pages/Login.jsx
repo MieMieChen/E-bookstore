@@ -27,21 +27,32 @@ export function Login() {
       }
 
       const res = await login(username, password);
-      if (res.ok&&res.data.valid==1) {
+      
+      console.log("登录响应:", res);
+      console.log("响应数据:", res.data);
+      
+      // 添加安全检查
+      if (!res || !res.data) {
+        console.error("登录响应无效:", res);
+        setError('登录请求失败，请检查网络连接');
+        messageApi.error('登录请求失败，请检查网络连接');
+        return;
+      }
+      
+      console.log("用户valid状态:", res.data.valid);
+      
+      if (res.ok && res.data.valid == 1) {
         messageApi.success("登录成功！").then(() => {
           const from = location.state?.from || '/home';
           console.log('登录成功，即将重定向到:', from);
           navigate(from, { replace: true });
         });
-      } else if(!res.ok&&res.data.valid==1) {
+      } else if (!res.ok && res.data.valid == 1) {
         console.log("登录失败，请检查用户名和密码");
         setError('登录失败，请检查用户名和密码');
         messageApi.error('登录失败，请检查用户名和密码');
-      }
-      else 
-      {
-        console.log("res.ok&&res.data.valid",res.ok, res.data.valid);
-
+      } else {
+        console.log("res.ok&&res.data.valid", res.ok, res.data.valid);
         console.log("您的账号已经被禁用");
         setError('您的账号已经被禁用');
         messageApi.error('您的账号已经被禁用');

@@ -1,5 +1,5 @@
-export const API_BASE = 'http://localhost:8080';
-export const PREFIX = 'http://localhost:8080/api';
+export const API_BASE = 'http://localhost:8888';
+export const PREFIX = 'http://localhost:8888/api';
 
 async function handleResponse(response) {
     if (response.status === 401) {

@@ -12,6 +12,7 @@ bookstore_backend\backend\dao\BookDao.class
 bookstore_backend\backend\dto\OrderStatsDTO.class
 bookstore_backend\backend\entity\OrderStatus.class
 bookstore_backend\backend\controller\RegisterRequest.class
+bookstore_backend\backend\controller\MongoDBTestController.class
 bookstore_backend\backend\entity\Order.class
 bookstore_backend\backend\service\StatsService.class
 bookstore_backend\backend\serviceimpl\CustomUserDetailsService.class
@@ -19,7 +20,9 @@ bookstore_backend\backend\repository\OrderRepository.class
 bookstore_backend\backend\dao\UserAuthDao.class
 bookstore_backend\backend\service\UserService.class
 bookstore_backend\backend\daoimpl\UserDaoImpl.class
+bookstore_backend\backend\util\BookDescriptionMigrationUtil.class
 bookstore_backend\backend\service\UserAuthService.class
+bookstore_backend\backend\util\BookTagAssignmentUtil.class
 bookstore_backend\backend\config\WebConfig.class
 bookstore_backend\backend\controller\BookController.class
 bookstore_backend\backend\service\OrderService.class
@@ -30,6 +33,8 @@ bookstore_backend\backend\exception\OrderNotFoundException.class
 bookstore_backend\backend\dto\OrderStatsDTO$OrderStatsDTOBuilder.class
 bookstore_backend\backend\entity\BookDetails.class
 bookstore_backend\backend\serviceimpl\CartServiceImpl.class
+bookstore_backend\backend\config\RequestLoggingInterceptor.class
+bookstore_backend\backend\serviceimpl\TagServiceImpl.class
 bookstore_backend\backend\daoimpl\CartDaoImpl.class
 bookstore_backend\backend\daoimpl\UserAuthImpl.class
 bookstore_backend\backend\serviceimpl\UserServiceImpl.class
@@ -38,6 +43,7 @@ bookstore_backend\backend\entity\User.class
 bookstore_backend\backend\dto\UserDTO.class
 bookstore_backend\backend\entity\Cart.class
 bookstore_backend\backend\service\AuthService.class
+bookstore_backend\backend\entity\Tag.class
 bookstore_backend\backend\dao\OrderDao.class
 bookstore_backend\backend\repository\UserRepository.class
 bookstore_backend\backend\serviceimpl\AuthServiceimpl.class
@@ -45,10 +51,12 @@ bookstore_backend\backend\util\PasswordMigrationUtil.class
 bookstore_backend\backend\serviceimpl\BookServiceImpl.class
 bookstore_backend\backend\repository\CartRepository.class
 bookstore_backend\backend\entity\UserAuth$UserAuthBuilder.class
+bookstore_backend\backend\util\TagGraphInitializer.class
 bookstore_backend\backend\service\CartService.class
 bookstore_backend\backend\controller\AdminController.class
 bookstore_backend\backend\entity\User$UserBuilder.class
 bookstore_backend\backend\controller\UserAuthController.class
+bookstore_backend\backend\controller\TagController.class
 bookstore_backend\backend\daoimpl\BookDaoImpl.class
 bookstore_backend\backend\daoimpl\OrderDaoImpl.class
 bookstore_backend\backend\repository\BookDetailsRepository.class
@@ -58,9 +66,12 @@ bookstore_backend\backend\dao\UserDao.class
 bookstore_backend\backend\BackendApplication.class
 bookstore_backend\backend\serviceimpl\StatsServiceImpl$BookSalesStat.class
 bookstore_backend\backend\dto\OrderFilterDTO$OrderFilterDTOBuilder.class
+bookstore_backend\backend\repository\TagRepository.class
 bookstore_backend\backend\dto\UserDTO$UserDTOBuilder.class
 bookstore_backend\backend\dto\UserStatsDTO.class
+bookstore_backend\backend\config\Neo4jConfig.class
 bookstore_backend\backend\serviceimpl\UserAuthServiceImpl.class
+bookstore_backend\backend\service\TagService.class
 bookstore_backend\backend\controller\OrderController.class
 bookstore_backend\backend\controller\CartController.class
 bookstore_backend\backend\dto\BookWithDetailsDTO.class
