@@ -6,6 +6,7 @@ C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backe
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\AdminController.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\AuthController.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\BookController.java
+C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\BookGraphQLController.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\CartController.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\MongoDBTestController.java
 C:\Users\chenz\Desktop\bookstore_9\backend\src\main\java\bookstore_backend\backend\controller\OrderController.java

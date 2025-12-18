@@ -111,6 +111,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow all OPTIONS requests
+                .requestMatchers("/graphql", "/graphql/**").permitAll() // Allow GraphQL endpoint (must be before other rules)
                 .requestMatchers("/api/auth/register").permitAll() // Allow registration
                 .requestMatchers("/api/auth/login", "/api/auth/me", "/api/books", "/css/**", "/js/**", "/images/**").permitAll() // Publicly accessible
                 .requestMatchers("/api/auth/migrate-passwords-test").permitAll() // Allow password migration test
@@ -119,6 +120,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN") //要求所有的人都必须是管理员才能够访问这个url下的内容。
                 .requestMatchers("/api/cart/**", "/api/orders/**", "/api/users/**", "/api/profile/**")
                     .hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated() // All other requests require authentication
             )
             .logout(logout -> logout

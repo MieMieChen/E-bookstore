@@ -156,7 +156,7 @@ public class BookServiceImpl implements BookService {
         Pageable pageable = PageRequest.of(page, size); //创建分页请求，page是页码，size是每页数量
         return bookDao.findAll(pageable); 
     }
-
-
-
+    public List<Book> findBooksByName(String name) {
+        return bookDao.findByTitleContainingIgnoreCase(name);
+    }
 }

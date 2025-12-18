@@ -37,7 +37,7 @@ public interface BookService {
     public Book updateBookStock(Long id, int stock);
     public void saveBook(Book book);
     public Page<Book> findBooksPaginated(int page, int size) ;
-
+    public List<Book> findBooksByName(String name);
 
 
 }

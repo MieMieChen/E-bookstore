@@ -1,0 +1,40 @@
+{
+  "说明": "GraphQL 请求示例 - 在 Postman 中使用",
+  
+  "方式1_使用变量": {
+    "method": "POST",
+    "url": "http://localhost:8080/graphql",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "query": "query MySearchQuery($bookName: String!) { searchBooksByName(name: $bookName) { id title author price description } }",
+      "variables": {
+        "bookName": "测试"
+      }
+    }
+  },
+  
+  "方式2_直接传值": {
+    "method": "POST",
+    "url": "http://localhost:8080/graphql",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "query": "query { searchBooksByName(name: \"测试\") { id title author price description } }"
+    }
+  },
+  
+  "方式3_查询所有字段": {
+    "method": "POST",
+    "url": "http://localhost:8080/graphql",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "query": "query { searchBooksByName(name: \"Java\") { id title author price description } }"
+    }
+  }
+}
+

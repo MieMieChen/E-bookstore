@@ -1,6 +1,7 @@
 import { PREFIX, get, processResponse,post,put,del } from "./common";
 //即使后端使用了 @RestController 把数据变成了 JSON 放在响应体里发过来，
 //前端接收到的是包含这个 JSON 字符串的原始响应。你需要调用 res.json() 来读取并解析这个 JSON 字符串，最终得到你在 JavaScript 中可以使用的对象
+import { gql } from '@apollo/client';
 export async function getBooks() {
   try {
     const url = `${PREFIX}/books`;
@@ -101,3 +102,14 @@ export async function restoreBook(bookId) {
   const res = await put(url);
   return res;
 }
+export const SEARCH_BOOKS_BY_NAME = gql`
+  query SearchBooksByName($name: String!) {
+    searchBooksByName(name: $name) {
+      id
+      name
+      author
+      price
+      description
+    }
+  }
+`;
