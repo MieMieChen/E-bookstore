@@ -34,6 +34,7 @@ bookstore_backend\backend\dto\OrderStatsDTO$OrderStatsDTOBuilder.class
 bookstore_backend\backend\entity\BookDetails.class
 bookstore_backend\backend\serviceimpl\CartServiceImpl.class
 bookstore_backend\backend\config\RequestLoggingInterceptor.class
+bookstore_backend\backend\controller\BookGraphQLController.class
 bookstore_backend\backend\serviceimpl\TagServiceImpl.class
 bookstore_backend\backend\daoimpl\CartDaoImpl.class
 bookstore_backend\backend\daoimpl\UserAuthImpl.class
